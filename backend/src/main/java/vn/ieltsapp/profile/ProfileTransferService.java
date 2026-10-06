@@ -103,9 +103,11 @@ public class ProfileTransferService {
         insertIfExists(e.exerciseAttempts(), pid, """
                 INSERT INTO exercise_attempt (profile_id, exercise_code, answer, correct, attempted_at)
                 VALUES (:pid, :exercise_code, :answer, :correct, :attempted_at)""");
-        insertIfExists(e.studySessions(), pid, """
+        // Chỉ nhập buổi học đã xong: buổi dở dang tham chiếu id từ của DB cũ, không dùng lại được.
+        skipped += insertIfExists(e.studySessions(), pid, """
                 INSERT INTO study_session (profile_id, study_date, state_json, started_at, finished_at, minutes)
-                VALUES (:pid, :study_date, :state_json, :started_at, :finished_at, :minutes)""");
+                SELECT :pid, :study_date, :state_json, :started_at, :finished_at, :minutes
+                WHERE :finished_at IS NOT NULL""");
 
         return new ImportResult(ProfileDto.from(profileService.get(pid)), skipped);
     }

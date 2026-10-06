@@ -56,11 +56,16 @@ class ProfileTransferApiTest extends IntegrationTest {
                  "userWords":[],"cards":[{"word_code":"khong#co","user_word":0,"ease":2.5,"interval_days":1,
                    "repetitions":1,"lapses":0,"due_date":"2026-10-02","created_at":"2026-10-01T09:00"}],
                  "reviews":[],"unitProgress":[{"unit_code":"S9-U01","status":"ACTIVE","started_at":"2026-10-01T09:00"}],
-                 "lessonProgress":[],"exerciseAttempts":[],"testResults":[],"studySessions":[]}
+                 "lessonProgress":[],"exerciseAttempts":[],"testResults":[],
+                 "studySessions":[{"study_date":"2026-10-01","state_json":"{}","started_at":"2026-10-01T09:00",
+                   "finished_at":"2026-10-01T09:30","minutes":30},
+                  {"study_date":"2026-10-02","state_json":"{}","started_at":"2026-10-02T09:00","minutes":0}]}
                 """;
         mvc.perform(post("/api/profiles/import").contentType(MediaType.APPLICATION_JSON).content(payload))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.skippedRows").value(2));
+                .andExpect(jsonPath("$.skippedRows").value(3));
+        assertThat(jdbc.sql("SELECT study_date FROM study_session").query(String.class).list())
+                .containsExactly("2026-10-01");
     }
 
     @Test
