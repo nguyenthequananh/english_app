@@ -1,0 +1,10 @@
+{
+  "code": "S0", "title": "Xây nền", "targetBand": 4.0, "order": 0,
+  "test": {
+    "code": "S0-T", "kind": "STAGE", "passRatio": 0.7,
+    "exercises": [
+      {"code": "S0-T-E1", "type": "MCQ", "prompt": "My sister ___ in Hanoi.", "options": ["live", "lives", "living"], "answer": "lives", "explanationVi": "Chủ ngữ ngôi thứ 3 số ít, động từ thêm -s."},
+      {"code": "S0-T-E2", "type": "FILL", "prompt": "We ___ (not/like) coffee.", "answer": "don't like|do not like", "explanationVi": "Phủ định hiện tại đơn với we: don't + V."}
+    ]
+  }
+}

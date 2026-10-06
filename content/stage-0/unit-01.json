@@ -1,0 +1,34 @@
+{
+  "code": "S0-U01", "stage": "S0", "title": "Chào hỏi & Thì hiện tại đơn", "order": 1,
+  "words": [
+    {"headword": "hello", "pos": "exclamation", "ipaUs": "/həˈloʊ/", "ipaUk": "/həˈləʊ/", "meaningVi": "xin chào", "exampleEn": "Hello, my name is Lan.", "exampleVi": "Xin chào, tên tôi là Lan.", "cefr": "A1"},
+    {"headword": "name", "pos": "noun", "ipaUs": "/neɪm/", "ipaUk": "/neɪm/", "meaningVi": "tên", "exampleEn": "What is your name?", "exampleVi": "Bạn tên là gì?", "cefr": "A1"},
+    {"headword": "live", "pos": "verb", "ipaUs": "/lɪv/", "ipaUk": "/lɪv/", "meaningVi": "sống", "exampleEn": "I live in Da Nang.", "exampleVi": "Tôi sống ở Đà Nẵng.", "cefr": "A1"},
+    {"headword": "work", "pos": "verb", "ipaUs": "/wɝːk/", "ipaUk": "/wɜːk/", "meaningVi": "làm việc", "exampleEn": "She works in a bank.", "exampleVi": "Cô ấy làm việc ở ngân hàng.", "cefr": "A1"},
+    {"headword": "family", "pos": "noun", "ipaUs": "/ˈfæm.əl.i/", "ipaUk": "/ˈfæm.əl.i/", "meaningVi": "gia đình", "exampleEn": "My family is small.", "exampleVi": "Gia đình tôi nhỏ.", "cefr": "A1"}
+  ],
+  "lessons": [
+    {
+      "code": "S0-U01-G1", "type": "GRAMMAR", "day": "MON", "title": "Thì hiện tại đơn: khẳng định",
+      "bodyMd": "## Thì hiện tại đơn\n\nDùng để nói về **thói quen** và **sự thật**.\n\n- I/You/We/They + V: *I live in Hanoi.*\n- He/She/It + V-s/es: *She lives in Hanoi.*",
+      "exercises": [
+        {"code": "S0-U01-G1-E1", "type": "MCQ", "prompt": "He ___ in a hospital.", "options": ["work", "works", "working"], "answer": "works", "explanationVi": "He là ngôi thứ 3 số ít nên thêm -s."},
+        {"code": "S0-U01-G1-E2", "type": "FILL", "prompt": "They ___ (live) near the sea.", "answer": "live", "explanationVi": "They giữ nguyên động từ."}
+      ]
+    },
+    {
+      "code": "S0-U01-P1", "type": "PRONUNCIATION", "day": "TUE", "title": "Âm /ɪ/ và /iː/",
+      "bodyMd": "## /ɪ/ ngắn và /iː/ dài\n\n- /ɪ/: *ship, live, sit*\n- /iː/: *sheep, leave, seat*",
+      "exercises": [
+        {"code": "S0-U01-P1-E1", "type": "MINIMAL_PAIR", "prompt": "live", "options": ["live", "leave"], "answer": "live", "explanationVi": "live có âm /ɪ/ ngắn."}
+      ]
+    }
+  ],
+  "test": {
+    "code": "S0-U01-T", "kind": "UNIT", "passRatio": 0.6,
+    "exercises": [
+      {"code": "S0-U01-T-E1", "type": "MCQ", "prompt": "My father ___ in an office.", "options": ["work", "works"], "answer": "works", "explanationVi": "My father = he, thêm -s."},
+      {"code": "S0-U01-T-E2", "type": "FILL", "prompt": "I ___ (live) with my family.", "answer": "live", "explanationVi": "I giữ nguyên động từ."}
+    ]
+  }
+}
