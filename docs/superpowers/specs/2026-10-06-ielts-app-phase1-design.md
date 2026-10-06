@@ -117,12 +117,14 @@ APP_TA/
 | `lesson` | Bài học (ngữ pháp/phát âm/đọc/nghe), bài tập, chấm bài |
 | `assessment` | Bài kiểm tra cuối unit và cuối chặng |
 | `progress` | Chuỗi ngày học, thống kê, heatmap |
-| `content` | Đọc và kiểm tra JSON, import (ghi đè theo `code`), nạp `content/` vào DB ở lần chạy đầu tiên |
+| `content` | Đọc và kiểm tra JSON, import (ghi đè theo `code`, xoá bài học/câu hỏi đã bị bỏ khỏi file), nạp lại nội dung đóng gói kèm vào DB ở mỗi lần khởi động |
 | `backup` | Sao lưu tự động/thủ công, khôi phục, xuất/nhập hồ sơ |
 | `settings` | Cấu hình app (cổng, thư mục sao lưu) |
 
 - Mọi API dữ liệu cá nhân đều lấy `profile_id` từ HTTP session, không nhận từ client. Chưa chọn hồ sơ thì trả về 401.
 - API dùng prefix `/api/**`. Các đường dẫn còn lại trả về `index.html` để React Router xử lý.
+- Bảo vệ `/api/**` khỏi DNS rebinding và POST giả mạo từ trang web khác: request có header `Host` không phải `127.0.0.1`/`localhost` bị từ chối (403, `code: FORBIDDEN_ORIGIN`); request thay đổi dữ liệu (khác GET/HEAD/OPTIONS) có header `Origin` thì host của `Origin` cũng phải là `127.0.0.1`/`localhost` (cổng nào cũng được, để Vite dev server ở 5173 dùng được).
+- **Quyết định:** nội dung đóng gói kèm app được nạp lại (upsert theo `code`) ở mỗi lần khởi động, không chỉ lần chạy đầu tiên, để bản cập nhật app mang theo nội dung mới/đã sửa mà không mất tiến độ học.
 
 ## 6. Mô hình dữ liệu
 
@@ -180,7 +182,8 @@ File `content/stage-0/stage.json` khai báo thông tin chặng và bài kiểm t
 - **Import nội dung:** kiểm tra JSON trước khi ghi (thiếu trường, `code` trùng trong file, `answer` không nằm trong `options`, `unit_code` không tồn tại). Mỗi file import trong một transaction, có lỗi thì không ghi gì và báo lỗi kèm đường dẫn tới trường sai.
 - **Cổng bận:** app gọi `/api/health` ở cổng đó. Nếu là instance của chính app thì chỉ mở trình duyệt vào đó; nếu không thì thử lần lượt `8766`…`8775` và lưu cổng thực tế vào `config.yml`.
 - **Không có giọng tiếng Anh:** hiện banner hướng dẫn, các tính năng khác vẫn dùng bình thường.
-- **DB lỗi hoặc không mở được:** hiện trang lỗi, cho phép chọn khôi phục từ bản sao lưu gần nhất.
+- **DB hỏng (quyết định):** khi khởi động, nếu `ielts.db` hỏng thì app tự khôi phục từ bản sao lưu lành gần nhất (file hỏng được dời sang `ielts-corrupt-*.db`), và `/api/health` trả `recoveredFrom` để giao diện báo cho người dùng, thay vì hiện trang lỗi. DB đang bị instance khác giữ (bận) không bị coi là hỏng.
+- **Lỗi không mong muốn:** trả 500 với `code: INTERNAL`, thông báo "Có lỗi không mong muốn, xem log", và ghi log mức ERROR. Lỗi chuẩn của Spring (404, 405, ...) giữ nguyên mã HTTP.
 
 ## 8. Hạ tầng và cấu hình
 
@@ -197,6 +200,8 @@ Trình duyệt ──http://127.0.0.1:8765──▶ IELTS App (Spring Boot + JRE
 ```
 - Chỉ lắng nghe trên `127.0.0.1`. Dữ liệu nằm tách khỏi thư mục cài app.
 - Khi khởi động, app tự mở trình duyệt mặc định (`Desktop.browse`) sau khi `/api/health` sẵn sàng.
+- Tắt app: nút "Tắt app" gọi `POST /api/app/shutdown`, server trả 202 `{"message": "Đang tắt app..."}` rồi đóng Spring context và thoát JVM sau khoảng 300 ms. Khôi phục bản sao lưu cần tắt app bằng nút này rồi mở lại.
+- Mọi `/api/**` chỉ nhận `Host` là `127.0.0.1`/`localhost` và, với request thay đổi dữ liệu, `Origin` cũng phải là `127.0.0.1`/`localhost` (xem §5).
 
 **`application.yml` chính:**
 ```yaml
@@ -217,7 +222,7 @@ logging:
 **Tham số JVM:** `-Xms64m -Xmx256m -XX:+UseSerialGC -Dfile.encoding=UTF-8`
 
 **Sao lưu:**
-- Tự động: khi mở app lần đầu trong ngày, giữ 7 bản. Dùng `VACUUM INTO` để có bản sao nhất quán khi đang ở chế độ WAL.
+- Tự động: mỗi ngày một bản, giữ 7 bản. Kiểm tra lúc khởi động và mỗi giờ khi app chạy liên tục qua ngày mới (`app.backup.schedule-enabled`, mặc định `true`). Dùng `VACUUM INTO` để có bản sao nhất quán khi đang ở chế độ WAL; chạy ngoài transaction vì pool chỉ có 1 kết nối.
 - Trước mỗi lần Flyway chạy migration mới thì sao lưu thêm một bản.
 - Thủ công: xuất toàn bộ DB, hoặc xuất một hồ sơ ra JSON và nhập lại.
 - Thư mục sao lưu có thể đổi sang thư mục OneDrive/Google Drive để có bản sao ngoài máy.
