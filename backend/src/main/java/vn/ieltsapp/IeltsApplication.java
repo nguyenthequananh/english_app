@@ -7,9 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import vn.ieltsapp.common.AppHome;
 
 @SpringBootApplication
+@ConfigurationPropertiesScan
 public class IeltsApplication {
 
     public static void main(String[] args) throws IOException {
