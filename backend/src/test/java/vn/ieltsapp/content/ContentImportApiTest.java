@@ -5,7 +5,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.nio.charset.StandardCharsets;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.List;
+import java.util.Map;
+import org.springframework.mock.web.MockHttpSession;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mock.web.MockMultipartFile;
@@ -128,5 +132,40 @@ class ContentImportApiTest extends IntegrationTest {
         assertThat(broken.ok()).isFalse();
         assertThat(broken.errors().get(0)).startsWith("JSON không hợp lệ");
         assertThat(orphan.errors()).contains("stage: chặng 'S9' không tồn tại");
+    }
+
+    @Test
+    void reimportRemovesLessonsAndExercisesDroppedFromFile() throws Exception {
+        importFixtures();
+        MockHttpSession session = newProfileSession("Thành");
+        long profileId = jdbc.sql("SELECT id FROM profile").query(Long.class).single();
+        postJson("/api/lessons/S0-U01-G1/submit", Map.of("answers", Map.of("S0-U01-G1-E1", "goes")), session)
+                .andExpect(status().isOk());
+        postJson("/api/lessons/S0-U01-P1/submit", Map.of("answers", Map.of()), session).andExpect(status().isOk());
+
+        ObjectNode unit = (ObjectNode) json.readTree(new ClassPathResource("fixtures/unit-s0-u01.json").getContentAsByteArray());
+        ArrayNode lessons = (ArrayNode) unit.get("lessons");
+        lessons.remove(1);                                          // bỏ bài S0-U01-P1
+        ((ArrayNode) lessons.get(0).get("exercises")).remove(1);    // bỏ câu S0-U01-G1-E2
+        ((ArrayNode) unit.get("test").get("exercises")).remove(1);  // bỏ câu S0-U01-T-E2
+        List<ImportResult> results = contentService.importFiles(
+                List.of(new NamedContent("unit-s0-u01.json", json.writeValueAsBytes(unit))));
+        assertThat(results.get(0).ok()).as(results.toString()).isTrue();
+
+        getAs("/api/units/S0-U01/lessons", session)
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].code").value("S0-U01-G1"));
+        getAs("/api/lessons/S0-U01-P1", session).andExpect(status().isNotFound());
+        getAs("/api/lessons/S0-U01-G1", session).andExpect(jsonPath("$.exercises.length()").value(1));
+        postJson("/api/lessons/S0-U01-G1/submit", Map.of("answers", Map.of("S0-U01-G1-E1", "goes")), session)
+                .andExpect(jsonPath("$.score").value(1.0))
+                .andExpect(jsonPath("$.results.length()").value(1));
+
+        assertThat(jdbc.sql("SELECT code FROM exercise WHERE code LIKE 'S0-U01-%' ORDER BY code")
+                .query(String.class).list()).containsExactly("S0-U01-G1-E1", "S0-U01-T-E1");
+        assertThat(jdbc.sql("SELECT lesson_code FROM lesson_progress WHERE profile_id = ?").param(profileId)
+                .query(String.class).list()).containsExactly("S0-U01-G1");
+        assertThat(jdbc.sql("SELECT COUNT(*) FROM exercise_attempt WHERE exercise_code = 'S0-U01-P1-E1'")
+                .query(Integer.class).single()).isEqualTo(1);
     }
 }

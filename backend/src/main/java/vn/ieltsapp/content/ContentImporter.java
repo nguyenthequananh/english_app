@@ -3,6 +3,8 @@ package vn.ieltsapp.content;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.ieltsapp.content.ContentModel.*;
@@ -36,8 +38,15 @@ public class ContentImporter {
             for (int j = 0; j < exercises.size(); j++) {
                 repo.upsertExercise(exercises.get(j), lesson.code(), null, j + 1);
             }
+            repo.deleteLessonExercisesExcept(lesson.code(), codes(exercises));
         }
+        repo.deleteUnitLessonsExcept(f.code(),
+                f.lessons().stream().map(LessonDef::code).collect(Collectors.toSet()));
         importTest(f.test(), f.code(), null);
+    }
+
+    private static Set<String> codes(List<ExerciseDef> exercises) {
+        return exercises.stream().map(ExerciseDef::code).collect(Collectors.toSet());
     }
 
     private List<String> collisions(String unitCode, String stageCode, List<LessonDef> lessons, TestDef test) {
@@ -81,5 +90,6 @@ public class ContentImporter {
         for (int j = 0; j < t.exercises().size(); j++) {
             repo.upsertExercise(t.exercises().get(j), null, t.code(), j + 1);
         }
+        repo.deleteTestExercisesExcept(t.code(), codes(t.exercises()));
     }
 }

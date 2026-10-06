@@ -132,6 +132,32 @@ public class ContentRepository {
                 .update();
     }
 
+    /** Xoá câu hỏi của bài học không còn trong file. exercise_attempt không có FK nên giữ nguyên. */
+    public void deleteLessonExercisesExcept(String lessonCode, Set<String> keep) {
+        for (String code : jdbc.sql("SELECT code FROM exercise WHERE lesson_code = ?").param(lessonCode)
+                .query(String.class).list()) {
+            if (!keep.contains(code)) jdbc.sql("DELETE FROM exercise WHERE code = ?").param(code).update();
+        }
+    }
+
+    public void deleteTestExercisesExcept(String testCode, Set<String> keep) {
+        for (String code : jdbc.sql("SELECT code FROM exercise WHERE test_code = ?").param(testCode)
+                .query(String.class).list()) {
+            if (!keep.contains(code)) jdbc.sql("DELETE FROM exercise WHERE code = ?").param(code).update();
+        }
+    }
+
+    /** Xoá bài học của unit không còn trong file, kèm câu hỏi và lesson_progress của bài đó. */
+    public void deleteUnitLessonsExcept(String unitCode, Set<String> keep) {
+        for (String code : jdbc.sql("SELECT code FROM lesson WHERE unit_code = ?").param(unitCode)
+                .query(String.class).list()) {
+            if (keep.contains(code)) continue;
+            jdbc.sql("DELETE FROM exercise WHERE lesson_code = ?").param(code).update();
+            jdbc.sql("DELETE FROM lesson_progress WHERE lesson_code = ?").param(code).update();
+            jdbc.sql("DELETE FROM lesson WHERE code = ?").param(code).update();
+        }
+    }
+
     private String toJson(List<String> options) {
         if (options == null) return null;
         try {
