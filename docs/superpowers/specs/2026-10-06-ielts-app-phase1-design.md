@@ -93,7 +93,8 @@ Module `session` ghép buổi học mỗi ngày cho hồ sơ đang dùng:
 ## 5. Kiến trúc
 
 **Công nghệ:**
-- Backend: Java 21, Spring Boot 3, Maven, Spring Data JPA, SQLite (`sqlite-jdbc` + `hibernate-community-dialects`), Flyway.
+- Backend: Java 21, Spring Boot 3, Maven, Spring JDBC (`JdbcClient`), SQLite (`sqlite-jdbc`), Flyway. Không dùng JPA: dialect SQLite của Hibernate xử lý kiểu ngày/giờ và khóa ghi kém ổn định, trong khi SQL thuần với SQLite đơn giản và dễ kiểm soát hơn.
+- Ngày lưu dạng TEXT ISO (`2026-10-05`), thời điểm lưu dạng `LocalDateTime` theo giờ máy (`2026-10-05T09:00`).
 - Frontend: React + Vite + TypeScript, Tailwind CSS, React Router, TanStack Query.
 
 **Cấu trúc repo:**
@@ -113,7 +114,7 @@ APP_TA/
 | `roadmap` | Chặng/unit, tính trạng thái khóa/mở, xử lý mở khóa sau khi kiểm tra |
 | `session` | Ghép buổi học, lưu và khôi phục trạng thái buổi học |
 | `vocab` | Từ vựng, thẻ, SM-2, kho từ, từ do người dùng thêm |
-| `grammar` | Bài học (ngữ pháp/phát âm/đọc/nghe), bài tập, chấm bài |
+| `lesson` | Bài học (ngữ pháp/phát âm/đọc/nghe), bài tập, chấm bài |
 | `assessment` | Bài kiểm tra cuối unit và cuối chặng |
 | `progress` | Chuỗi ngày học, thống kê, heatmap |
 | `content` | Đọc và kiểm tra JSON, import (ghi đè theo `code`), nạp `content/` vào DB ở lần chạy đầu tiên |
@@ -207,10 +208,6 @@ spring:
   datasource:
     url: jdbc:sqlite:${app.home}/ielts.db?journal_mode=WAL&foreign_keys=on&busy_timeout=5000
     hikari.maximum-pool-size: 1
-  jpa:
-    database-platform: org.hibernate.community.dialect.SQLiteDialect
-    hibernate.ddl-auto: validate
-    open-in-view: false
   flyway: { enabled: true, locations: classpath:db/migration }
 logging:
   file.name: ${app.home}/logs/app.log
