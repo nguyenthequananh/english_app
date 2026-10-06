@@ -8,8 +8,10 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+/** Sao lưu tự động mỗi ngày một bản: lúc khởi động và kiểm tra lại mỗi giờ. Chạy ngoài transaction (pool = 1). */
 @Component
 @Order(2)
 public class DailyBackupRunner implements ApplicationRunner {
@@ -27,13 +29,18 @@ public class DailyBackupRunner implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        int profiles = jdbc.sql("SELECT COUNT(*) FROM profile").query(Integer.class).single();
-        if (profiles > 0 && !backups.hasBackupOn(LocalDate.now(clock))) {
-            try {
+        backupIfDue();
+    }
+
+    @Scheduled(fixedDelayString = "PT1H", initialDelayString = "PT1H")
+    public void backupIfDue() {
+        try {
+            int profiles = jdbc.sql("SELECT COUNT(*) FROM profile").query(Integer.class).single();
+            if (profiles > 0 && !backups.hasBackupOn(LocalDate.now(clock))) {
                 log.info("Sao lưu tự động: {}", backups.backupNow("auto").name());
-            } catch (RuntimeException e) {
-                log.warn("Sao lưu tự động thất bại", e);
             }
+        } catch (RuntimeException e) {
+            log.warn("Sao lưu tự động thất bại", e);
         }
     }
 }

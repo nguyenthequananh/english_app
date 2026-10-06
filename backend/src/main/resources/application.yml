@@ -9,6 +9,7 @@ app:
     skip-new-when-due-over: 100
   backup:
     keep: 7
+    schedule-enabled: true
 
 server:
   address: 127.0.0.1

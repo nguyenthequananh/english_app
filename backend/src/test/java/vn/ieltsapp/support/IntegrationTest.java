@@ -53,6 +53,7 @@ public abstract class IntegrationTest {
         registry.add("app.home", HOME::toString);
         registry.add("app.open-browser", () -> "false");
         registry.add("app.content.bootstrap", () -> "false");
+        registry.add("app.backup.schedule-enabled", () -> "false");
     }
 
     @Autowired protected MockMvc mvc;

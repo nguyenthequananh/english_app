@@ -87,7 +87,8 @@ class BackupApiTest extends IntegrationTest {
     @Test
     void restoreWritesMarkerAndRejectsBadNames() throws Exception {
         String name = body(mvc.perform(post("/api/backups"))).get("name").asText();
-        mvc.perform(post("/api/backups/" + name + "/restore")).andExpect(status().isOk());
+        mvc.perform(post("/api/backups/" + name + "/restore")).andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Đã lên lịch khôi phục. Hãy tắt app (nút Tắt app) rồi mở lại để hoàn tất."));
         assertThat(Files.readString(HOME.resolve(StartupRestore.MARKER))).endsWith(name);
 
         mvc.perform(post("/api/backups/..%2Fielts.db/restore")).andExpect(status().is4xxClientError());

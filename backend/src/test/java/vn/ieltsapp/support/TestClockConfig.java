@@ -9,4 +9,8 @@ public class TestClockConfig {
     @Bean
     @Primary
     public MutableClock mutableClock() { return new MutableClock(); }
+
+    @Bean
+    @Primary
+    public RecordingAppExiter recordingAppExiter() { return new RecordingAppExiter(); }
 }

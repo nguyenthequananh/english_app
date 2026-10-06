@@ -31,7 +31,7 @@ public class BackupController {
     @PostMapping("/{name}/restore")
     public Map<String, String> restore(@PathVariable String name) {
         service.scheduleRestore(name);
-        return Map.of("message", "Đã lên lịch khôi phục. Hãy đóng và mở lại app để hoàn tất.");
+        return Map.of("message", "Đã lên lịch khôi phục. Hãy tắt app (nút Tắt app) rồi mở lại để hoàn tất.");
     }
 
     @GetMapping("/export")
