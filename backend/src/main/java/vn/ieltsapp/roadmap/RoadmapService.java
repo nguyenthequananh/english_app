@@ -29,17 +29,41 @@ public class RoadmapService {
         statuses(event.profileId());
     }
 
-    /** Trạng thái các unit; tự mở unit đầu tiên nếu hồ sơ chưa có tiến độ nào. */
+    /**
+     * Trạng thái các unit, suy ra mỗi lần đọc để unit nạp thêm sau vẫn được mở đúng lúc.
+     * Unit mở (ACTIVE nếu chưa DONE) khi: là unit đầu tiên, hoặc unit liền trước trong chặng đã DONE,
+     * hoặc là unit đầu của chặng mà bài kiểm tra chặng liền trước đã qua. Không bao giờ khoá lại unit đã mở.
+     * Unit mới mở được ghi ACTIVE vào unit_progress.
+     */
     public Map<String, String> statuses(long profileId) {
-        Map<String, String> statuses = repo.unitStatuses(profileId);
-        if (statuses.isEmpty()) {
-            Optional<UnitRow> first = repo.units().stream().findFirst();
-            if (first.isPresent()) {
-                repo.setUnitStatus(profileId, first.get().code(), ACTIVE, now());
-                statuses = repo.unitStatuses(profileId);
+        Map<String, String> stored = repo.unitStatuses(profileId);
+        Map<String, String> result = new HashMap<>(stored);
+        Set<String> passedStages = repo.passedStageTests(profileId);
+        List<StageRow> stages = repo.stages();
+        List<UnitRow> units = repo.units();
+        boolean firstOverall = true;
+        for (int i = 0; i < stages.size(); i++) {
+            String stageCode = stages.get(i).code();
+            boolean previousStagePassed = i > 0 && passedStages.contains(stages.get(i - 1).code());
+            String previousUnitStatus = null;
+            boolean firstInStage = true;
+            for (UnitRow u : units) {
+                if (!u.stageCode().equals(stageCode)) continue;
+                String status = result.getOrDefault(u.code(), LOCKED);
+                boolean open = firstOverall
+                        || DONE.equals(previousUnitStatus)
+                        || (firstInStage && previousStagePassed);
+                if (LOCKED.equals(status) && open) {
+                    repo.setUnitStatus(profileId, u.code(), ACTIVE, now());
+                    status = ACTIVE;
+                    result.put(u.code(), ACTIVE);
+                }
+                previousUnitStatus = status;
+                firstInStage = false;
+                firstOverall = false;
             }
         }
-        return statuses;
+        return result;
     }
 
     public Optional<UnitRow> currentUnit(long profileId) {
@@ -61,16 +85,9 @@ public class RoadmapService {
 
     @Transactional
     public void onUnitTestPassed(long profileId, String unitCode) {
-        Map<String, String> s = statuses(profileId);
+        if (repo.units().stream().noneMatch(u -> u.code().equals(unitCode))) throw ApiException.notFound("unit");
         repo.setUnitStatus(profileId, unitCode, DONE, now());
-        List<UnitRow> all = repo.units();
-        UnitRow unit = all.stream().filter(u -> u.code().equals(unitCode)).findFirst()
-                .orElseThrow(() -> ApiException.notFound("unit"));
-        List<UnitRow> sameStage = all.stream().filter(u -> u.stageCode().equals(unit.stageCode())).toList();
-        int index = sameStage.indexOf(unit);
-        if (index + 1 < sameStage.size()) {
-            activateIfLocked(profileId, sameStage.get(index + 1).code(), s);
-        }
+        statuses(profileId); // mở unit kế tiếp trong chặng
     }
 
     @Transactional
