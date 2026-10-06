@@ -25,6 +25,34 @@ public class ContentRepository {
         return new HashSet<>(jdbc.sql("SELECT code FROM stage").query(String.class).list());
     }
 
+    public Optional<String> lessonUnit(String code) {
+        return jdbc.sql("SELECT unit_code FROM lesson WHERE code = ?").param(code).query(String.class).optional();
+    }
+
+    public Optional<String> exerciseLesson(String code) {
+        return jdbc.sql("SELECT lesson_code FROM exercise WHERE code = ?").param(code).query(String.class).optional();
+    }
+
+    public Optional<String> exerciseTest(String code) {
+        return jdbc.sql("SELECT test_code FROM exercise WHERE code = ?").param(code).query(String.class).optional();
+    }
+
+    public boolean exerciseExists(String code) {
+        return jdbc.sql("SELECT COUNT(*) FROM exercise WHERE code = ?").param(code).query(Integer.class).single() > 0;
+    }
+
+    public boolean testExists(String code) {
+        return jdbc.sql("SELECT COUNT(*) FROM test WHERE code = ?").param(code).query(Integer.class).single() > 0;
+    }
+
+    public Optional<String> testUnit(String code) {
+        return jdbc.sql("SELECT unit_code FROM test WHERE code = ?").param(code).query(String.class).optional();
+    }
+
+    public Optional<String> testStage(String code) {
+        return jdbc.sql("SELECT stage_code FROM test WHERE code = ?").param(code).query(String.class).optional();
+    }
+
     public void upsertStage(StageFile f) {
         jdbc.sql("""
                         INSERT INTO stage (code, title, target_band, sort_order) VALUES (?, ?, ?, ?)

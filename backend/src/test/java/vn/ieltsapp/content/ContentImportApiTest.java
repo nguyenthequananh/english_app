@@ -90,6 +90,30 @@ class ContentImportApiTest extends IntegrationTest {
     }
 
     @Test
+    void codeOwnedByAnotherUnitIsRejected() throws Exception {
+        importFixtures();
+        String clash = """
+                {"code":"S0-U03","stage":"S0","title":"Trùng","order":3,"words":[],
+                 "lessons":[{"code":"S0-U01-G1","type":"GRAMMAR","day":"MON","title":"t","bodyMd":"b",
+                   "exercises":[]},
+                 {"code":"S0-U03-G1","type":"GRAMMAR","day":"MON","title":"t","bodyMd":"b",
+                   "exercises":[{"code":"S0-U01-G1-E1","type":"FILL","prompt":"p","answer":"a"}]}],
+                 "test":{"code":"S0-U01-T","kind":"UNIT","exercises":[{"code":"S0-U03-T1","type":"FILL","prompt":"p","answer":"a"}]}}
+                """;
+        List<ImportResult> results = contentService.importFiles(
+                List.of(new NamedContent("clash.json", clash.getBytes(StandardCharsets.UTF_8))));
+
+        assertThat(results.get(0).ok()).isFalse();
+        assertThat(results.get(0).errors()).contains(
+                "lessons[0].code: 'S0-U01-G1' đã thuộc unit 'S0-U01'",
+                "lessons[1].exercises[0].code: 'S0-U01-G1-E1' đã thuộc bài khác",
+                "test.code: 'S0-U01-T' đã thuộc nơi khác");
+        assertThat(jdbc.sql("SELECT unit_code FROM lesson WHERE code = 'S0-U01-G1'").query(String.class).single())
+                .isEqualTo("S0-U01");
+        assertThat(count("unit")).isEqualTo(3);
+    }
+
+    @Test
     void brokenJsonAndUnknownStageAreReported() {
         List<ImportResult> results = contentService.importFiles(List.of(
                 new NamedContent("broken.json", "{ không phải json".getBytes(StandardCharsets.UTF_8)),

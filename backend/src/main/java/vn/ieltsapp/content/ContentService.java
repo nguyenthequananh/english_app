@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import vn.ieltsapp.common.ApiException;
 import vn.ieltsapp.content.ContentModel.StageFile;
@@ -21,6 +23,8 @@ public class ContentService {
     private record Parsed(NamedContent source, JsonNode node, String error) {
         boolean isStage() { return node != null && node.has("targetBand"); }
     }
+
+    private static final Logger log = LoggerFactory.getLogger(ContentService.class);
 
     private final ContentImporter importer;
     private final ObjectMapper mapper;
@@ -54,6 +58,9 @@ public class ContentService {
                         e.getDetails().isEmpty() ? List.of(e.getMessage()) : e.getDetails()));
             } catch (JsonProcessingException e) {
                 results.add(new ImportResult(name, false, List.of("Sai cấu trúc: " + e.getOriginalMessage())));
+            } catch (RuntimeException e) {
+                log.warn("Lỗi khi nạp {}", name, e);
+                results.add(new ImportResult(name, false, List.of("Lỗi khi nạp: " + e.getMessage())));
             }
         }
         return results;

@@ -36,11 +36,14 @@ public class ContentBootstrap implements ApplicationRunner {
                 files.add(new NamedContent(r.getURI().toString(), in.readAllBytes()));
             }
         }
+        int ok = 0;
         for (ImportResult result : service.importFiles(files)) {
-            if (!result.ok()) {
+            if (result.ok()) {
+                ok++;
+            } else {
                 log.warn("Nội dung lỗi {}: {}", result.file(), result.errors());
             }
         }
-        log.info("Đã nạp {} file nội dung", files.size());
+        log.info("Đã nạp {}/{} file nội dung", ok, files.size());
     }
 }
