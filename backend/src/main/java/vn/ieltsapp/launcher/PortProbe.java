@@ -35,10 +35,17 @@ public final class PortProbe {
         }
     }
 
+    public static final int RANGE_START = 8765;
+    public static final int RANGE_END = 8775;
+
+    /** Chỉ quét khoảng 8765..8775: từ preferred (nếu nằm trong khoảng) lên cuối, rồi quay lại đầu khoảng. */
     public static int choosePort(int preferred) {
-        for (int port = preferred; port <= preferred + 10; port++) {
+        int start = preferred >= RANGE_START && preferred <= RANGE_END ? preferred : RANGE_START;
+        int size = RANGE_END - RANGE_START + 1;
+        for (int i = 0; i < size; i++) {
+            int port = RANGE_START + (start - RANGE_START + i) % size;
             if (isFree(port)) return port;
         }
-        throw new IllegalStateException("Không tìm được cổng trống trong khoảng " + preferred + "–" + (preferred + 10));
+        throw new IllegalStateException("Không tìm được cổng trống trong khoảng " + RANGE_START + "–" + RANGE_END);
     }
 }

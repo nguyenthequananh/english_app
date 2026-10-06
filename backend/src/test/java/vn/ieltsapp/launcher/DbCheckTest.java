@@ -45,4 +45,20 @@ class DbCheckTest {
         assertThat(DbCheck.ensureUsable(home)).contains("NONE");
         assertThat(home.resolve("ielts.db")).doesNotExist();
     }
+
+    @Test
+    void lockedDbIsNotTreatedAsCorrupt() throws Exception {
+        Path db = home.resolve("ielts.db");
+        createDb(db);
+        try (Connection holder = DriverManager.getConnection("jdbc:sqlite:" + db)) {
+            holder.createStatement().execute("PRAGMA locking_mode=EXCLUSIVE");
+            holder.createStatement().execute("BEGIN EXCLUSIVE");
+            assertThat(DbCheck.ensureUsable(home)).isEmpty();
+            assertThat(db).exists();
+            holder.createStatement().execute("ROLLBACK");
+        }
+        try (var files = Files.list(home)) {
+            assertThat(files.map(p -> p.getFileName().toString())).noneMatch(n -> n.startsWith("ielts-corrupt-"));
+        }
+    }
 }

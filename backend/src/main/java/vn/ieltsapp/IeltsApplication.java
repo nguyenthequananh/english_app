@@ -25,15 +25,16 @@ public class IeltsApplication {
         Path home = AppHome.resolve();
         Files.createDirectories(home.resolve("logs"));
 
-        Optional<String> restored = StartupRestore.applyPending(home);
-        Optional<String> recovered = DbCheck.ensureUsable(home);
-
         AppConfigFile config = AppConfigFile.load(home);
         int preferred = config.port().orElse(DEFAULT_PORT);
         if (PortProbe.isOurApp(preferred)) {
             BrowserOpener.open("http://127.0.0.1:" + preferred + "/");
             return;
         }
+
+        Optional<String> restored = StartupRestore.applyPending(home);
+        Optional<String> recovered = DbCheck.ensureUsable(home);
+
         int port = PortProbe.choosePort(preferred);
         if (config.port().orElse(-1) != port) {
             config.setPort(port);
