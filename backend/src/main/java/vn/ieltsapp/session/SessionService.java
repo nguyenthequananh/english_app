@@ -49,6 +49,12 @@ public class SessionService {
             create(profileId, today);
             return repo.find(profileId, today).orElseThrow();
         });
+        SessionState state = read(row);
+        SessionState settled = settle(profileId, state);
+        if (!settled.equals(state) || ("DONE".equals(settled.step()) && row.finishedAt() == null)) {
+            save(row, settled);
+            row = repo.find(profileId, today).orElseThrow();
+        }
         return view(profileId, row);
     }
 
@@ -70,9 +76,8 @@ public class SessionService {
         vocab.review(profileId, wordId, grade);
         List<Long> rest = new ArrayList<>(queue.subList(1, queue.size()));
         if (grade == Grade.AGAIN) rest.add(wordId);
-        SessionState next = (review ? state.withReviewQueue(rest) : state.withNewQueue(rest))
-                .withCardsDone(state.cardsDone() + 1)
-                .advance();
+        SessionState next = settle(profileId, (review ? state.withReviewQueue(rest) : state.withNewQueue(rest))
+                .withCardsDone(state.cardsDone() + 1));
         save(row, next);
         return view(profileId, repo.find(profileId, today).orElseThrow());
     }
@@ -97,12 +102,21 @@ public class SessionService {
                         .map(l -> new LessonRef(l.code(), l.day(), l.sortOrder(), l.completed())).toList())
                 .orElse(List.of());
         SessionPlan plan = SessionPlanner.plan(new PlanInput(today, due, dueTotal, fresh, unitLessons), settings);
-        SessionState state = new SessionState("REVIEW", plan.reviewWordIds(), plan.newWordIds(),
-                plan.lessonCode(), 0).advance();
+        SessionState state = settle(profileId, new SessionState("REVIEW", plan.reviewWordIds(), plan.newWordIds(),
+                plan.lessonCode(), 0));
         repo.insert(profileId, today, write(state), LocalDateTime.now(clock).toString());
         if ("DONE".equals(state.step())) {
             repo.find(profileId, today).ifPresent(row -> save(row, state));
         }
+    }
+
+    /** Bỏ qua bước rỗng; vào bước LESSON mà bài đã làm (ngoài buổi học) thì xong luôn. */
+    private SessionState settle(long profileId, SessionState state) {
+        SessionState s = state.advance();
+        if ("LESSON".equals(s.step()) && repo.lessonCompleted(profileId, s.lessonCode())) {
+            s = s.withStep("DONE");
+        }
+        return s;
     }
 
     private void save(SessionRow row, SessionState state) {

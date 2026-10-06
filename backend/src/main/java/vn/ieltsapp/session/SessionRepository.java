@@ -38,4 +38,9 @@ public class SessionRepository {
         jdbc.sql("UPDATE study_session SET state_json = ?, finished_at = ?, minutes = ? WHERE id = ?")
                 .params(stateJson, finishedAt, minutes, id).update();
     }
+
+    public boolean lessonCompleted(long profileId, String lessonCode) {
+        return jdbc.sql("SELECT COUNT(*) FROM lesson_progress WHERE profile_id = ? AND lesson_code = ?")
+                .params(profileId, lessonCode).query(Integer.class).single() > 0;
+    }
 }

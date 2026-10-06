@@ -113,4 +113,30 @@ class SessionApiTest extends IntegrationTest {
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.code").value("WRONG_STEP"));
     }
+
+    @Test
+    void lessonCompletedOutOfBandFinishesSessionWhenCardsAreDone() throws Exception {
+        getAs("/api/session/today", session).andExpect(jsonPath("$.step").value("NEW"));
+        postJson("/api/lessons/S0-U01-G1/submit", Map.of("answers", Map.of()), session).andExpect(status().isOk());
+        answer("hello", "GOOD");
+        answer("book", "GOOD");
+        answer("go", "GOOD");
+        getAs("/api/session/today", session)
+                .andExpect(jsonPath("$.step").value("DONE"))
+                .andExpect(jsonPath("$.finished").value(true));
+        assertThat(jdbc.sql("SELECT finished_at FROM study_session").query(String.class).single()).isNotNull();
+    }
+
+    @Test
+    void sessionStuckInLessonIsSettledWhenViewed() throws Exception {
+        getAs("/api/session/today", session);
+        answer("hello", "GOOD");
+        answer("book", "GOOD");
+        answer("go", "GOOD");
+        long profileId = jdbc.sql("SELECT id FROM profile").query(Long.class).single();
+        jdbc.sql("INSERT INTO lesson_progress VALUES (?, 'S0-U01-G1', 1.0, '2026-10-05T09:10')").param(profileId).update();
+        getAs("/api/session/today", session)
+                .andExpect(jsonPath("$.step").value("DONE"))
+                .andExpect(jsonPath("$.finished").value(true));
+    }
 }
