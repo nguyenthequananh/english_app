@@ -45,6 +45,7 @@ public abstract class IntegrationTest {
 
     @BeforeEach
     void resetState() {
+        TestDb.clear(jdbc);
         clock.set(LocalDate.of(2026, 10, 5));
     }
 }
