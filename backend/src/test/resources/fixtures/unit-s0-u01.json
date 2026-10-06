@@ -1,0 +1,32 @@
+{
+  "code": "S0-U01", "stage": "S0", "title": "Chào hỏi & Thì hiện tại đơn", "order": 1,
+  "words": [
+    {"headword": "hello", "pos": "exclamation", "ipaUs": "/həˈloʊ/", "ipaUk": "/həˈləʊ/", "meaningVi": "xin chào", "exampleEn": "Hello, I'm Lan.", "exampleVi": "Xin chào, tôi là Lan.", "cefr": "A1"},
+    {"headword": "book", "pos": "noun", "ipaUs": "/bʊk/", "ipaUk": "/bʊk/", "meaningVi": "quyển sách", "exampleEn": "This is my book.", "exampleVi": "Đây là quyển sách của tôi.", "cefr": "A1"},
+    {"headword": "go", "pos": "verb", "ipaUs": "/ɡoʊ/", "ipaUk": "/ɡəʊ/", "meaningVi": "đi", "exampleEn": "I go to school.", "exampleVi": "Tôi đi học.", "cefr": "A1"}
+  ],
+  "lessons": [
+    {
+      "code": "S0-U01-G1", "type": "GRAMMAR", "day": "MON", "title": "Thì hiện tại đơn",
+      "bodyMd": "## Thì hiện tại đơn\n\nDùng để nói về thói quen.",
+      "exercises": [
+        {"code": "S0-U01-G1-E1", "type": "MCQ", "prompt": "She ___ to school every day.", "options": ["go", "goes", "going"], "answer": "goes", "explanationVi": "Chủ ngữ ngôi thứ 3 số ít nên thêm -es."},
+        {"code": "S0-U01-G1-E2", "type": "FILL", "prompt": "They ___ (play) football on Sundays.", "answer": "play", "explanationVi": "Chủ ngữ số nhiều giữ nguyên động từ."}
+      ]
+    },
+    {
+      "code": "S0-U01-P1", "type": "PRONUNCIATION", "day": "TUE", "title": "Âm /ɪ/ và /iː/",
+      "bodyMd": "## /ɪ/ và /iː/",
+      "exercises": [
+        {"code": "S0-U01-P1-E1", "type": "MINIMAL_PAIR", "prompt": "ship", "options": ["ship", "sheep"], "answer": "ship", "explanationVi": "ship có âm /ɪ/ ngắn."}
+      ]
+    }
+  ],
+  "test": {
+    "code": "S0-U01-T", "kind": "UNIT", "passRatio": 0.5,
+    "exercises": [
+      {"code": "S0-U01-T-E1", "type": "MCQ", "prompt": "He ___ a book.", "options": ["have", "has"], "answer": "has", "explanationVi": "He đi với has."},
+      {"code": "S0-U01-T-E2", "type": "FILL", "prompt": "I ___ (go) to work by bus.", "answer": "go", "explanationVi": "I giữ nguyên động từ."}
+    ]
+  }
+}

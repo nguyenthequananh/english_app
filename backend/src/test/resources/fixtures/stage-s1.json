@@ -1,0 +1,9 @@
+{
+  "code": "S1", "title": "Tiền IELTS", "targetBand": 5.0, "order": 1,
+  "test": {
+    "code": "S1-T", "kind": "STAGE", "passRatio": 0.7,
+    "exercises": [
+      {"code": "S1-T-E1", "type": "MCQ", "prompt": "The letter ___ yesterday.", "options": ["was sent", "sent"], "answer": "was sent", "explanationVi": "Câu bị động quá khứ."}
+    ]
+  }
+}

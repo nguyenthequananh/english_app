@@ -1,0 +1,20 @@
+{
+  "code": "S1-U01", "stage": "S1", "title": "Câu bị động", "order": 1,
+  "words": [
+    {"headword": "however", "pos": "adverb", "ipaUs": "/haʊˈev.ɚ/", "meaningVi": "tuy nhiên", "exampleEn": "However, it was late.", "cefr": "B1"}
+  ],
+  "lessons": [
+    {
+      "code": "S1-U01-G1", "type": "GRAMMAR", "day": "MON", "title": "Câu bị động", "bodyMd": "## Bị động",
+      "exercises": [
+        {"code": "S1-U01-G1-E1", "type": "FILL", "prompt": "The book ___ (write) in 1990.", "answer": "was written", "explanationVi": "Bị động quá khứ: was + V3."}
+      ]
+    }
+  ],
+  "test": {
+    "code": "S1-U01-T", "kind": "UNIT", "passRatio": 0.6,
+    "exercises": [
+      {"code": "S1-U01-T-E1", "type": "FILL", "prompt": "The house ___ (build) last year.", "answer": "was built", "explanationVi": "Bị động quá khứ."}
+    ]
+  }
+}

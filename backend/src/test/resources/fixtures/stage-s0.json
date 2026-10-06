@@ -1,0 +1,10 @@
+{
+  "code": "S0", "title": "Xây nền", "targetBand": 4.0, "order": 0,
+  "test": {
+    "code": "S0-T", "kind": "STAGE", "passRatio": 0.7,
+    "exercises": [
+      {"code": "S0-T-E1", "type": "MCQ", "prompt": "He ___ a teacher.", "options": ["am", "is", "are"], "answer": "is", "explanationVi": "He đi với is."},
+      {"code": "S0-T-E2", "type": "FILL", "prompt": "I ___ (be) happy.", "answer": "am", "explanationVi": "I đi với am."}
+    ]
+  }
+}

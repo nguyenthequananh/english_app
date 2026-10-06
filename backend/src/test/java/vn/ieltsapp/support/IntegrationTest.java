@@ -1,5 +1,6 @@
 package vn.ieltsapp.support;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -12,12 +13,18 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.io.ClassPathResource;
+import vn.ieltsapp.content.ContentService;
+import vn.ieltsapp.content.ContentService.ImportResult;
+import vn.ieltsapp.content.ContentService.NamedContent;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.mock.web.MockHttpSession;
@@ -52,6 +59,24 @@ public abstract class IntegrationTest {
     @Autowired protected JdbcClient jdbc;
     @Autowired protected ObjectMapper json;
     @Autowired protected MutableClock clock;
+    @Autowired protected ContentService contentService;
+
+    protected static final List<String> FIXTURES = List.of(
+            "stage-s0.json", "stage-s1.json", "unit-s0-u01.json", "unit-s0-u02.json", "unit-s1-u01.json");
+
+    protected void importFixtures() throws Exception {
+        List<NamedContent> files = new ArrayList<>();
+        for (String name : FIXTURES) {
+            files.add(new NamedContent(name, new ClassPathResource("fixtures/" + name).getContentAsByteArray()));
+        }
+        List<ImportResult> results = contentService.importFiles(files);
+        assertThat(results).allMatch(ImportResult::ok, "fixtures import ok: " + results);
+    }
+
+    protected long wordId(String headword) {
+        return jdbc.sql("SELECT id FROM word WHERE headword = ? AND profile_id IS NULL")
+                .param(headword).query(Long.class).single();
+    }
 
     @BeforeEach
     void resetState() {

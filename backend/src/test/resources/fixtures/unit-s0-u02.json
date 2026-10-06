@@ -1,0 +1,21 @@
+{
+  "code": "S0-U02", "stage": "S0", "title": "Mạo từ a/an", "order": 2,
+  "words": [
+    {"headword": "apple", "pos": "noun", "ipaUs": "/ˈæp.əl/", "meaningVi": "quả táo", "exampleEn": "I eat an apple.", "cefr": "A1"},
+    {"headword": "run", "pos": "verb", "ipaUs": "/rʌn/", "meaningVi": "chạy", "exampleEn": "I run every morning.", "cefr": "A1"}
+  ],
+  "lessons": [
+    {
+      "code": "S0-U02-G1", "type": "GRAMMAR", "day": "MON", "title": "Mạo từ a/an", "bodyMd": "## a/an",
+      "exercises": [
+        {"code": "S0-U02-G1-E1", "type": "MCQ", "prompt": "___ apple", "options": ["a", "an"], "answer": "an", "explanationVi": "apple bắt đầu bằng nguyên âm."}
+      ]
+    }
+  ],
+  "test": {
+    "code": "S0-U02-T", "kind": "UNIT", "passRatio": 0.6,
+    "exercises": [
+      {"code": "S0-U02-T-E1", "type": "MCQ", "prompt": "I eat ___ apple.", "options": ["a", "an"], "answer": "an", "explanationVi": "apple bắt đầu bằng nguyên âm."}
+    ]
+  }
+}
