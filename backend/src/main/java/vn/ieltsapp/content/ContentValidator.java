@@ -58,8 +58,8 @@ public final class ContentValidator {
                 LessonDef l = f.lessons().get(i);
                 String p = "lessons[" + i + "]";
                 uniqueCode(e, p + ".code", l.code(), codes);
-                if (!LESSON_TYPES.contains(l.type())) e.add(p + ".type: không hợp lệ");
-                if (!DAYS.contains(l.day())) e.add(p + ".day: phải là MON..SAT");
+                if (l.type() == null || !LESSON_TYPES.contains(l.type())) e.add(p + ".type: không hợp lệ");
+                if (l.day() == null || !DAYS.contains(l.day())) e.add(p + ".day: phải là MON..SAT");
                 required(e, p + ".title", l.title());
                 required(e, p + ".bodyMd", l.bodyMd());
                 List<ExerciseDef> xs = l.exercises() == null ? List.of() : l.exercises();
@@ -94,7 +94,7 @@ public final class ContentValidator {
 
     private static void validateExercise(List<String> e, String p, ExerciseDef x, Set<String> codes) {
         uniqueCode(e, p + ".code", x.code(), codes);
-        if (!EXERCISE_TYPES.contains(x.type())) e.add(p + ".type: không hợp lệ");
+        if (x.type() == null || !EXERCISE_TYPES.contains(x.type())) e.add(p + ".type: không hợp lệ");
         required(e, p + ".prompt", x.prompt());
         required(e, p + ".answer", x.answer());
         if ("MCQ".equals(x.type()) || "MINIMAL_PAIR".equals(x.type())) {

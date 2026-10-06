@@ -88,4 +88,15 @@ class ContentValidatorTest {
                 "title: bắt buộc", "targetBand: bắt buộc", "test.passRatio: phải trong (0, 1]",
                 "test.exercises: cần ít nhất 1 câu");
     }
+
+    @Test
+    void missingTypeAndDayAreReportedNotThrown() {
+        UnitFile u = validUnit();
+        ExerciseDef nullTypeExercise = new ExerciseDef("X1", null, "p", List.of("a", "b"), "a", null);
+        UnitFile bad = new UnitFile(u.code(), u.stage(), u.title(), u.order(), u.words(),
+                List.of(new LessonDef("S0-U01-G1", null, null, "t", "b", List.of(nullTypeExercise))), u.test());
+        List<String> errors = ContentValidator.validateUnit(bad, Set.of("S0"));
+        assertThat(errors).contains("lessons[0].type: không hợp lệ", "lessons[0].day: phải là MON..SAT",
+                "lessons[0].exercises[0].type: không hợp lệ");
+    }
 }
