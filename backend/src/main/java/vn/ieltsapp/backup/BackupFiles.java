@@ -44,9 +44,14 @@ public final class BackupFiles {
         if (!Files.isDirectory(dir)) return List.of();
         try (Stream<Path> files = Files.list(dir)) {
             return files.filter(p -> NAME.matcher(p.getFileName().toString()).matches())
-                    .sorted(Comparator.comparing((Path p) -> p.getFileName().toString()).reversed())
+                    .sorted(Comparator.comparing((Path p) -> stem(p)).reversed())
                     .toList();
         }
+    }
+
+    private static String stem(Path p) {
+        String n = p.getFileName().toString();
+        return n.substring(0, n.length() - ".db".length());
     }
 
     public static void prune(Path dir, int keep) throws IOException {

@@ -29,7 +29,11 @@ public class DailyBackupRunner implements ApplicationRunner {
     public void run(ApplicationArguments args) {
         int profiles = jdbc.sql("SELECT COUNT(*) FROM profile").query(Integer.class).single();
         if (profiles > 0 && !backups.hasBackupOn(LocalDate.now(clock))) {
-            log.info("Sao lưu tự động: {}", backups.backupNow("auto").name());
+            try {
+                log.info("Sao lưu tự động: {}", backups.backupNow("auto").name());
+            } catch (RuntimeException e) {
+                log.warn("Sao lưu tự động thất bại", e);
+            }
         }
     }
 }
