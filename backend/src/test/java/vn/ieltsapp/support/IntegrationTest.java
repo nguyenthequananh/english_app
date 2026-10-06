@@ -25,6 +25,7 @@ public abstract class IntegrationTest {
     static {
         try {
             HOME = Files.createTempDirectory("ielts-test");
+            System.setProperty("app.home", HOME.toString());
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
