@@ -145,3 +145,24 @@ test('ôn thêm: quay lại trang sau khi chấm hết thì tải danh sách m�
   expect(await screen.findByText('Không còn thẻ nào đến hạn. Tuyệt!')).toBeInTheDocument();
   expect(calls.filter((c) => c.method === 'GET' && c.path === '/cards/due?limit=200')).toHaveLength(2);
 });
+
+test('buổi học: lỗi tải buổi học thì hiện thông báo và nút thử lại', async () => {
+  mockApi({ 'GET /session/today': () => problem(500, 'INTERNAL', 'Có lỗi xảy ra, hãy thử lại') });
+  renderRoutes('/session');
+  expect(await screen.findByText('Có lỗi xảy ra, hãy thử lại')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Thử lại' })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Về trang chủ' })).toHaveAttribute('href', '/');
+});
+
+test('trang Hôm nay: lỗi tải tổng quan thì có nút thử lại', async () => {
+  const user = userEvent.setup();
+  let fail = true;
+  mockApi({ 'GET /progress/summary': () => (fail ? problem(500, 'INTERNAL', 'Có lỗi xảy ra, hãy thử lại') : { body: {
+    streak: 3, dueCount: 12, finishedToday: false, currentUnit: null,
+  } }) });
+  renderRoutes('/');
+  expect(await screen.findByRole('alert')).toHaveTextContent('Có lỗi xảy ra, hãy thử lại');
+  fail = false;
+  await user.click(screen.getByRole('button', { name: 'Thử lại' }));
+  expect(await screen.findByText('🔥 3 ngày liên tiếp')).toBeInTheDocument();
+});

@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { endpoints } from '../api/endpoints';
 import { ApiError } from '../api/client';
 import type { Profile } from '../api/types';
+import { QueryError } from '../components/QueryError';
 
 export default function ProfileSelectPage() {
   const navigate = useNavigate();
@@ -13,7 +14,8 @@ export default function ProfileSelectPage() {
   const [pinFor, setPinFor] = useState<Profile | null>(null);
   const [pin, setPin] = useState('');
 
-  const { data: profiles } = useQuery({ queryKey: ['profiles'], queryFn: endpoints.profiles });
+  const profilesQuery = useQuery({ queryKey: ['profiles'], queryFn: endpoints.profiles });
+  const profiles = profilesQuery.data;
   const select = useMutation({
     mutationFn: ({ id, pin }: { id: number; pin?: string }) => endpoints.selectProfile(id, pin),
     onSuccess: () => {
@@ -36,6 +38,9 @@ export default function ProfileSelectPage() {
   return (
     <div data-testid="page-profiles" className="mx-auto mt-16 max-w-2xl p-4">
       <h1 className="mb-6 text-center text-2xl font-bold">Ai đang học?</h1>
+      {profilesQuery.error && (
+        <div className="mb-6"><QueryError error={profilesQuery.error} onRetry={() => profilesQuery.refetch()} /></div>
+      )}
       <div className="flex flex-wrap justify-center gap-4">
         {profiles?.map((p) => (
           <button key={p.id} type="button" className="card flex w-36 flex-col items-center gap-2 hover:ring-2 hover:ring-indigo-400"

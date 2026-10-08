@@ -88,3 +88,18 @@ test('trượt bài chuyển chặng thì hiện unit nên ôn và cho làm lạ
   await user.click(screen.getByRole('button', { name: 'Làm lại' }));
   expect(screen.getByRole('button', { name: 'Nộp bài' })).toBeInTheDocument();
 });
+
+test('bài học bị khoá: hiện lỗi từ backend, thử lại thì tải được bài', async () => {
+  const user = userEvent.setup();
+  let locked = true;
+  const calls = mockApi({
+    'GET /lessons/S0-U01-G1': () => (locked ? problem(403, 'UNIT_LOCKED', 'Unit này chưa được mở khoá') : { body: lesson }),
+  });
+  renderRoutes('/lessons/S0-U01-G1');
+  expect(await screen.findByText('Unit này chưa được mở khoá')).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Về lộ trình' })).toHaveAttribute('href', '/roadmap');
+  locked = false;
+  await user.click(screen.getByRole('button', { name: 'Thử lại' }));
+  expect(await screen.findByRole('heading', { name: 'Thì hiện tại đơn' })).toBeInTheDocument();
+  expect(calls.filter((c) => c.path === '/lessons/S0-U01-G1')).toHaveLength(2);
+});

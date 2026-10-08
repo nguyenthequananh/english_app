@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { endpoints } from '../api/endpoints';
 import type { UnitView } from '../api/types';
+import { QueryError } from '../components/QueryError';
 import { DAY_LABEL, LESSON_TYPE_LABEL, STATUS_LABEL } from '../components/labels';
 
 const STATUS_CLS: Record<string, string> = {
@@ -10,7 +11,9 @@ const STATUS_CLS: Record<string, string> = {
 };
 
 export default function RoadmapPage() {
-  const { data } = useQuery({ queryKey: ['roadmap'], queryFn: endpoints.roadmap });
+  const roadmapQuery = useQuery({ queryKey: ['roadmap'], queryFn: endpoints.roadmap });
+  const { data } = roadmapQuery;
+  if (roadmapQuery.error) return <QueryError error={roadmapQuery.error} onRetry={() => roadmapQuery.refetch()} />;
   if (!data) return <p className="text-slate-500">Đang tải lộ trình…</p>;
   return (
     <div data-testid="page-roadmap" className="space-y-4">
@@ -53,7 +56,16 @@ function UnitRow({ unit }: { unit: UnitView }) {
 }
 
 function UnitLessons({ code }: { code: string }) {
-  const { data } = useQuery({ queryKey: ['unitLessons', code], queryFn: () => endpoints.unitLessons(code) });
+  const lessonsQuery = useQuery({ queryKey: ['unitLessons', code], queryFn: () => endpoints.unitLessons(code) });
+  const { data } = lessonsQuery;
+  if (lessonsQuery.error) {
+    return (
+      <p role="alert" className="flex items-center gap-2 px-3 pb-2 text-sm text-rose-700">
+        Không tải được danh sách bài.
+        <button type="button" className="text-indigo-600 hover:underline" onClick={() => lessonsQuery.refetch()}>Thử lại</button>
+      </p>
+    );
+  }
   if (!data) return <p className="px-3 pb-2 text-sm text-slate-500">Đang tải…</p>;
   return (
     <div className="space-y-1 px-3 pb-3">

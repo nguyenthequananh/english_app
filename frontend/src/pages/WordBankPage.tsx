@@ -2,6 +2,7 @@ import { useDeferredValue, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { endpoints } from '../api/endpoints';
 import type { AddWord, WordStatus } from '../api/types';
+import { QueryError } from '../components/QueryError';
 import { SpeakButton } from '../components/SpeakButton';
 import { toast } from '../components/Toaster';
 import { WORD_STATUS_LABEL } from '../components/labels';
@@ -11,7 +12,8 @@ export default function WordBankPage() {
   const [status, setStatus] = useState<WordStatus | ''>('');
   const [adding, setAdding] = useState(false);
   const deferredQ = useDeferredValue(q);
-  const { data } = useQuery({ queryKey: ['words', deferredQ, status], queryFn: () => endpoints.words(deferredQ, status) });
+  const wordsQuery = useQuery({ queryKey: ['words', deferredQ, status], queryFn: () => endpoints.words(deferredQ, status) });
+  const { data } = wordsQuery;
 
   return (
     <div data-testid="page-words" className="space-y-4">
@@ -33,6 +35,7 @@ export default function WordBankPage() {
 
       {adding && <AddWordForm onClose={() => setAdding(false)} />}
 
+      {wordsQuery.error && <QueryError error={wordsQuery.error} onRetry={() => wordsQuery.refetch()} />}
       {data && data.length === 0 && <p className="text-slate-500">Không có từ nào</p>}
       {data && data.length > 0 && (
         <div className="card overflow-x-auto p-0">

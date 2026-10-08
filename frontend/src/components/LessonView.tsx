@@ -2,10 +2,12 @@ import Markdown from 'react-markdown';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { endpoints } from '../api/endpoints';
 import { ExerciseSet } from './ExerciseSet';
+import { QueryError } from './QueryError';
 
 export function LessonView({ code, onDone, doneLabel = 'Xong' }: { code: string; onDone: () => void; doneLabel?: string }) {
   const queryClient = useQueryClient();
-  const { data: lesson, isLoading } = useQuery({ queryKey: ['lesson', code], queryFn: () => endpoints.lesson(code) });
+  const lessonQuery = useQuery({ queryKey: ['lesson', code], queryFn: () => endpoints.lesson(code) });
+  const { data: lesson, isLoading } = lessonQuery;
   const submit = useMutation({
     mutationFn: (answers: Record<string, string>) => endpoints.submitLesson(code, answers),
     onSuccess: () => {
@@ -15,6 +17,9 @@ export function LessonView({ code, onDone, doneLabel = 'Xong' }: { code: string;
     },
   });
 
+  if (lessonQuery.error) {
+    return <QueryError error={lessonQuery.error} onRetry={() => lessonQuery.refetch()} backTo={{ to: '/roadmap', label: 'Về lộ trình' }} />;
+  }
   if (isLoading || !lesson) return <p className="text-slate-500">Đang tải bài học…</p>;
   const noExercises = lesson.exercises.length === 0;
 

@@ -2,9 +2,12 @@ import { useQuery } from '@tanstack/react-query';
 import { endpoints } from '../api/endpoints';
 import { Heatmap } from '../components/Heatmap';
 import { KnownChart } from '../components/KnownChart';
+import { QueryError } from '../components/QueryError';
 
 export default function StatsPage() {
-  const { data: s } = useQuery({ queryKey: ['stats'], queryFn: endpoints.stats });
+  const statsQuery = useQuery({ queryKey: ['stats'], queryFn: endpoints.stats });
+  const s = statsQuery.data;
+  if (statsQuery.error) return <QueryError error={statsQuery.error} onRetry={() => statsQuery.refetch()} />;
   if (!s) return <p className="text-slate-500">Đang tải thống kê…</p>;
   const tile = (testId: string, label: string, value: number) => (
     <div className="card">

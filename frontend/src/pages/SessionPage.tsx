@@ -5,6 +5,7 @@ import { ApiError } from '../api/client';
 import { notifyError } from '../components/Toaster';
 import { Flashcard } from '../components/Flashcard';
 import { LessonView } from '../components/LessonView';
+import { QueryError } from '../components/QueryError';
 import { StepBar } from '../components/StepBar';
 import type { Grade } from '../api/types';
 
@@ -13,7 +14,8 @@ const SESSION_KEY = ['session', 'today'];
 
 export default function SessionPage() {
   const queryClient = useQueryClient();
-  const { data: v } = useQuery({ queryKey: SESSION_KEY, queryFn: endpoints.sessionToday });
+  const sessionQuery = useQuery({ queryKey: SESSION_KEY, queryFn: endpoints.sessionToday });
+  const v = sessionQuery.data;
   const answer = useMutation({
     mutationFn: ({ wordId, grade }: { wordId: number; grade: Grade }) => endpoints.answerCard(wordId, grade),
     onSuccess: (next) => queryClient.setQueryData(SESSION_KEY, next),
@@ -24,6 +26,9 @@ export default function SessionPage() {
     meta: { silent: true },
   });
 
+  if (sessionQuery.error) {
+    return <QueryError error={sessionQuery.error} onRetry={() => sessionQuery.refetch()} backTo={{ to: '/', label: 'Về trang chủ' }} />;
+  }
   if (!v) return <p className="text-slate-500">Đang chuẩn bị buổi học…</p>;
   const card = v.currentCard;
 

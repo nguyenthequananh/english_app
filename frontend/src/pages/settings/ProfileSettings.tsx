@@ -4,11 +4,14 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { endpoints } from '../../api/endpoints';
 import type { Profile } from '../../api/types';
 import { AvatarPicker } from '../../components/AvatarPicker';
+import { QueryError } from '../../components/QueryError';
 import { toast } from '../../components/Toaster';
 import { configureSpeech, speak, useEnglishVoices } from '../../speech/speech';
 
 export function ProfileSettings() {
-  const { data: profile } = useQuery({ queryKey: ['profile', 'current'], queryFn: endpoints.currentProfile });
+  const profileQuery = useQuery({ queryKey: ['profile', 'current'], queryFn: endpoints.currentProfile });
+  const profile = profileQuery.data;
+  if (profileQuery.error) return <QueryError error={profileQuery.error} onRetry={() => profileQuery.refetch()} />;
   if (!profile) return null;
   return <ProfileForm key={profile.id} profile={profile} />;
 }

@@ -3,12 +3,14 @@ import { Link } from 'react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { endpoints } from '../api/endpoints';
 import { Flashcard } from '../components/Flashcard';
+import { QueryError } from '../components/QueryError';
 import type { Grade } from '../api/types';
 
 export default function ReviewPage() {
   const queryClient = useQueryClient();
   const [index, setIndex] = useState(0);
-  const { data: cards } = useQuery({ queryKey: ['dueCards'], queryFn: () => endpoints.dueCards(200), staleTime: Infinity, gcTime: 0 });
+  const cardsQuery = useQuery({ queryKey: ['dueCards'], queryFn: () => endpoints.dueCards(200), staleTime: Infinity, gcTime: 0 });
+  const cards = cardsQuery.data;
   const review = useMutation({
     mutationFn: ({ wordId, grade }: { wordId: number; grade: Grade }) => endpoints.reviewCard(wordId, grade),
     onSuccess: () => {
@@ -17,6 +19,9 @@ export default function ReviewPage() {
     },
   });
 
+  if (cardsQuery.error) {
+    return <QueryError error={cardsQuery.error} onRetry={() => cardsQuery.refetch()} backTo={{ to: '/', label: 'Về trang chủ' }} />;
+  }
   if (!cards) return <p className="text-slate-500">Đang tải thẻ…</p>;
   const card = cards[index];
   if (!card) {

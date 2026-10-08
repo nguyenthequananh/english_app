@@ -1,9 +1,12 @@
 import { Link } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { endpoints } from '../api/endpoints';
+import { QueryError } from '../components/QueryError';
 
 export default function TodayPage() {
-  const { data: s } = useQuery({ queryKey: ['summary'], queryFn: endpoints.summary });
+  const summaryQuery = useQuery({ queryKey: ['summary'], queryFn: endpoints.summary });
+  const s = summaryQuery.data;
+  if (summaryQuery.error) return <QueryError error={summaryQuery.error} onRetry={() => summaryQuery.refetch()} />;
   if (!s) return <p className="text-slate-500">Đang tải…</p>;
   const unit = s.currentUnit;
   return (
