@@ -14,10 +14,14 @@ export function Flashcard({ word, onGrade, busy = false }: { word: Word; onGrade
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      const tag = (e.target as HTMLElement | null)?.tagName;
+      const target = e.target as HTMLElement | null;
+      const tag = target?.tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
       if (e.repeat || e.ctrlKey || e.altKey || e.metaKey) return;
       if (e.code === 'Space' || e.key === ' ') {
+        // Space trên nút/link khác (🔊, nút chấm) để trình duyệt kích hoạt nút đó như bình thường
+        const control = target?.closest?.('button, a');
+        if (control && !control.hasAttribute('data-flip')) return;
         e.preventDefault();
         setFlipped((f) => !f);
         return;
@@ -39,7 +43,7 @@ export function Flashcard({ word, onGrade, busy = false }: { word: Word; onGrade
       </div>
       <p className="text-sm text-slate-500">{word.pos}</p>
       {!flipped ? (
-        <button type="button" className="btn btn-primary mt-6" onClick={() => setFlipped(true)}>Lật thẻ (Space)</button>
+        <button type="button" data-flip className="btn btn-primary mt-6" onClick={() => setFlipped(true)}>Lật thẻ (Space)</button>
       ) : (
         <div className="mt-4 space-y-2" data-testid="card-back">
           {ipa && <p className="font-mono text-slate-600">{ipa}</p>}

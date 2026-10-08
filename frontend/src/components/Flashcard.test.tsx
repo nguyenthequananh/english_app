@@ -63,3 +63,21 @@ test('phím lặp hoặc có Ctrl/Alt/Meta không chấm thẻ', () => {
   fireEvent.keyDown(window, { key: '3' });
   expect(onGrade).toHaveBeenCalledTimes(1);
 });
+
+test('Space trên nút 🔊 đang được focus không lật thẻ', () => {
+  stubSpeech();
+  render(<Flashcard word={word} onGrade={() => undefined} />);
+  const speakBtn = screen.getByRole('button', { name: 'Nghe: hello' });
+  speakBtn.focus();
+  fireEvent.keyDown(speakBtn, { key: ' ', code: 'Space' });
+  expect(screen.queryByTestId('card-back')).not.toBeInTheDocument();
+});
+
+test('Space khi focus ở nút lật thẻ vẫn lật thẻ', () => {
+  stubSpeech();
+  render(<Flashcard word={word} onGrade={() => undefined} />);
+  const flipBtn = screen.getByRole('button', { name: /Lật thẻ/ });
+  flipBtn.focus();
+  fireEvent.keyDown(flipBtn, { key: ' ', code: 'Space' });
+  expect(screen.getByTestId('card-back')).toBeInTheDocument();
+});
