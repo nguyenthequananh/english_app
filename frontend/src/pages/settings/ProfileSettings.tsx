@@ -27,7 +27,7 @@ function ProfileForm({ profile }: { profile: Profile }) {
 
   const save = useMutation({
     mutationFn: () => endpoints.updateProfile({
-      name: name.trim(), avatar: avatar || undefined, dailyMinutes, voice: voice || undefined, speechRate,
+      name: name.trim(), avatar: avatar || undefined, dailyMinutes, voice, speechRate,
       pin: !removePin && pin ? pin : undefined, removePin: removePin || undefined,
     }),
     onSuccess: (updated) => {

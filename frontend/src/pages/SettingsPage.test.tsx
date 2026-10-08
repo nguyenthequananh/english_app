@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Route, Routes } from 'react-router';
 import SettingsPage from './SettingsPage';
@@ -94,4 +94,21 @@ test('khôi phục bản sao lưu rồi tắt app', async () => {
   expect(await screen.findByText(/Đã lên lịch khôi phục/)).toBeInTheDocument();
   await user.click(screen.getAllByRole('button', { name: 'Tắt app' })[0]);
   expect(await screen.findByTestId('app-stopped')).toHaveTextContent('App đã tắt');
+});
+
+test('chọn lại giọng tự động gửi voice rỗng', async () => {
+  const user = userEvent.setup();
+  stubSpeech();
+  const withVoice = { ...profile, voice: 'Microsoft Ryan' };
+  const calls = mockApi({
+    ...base,
+    'GET /profiles/current': () => ({ body: withVoice }),
+    'PUT /profiles/current': (body) => ({ body: { ...withVoice, ...(body as object), voice: null } }),
+  });
+  renderSettings();
+  const select = await screen.findByLabelText('Giọng đọc');
+  await user.selectOptions(select, '');
+  await user.click(screen.getByRole('button', { name: 'Lưu hồ sơ' }));
+  await waitFor(() => expect(calls.some((c) => c.method === 'PUT')).toBe(true));
+  expect(calls.find((c) => c.method === 'PUT')?.body).toHaveProperty('voice', '');
 });
