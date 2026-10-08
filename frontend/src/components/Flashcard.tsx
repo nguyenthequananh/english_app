@@ -16,6 +16,7 @@ export function Flashcard({ word, onGrade, busy = false }: { word: Word; onGrade
     const onKey = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement | null)?.tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (e.repeat || e.ctrlKey || e.altKey || e.metaKey) return;
       if (e.code === 'Space' || e.key === ' ') {
         e.preventDefault();
         setFlipped((f) => !f);

@@ -49,3 +49,17 @@ test('nút loa đọc từ và câu ví dụ', async () => {
   await userEvent.click(screen.getByRole('button', { name: 'Nghe câu: Hello, I am Lan.' }));
   expect(spoken.map((s) => s.text)).toEqual(['hello', 'Hello, I am Lan.']);
 });
+
+test('phím lặp hoặc có Ctrl/Alt/Meta không chấm thẻ', () => {
+  stubSpeech();
+  const onGrade = vi.fn();
+  render(<Flashcard word={word} onGrade={onGrade} />);
+  fireEvent.keyDown(window, { key: ' ', code: 'Space' });
+  fireEvent.keyDown(window, { key: '3', repeat: true });
+  fireEvent.keyDown(window, { key: '3', ctrlKey: true });
+  fireEvent.keyDown(window, { key: '3', altKey: true });
+  fireEvent.keyDown(window, { key: '3', metaKey: true });
+  expect(onGrade).not.toHaveBeenCalled();
+  fireEvent.keyDown(window, { key: '3' });
+  expect(onGrade).toHaveBeenCalledTimes(1);
+});

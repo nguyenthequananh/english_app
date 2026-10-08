@@ -1,4 +1,7 @@
-import { fireEvent, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { MemoryRouter } from 'react-router';
+import { createQueryClient } from '../api/queryClient';
 import userEvent from '@testing-library/user-event';
 import { Route, Routes } from 'react-router';
 import TodayPage from './TodayPage';
@@ -114,4 +117,31 @@ test('ôn thêm: chấm hết thẻ đến hạn thì báo hết thẻ', async (
   fireEvent.keyDown(window, { key: '4' });
   expect(await screen.findByText('Không còn thẻ nào đến hạn. Tuyệt!')).toBeInTheDocument();
   expect(calls.find((c) => c.method === 'POST')?.body).toEqual({ grade: 'EASY' });
+});
+
+test('ôn thêm: quay lại trang sau khi chấm hết thì tải danh sách mới, không chấm lại thẻ cũ', async () => {
+  stubSpeech();
+  let due: Word[] = [word(1, 'hello')];
+  const calls = mockApi({
+    'GET /cards/due?limit=200': () => ({ body: due }),
+    'POST /cards/1/review': () => ({ body: { ease: 2.5, intervalDays: 6, repetitions: 2, lapses: 0, dueDate: '2026-10-13' } }),
+  });
+  const client = createQueryClient();
+  const ui = (
+    <QueryClientProvider client={client}>
+      <MemoryRouter initialEntries={['/review']}><ReviewPage /></MemoryRouter>
+    </QueryClientProvider>
+  );
+  const first = render(ui);
+  await screen.findByText('hello');
+  fireEvent.keyDown(window, { key: ' ', code: 'Space' });
+  fireEvent.keyDown(window, { key: '4' });
+  expect(await screen.findByText('Không còn thẻ nào đến hạn. Tuyệt!')).toBeInTheDocument();
+  first.unmount();
+  await new Promise((r) => setTimeout(r, 0)); // gcTime 0 dọn query sau một tick, như khi người dùng chuyển trang
+
+  due = [];
+  render(ui);
+  expect(await screen.findByText('Không còn thẻ nào đến hạn. Tuyệt!')).toBeInTheDocument();
+  expect(calls.filter((c) => c.method === 'GET' && c.path === '/cards/due?limit=200')).toHaveLength(2);
 });

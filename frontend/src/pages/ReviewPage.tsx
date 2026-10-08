@@ -8,7 +8,7 @@ import type { Grade } from '../api/types';
 export default function ReviewPage() {
   const queryClient = useQueryClient();
   const [index, setIndex] = useState(0);
-  const { data: cards } = useQuery({ queryKey: ['dueCards'], queryFn: () => endpoints.dueCards(200), staleTime: Infinity });
+  const { data: cards } = useQuery({ queryKey: ['dueCards'], queryFn: () => endpoints.dueCards(200), staleTime: Infinity, gcTime: 0 });
   const review = useMutation({
     mutationFn: ({ wordId, grade }: { wordId: number; grade: Grade }) => endpoints.reviewCard(wordId, grade),
     onSuccess: () => {
