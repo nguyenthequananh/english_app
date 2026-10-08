@@ -1,5 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 
+test.describe.configure({ mode: 'serial' });
+
 async function createProfile(page: Page, name: string) {
   await page.goto('/profiles/new');
   await page.getByLabel('Tên').fill(name);
@@ -12,6 +14,10 @@ async function finishTodaySession(page: Page) {
   const stepBar = page.getByTestId('session-step');
   await expect(stepBar).toBeVisible();
   for (let i = 0; i < 40; i++) {
+    // Thẻ mới mount luôn hiện "Lật thẻ"; thẻ vừa chấm thì đã lật. Chờ thẻ mới hoặc sang bước LESSON.
+    await expect(
+      page.getByRole('button', { name: /Lật thẻ/ }).or(page.locator('[data-step="LESSON"]')),
+    ).toBeVisible();
     const step = await stepBar.getAttribute('data-step');
     if (step !== 'REVIEW' && step !== 'NEW') break;
     await page.keyboard.press('Space');
@@ -22,8 +28,10 @@ async function finishTodaySession(page: Page) {
   }
   await expect(stepBar).toHaveAttribute('data-step', 'LESSON');
   const submit = page.getByRole('button', { name: 'Nộp bài' });
+  const done = page.getByRole('button', { name: 'Đã học xong bài này' });
+  await expect(submit.or(done)).toBeVisible();
   if (await submit.isVisible()) await submit.click();
-  else await page.getByRole('button', { name: 'Đã học xong bài này' }).click();
+  else await done.click();
   await page.getByRole('button', { name: 'Hoàn thành buổi học' }).click();
   await expect(page.getByText('🎉 Xong buổi học hôm nay!')).toBeVisible();
 }
