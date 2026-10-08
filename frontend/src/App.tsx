@@ -1,4 +1,8 @@
-import { Navigate, Route, Routes } from 'react-router';
+import { useEffect } from 'react';
+import { Navigate, Route, Routes, useNavigate } from 'react-router';
+import { useQueryClient } from '@tanstack/react-query';
+import { setProfileRequiredHandler } from './api/client';
+import { Toaster } from './components/Toaster';
 import Layout from './components/Layout';
 import ProfileSelectPage from './pages/ProfileSelectPage';
 import CreateProfilePage from './pages/CreateProfilePage';
@@ -14,7 +18,17 @@ import StatsPage from './pages/StatsPage';
 import SettingsPage from './pages/SettingsPage';
 
 export default function App() {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  useEffect(() => {
+    setProfileRequiredHandler(() => {
+      queryClient.removeQueries({ predicate: (q) => !['profiles', 'health'].includes(String(q.queryKey[0])) });
+      navigate('/profiles', { replace: true });
+    });
+  }, [navigate, queryClient]);
+
   return (
+    <>
     <Routes>
       <Route path="/profiles" element={<ProfileSelectPage />} />
       <Route path="/profiles/new" element={<CreateProfilePage />} />
@@ -33,5 +47,7 @@ export default function App() {
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    <Toaster />
+    </>
   );
 }
