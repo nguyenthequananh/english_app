@@ -43,7 +43,10 @@ export default function ProfileSelectPage() {
               setPin('');
               select.reset();
               if (p.hasPin) setPinFor(p);
-              else select.mutate({ id: p.id });
+              else {
+                setPinFor(null);
+                select.mutate({ id: p.id });
+              }
             }}>
             <span className="text-5xl">{p.avatar ?? '🙂'}</span>
             <span className="font-medium">{p.name}{p.hasPin ? ' 🔒' : ''}</span>

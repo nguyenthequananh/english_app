@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { endpoints } from '../api/endpoints';
 import { AvatarPicker, AVATARS } from '../components/AvatarPicker';
+import type { Profile } from '../api/types';
 import { useEnglishVoices } from '../speech/speech';
 
 export default function CreateProfilePage() {
@@ -15,11 +16,14 @@ export default function CreateProfilePage() {
   const [dailyMinutes, setDailyMinutes] = useState(30);
   const [voice, setVoice] = useState('');
 
+  const created = useRef<Profile | null>(null);
+
   const create = useMutation({
     mutationFn: async () => {
-      const profile = await endpoints.createProfile({
+      created.current ??= await endpoints.createProfile({
         name: name.trim(), avatar, pin: pin || null, dailyMinutes, voice: voice || null,
       });
+      const profile = created.current;
       await endpoints.selectProfile(profile.id, pin || undefined);
       return profile;
     },

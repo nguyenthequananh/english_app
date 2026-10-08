@@ -36,9 +36,11 @@ test('một hồ sơ không PIN thì tự vào luôn', async () => {
 });
 
 test('bấm Đổi hồ sơ (?manual=1) thì không tự vào', async () => {
-  mockApi({ 'GET /profiles': () => ({ body: [lan] }) });
+  const calls = mockApi({ 'GET /profiles': () => ({ body: [lan] }) });
   renderPages('/profiles?manual=1');
   expect(await screen.findByRole('button', { name: /Lan/ })).toBeInTheDocument();
+  await new Promise((r) => setTimeout(r, 50));
+  expect(calls.some((c) => c.method === 'POST')).toBe(false);
   expect(screen.queryByText('TRANG CHỦ')).not.toBeInTheDocument();
 });
 
@@ -75,4 +77,21 @@ test('tạo hồ sơ gửi đủ thông tin rồi chọn hồ sơ đó', async (
   expect(await screen.findByText('TRANG CHỦ')).toBeInTheDocument();
   const created = calls.find((c) => c.method === 'POST' && c.path === '/profiles');
   expect(created?.body).toMatchObject({ name: 'Thành', avatar: '🐯', pin: '4321', dailyMinutes: 30 });
+});
+
+test('tạo hồ sơ xong mà chọn lỗi thì thử lại không tạo trùng', async () => {
+  const user = userEvent.setup();
+  stubSpeech();
+  let selects = 0;
+  const calls = mockApi({
+    'POST /profiles': () => ({ status: 201, body: { ...lan, id: 7, name: 'Thành' } }),
+    'POST /profiles/7/select': () => (++selects === 1 ? problem(500, 'INTERNAL', 'x') : { status: 204 }),
+  });
+  renderPages('/profiles/new');
+  await user.type(screen.getByLabelText('Tên'), 'Thành');
+  await user.click(screen.getByRole('button', { name: 'Tạo hồ sơ' }));
+  await vi.waitFor(() => expect(selects).toBe(1));
+  await user.click(await screen.findByRole('button', { name: 'Tạo hồ sơ' }));
+  expect(await screen.findByText('TRANG CHỦ')).toBeInTheDocument();
+  expect(calls.filter((c) => c.method === 'POST' && c.path === '/profiles')).toHaveLength(1);
 });
