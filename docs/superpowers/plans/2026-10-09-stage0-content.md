@@ -698,7 +698,7 @@ git commit -m "content: Chặng 0 unit 11–13"
 
 Nội dung:
 - Unit 14 — Du lịch. G1 quá khứ đơn động từ bất quy tắc thường gặp (go–went, see–saw, take–took, buy–bought…); G2 câu hỏi quá khứ đơn với từ để hỏi (Where did…? What did…?). P1 âm cuối (lỗi người Việt nuốt âm cuối: MINIMAL_PAIR như bike–bite, rice–rise, white–wide; MCQ chọn từ có âm cuối khác).
-- Unit 15 — Sức khỏe & cơ thể. G1 should/shouldn't (lời khuyên); G2 must/mustn't vs have to/don't have to. P1 cụm phụ âm (street, spring, desks, asked — MINIMAL_PAIR với cặp có thật như play–pray, glass–grass; MCQ đếm âm tiết, ví dụ 'How many syllables in \"asked\"?').
+- Unit 15 — Sức khỏe & cơ thể. G1 should/shouldn't (lời khuyên); G2 must/mustn't vs have to/don't have to. P1 cụm phụ âm (street, spring, desks, asked — MINIMAL_PAIR với cặp có thật như play–pray, glass–grass; MCQ đếm âm tiết, ví dụ 'How many syllables in asked?').
 - Unit 16 — Trường học. G1 câu hỏi Wh- (what, where, when, who, why, how) với to be và trợ động từ; G2 How + tính từ/trạng từ (how old, how often, how long), câu hỏi chủ ngữ (Who teaches…?). P1 ngữ điệu câu hỏi (Wh- xuống giọng, Yes/No lên giọng — MCQ "Does this question go up or down at the end?").
 
 - [ ] **Step 1: Liệt kê từ đã dùng** — chạy lệnh `grep` trong hướng dẫn, ghi nhớ để không lặp.
