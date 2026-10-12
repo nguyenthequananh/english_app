@@ -10,7 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import vn.ieltsapp.common.WordCode;
 import vn.ieltsapp.content.ContentModel.*;
@@ -185,7 +184,6 @@ class ContentFolderTest {
         assertThat(dups).isEmpty();
     }
 
-    @Disabled("Bật ở Task 12 khi đủ 24 unit")
     @Test
     void stageIsComplete() throws IOException {
         SortedMap<Integer, UnitFile> units = units();
