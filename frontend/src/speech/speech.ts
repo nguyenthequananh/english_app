@@ -8,6 +8,11 @@ export function configureSpeech(settings: SpeechSettings) {
   current = settings;
 }
 
+/** Tốc độ đọc hiện đang cấu hình (để tính "nghe chậm" tương đối theo hồ sơ). */
+export function currentSpeechRate(): number {
+  return current.rate;
+}
+
 function synth(): SpeechSynthesis | null {
   const s = (globalThis as { speechSynthesis?: SpeechSynthesis }).speechSynthesis;
   return s ?? null;

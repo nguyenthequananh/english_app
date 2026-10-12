@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ExerciseSet } from './ExerciseSet';
 import { stubSpeech } from '../test/speechStub';
+import { configureSpeech } from '../speech/speech';
 import type { ExerciseView } from '../api/types';
 
 const exercises: ExerciseView[] = [
@@ -64,4 +65,37 @@ test('DICTATION: sau khi chấm thì hiện câu đáp án', () => {
     results={[{ code: 'D1', given: 'i live in hanoy', correct: false, answer: 'I live in Hanoi.', explanationVi: null }]} />);
   expect(screen.getByText('✗ Sai — đáp án: I live in Hanoi.')).toBeInTheDocument();
   expect(screen.getByLabelText('Câu 1')).toBeDisabled();
+});
+
+test('Enter trong ô gõ không nộp bài mà chuyển sang ô kế tiếp; ô gõ tắt spellcheck/autocomplete', async () => {
+  const user = userEvent.setup();
+  stubSpeech();
+  const onSubmit = vi.fn();
+  render(<ExerciseSet exercises={[
+    { code: 'F1', type: 'FILL', prompt: 'They ___ (play) football.', options: [] },
+    { code: 'D1', type: 'DICTATION', prompt: 'I live in Hanoi.', options: null },
+  ]} onSubmit={onSubmit} />);
+  const first = screen.getByLabelText('Câu 1');
+  expect(first).toHaveAttribute('spellcheck', 'false');
+  expect(first).toHaveAttribute('autocomplete', 'off');
+  expect(first).toHaveAttribute('autocapitalize', 'off');
+  await user.type(first, 'play{Enter}');
+  expect(onSubmit).not.toHaveBeenCalled();
+  expect(screen.getByLabelText('Câu 2')).toHaveFocus();
+  await user.type(screen.getByLabelText('Câu 2'), 'i live{Enter}');
+  expect(onSubmit).not.toHaveBeenCalled();
+});
+
+test('Nghe chậm tính theo tốc độ đã cấu hình trong hồ sơ', async () => {
+  const user = userEvent.setup();
+  const spoken = stubSpeech();
+  configureSpeech({ voice: null, rate: 0.6 });
+  try {
+    render(<ExerciseSet exercises={[{ code: 'D1', type: 'DICTATION', prompt: 'I live in Hanoi.', options: null }]}
+      onSubmit={() => undefined} />);
+    await user.click(screen.getByRole('button', { name: 'Nghe chậm' }));
+    expect(spoken[0].rate).toBeCloseTo(0.42);
+  } finally {
+    configureSpeech({ voice: null, rate: 1 });
+  }
 });

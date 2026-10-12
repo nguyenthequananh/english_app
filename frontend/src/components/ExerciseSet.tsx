@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import type { ExerciseResult, ExerciseView } from '../api/types';
-import { speak } from '../speech/speech';
+import { currentSpeechRate, speak } from '../speech/speech';
 import { SpeakButton } from './SpeakButton';
+
+/** Nghe chậm = 70% tốc độ đang cấu hình trong hồ sơ. */
+const SLOW_FACTOR = 0.7;
 
 interface Props {
   exercises: ExerciseView[];
@@ -49,13 +52,21 @@ function ExerciseItem({ index, exercise, value, onChange, result, disabled }: {
         <div className="flex flex-wrap items-center gap-2">
           <span>Nghe và chép lại câu:</span>
           <button type="button" className="btn btn-ghost" aria-label="Nghe câu" onClick={() => speak(exercise.prompt)}>🔊 Nghe câu</button>
-          <button type="button" className="btn btn-ghost" aria-label="Nghe chậm" onClick={() => speak(exercise.prompt, { rate: 0.7 })}>🐢 Nghe chậm</button>
+          <button type="button" className="btn btn-ghost" aria-label="Nghe chậm" onClick={() => speak(exercise.prompt, { rate: SLOW_FACTOR * currentSpeechRate() })}>🐢 Nghe chậm</button>
         </div>
       ) : (
         <p className="font-medium">{exercise.prompt}</p>
       )}
       {exercise.type === 'FILL' || exercise.type === 'DICTATION' ? (
-        <input className="input mt-2" aria-label={`Câu ${index}`} value={value} disabled={disabled}
+        <input className="input mt-2" data-exercise-input aria-label={`Câu ${index}`} value={value} disabled={disabled}
+          spellCheck={false} autoComplete="off" autoCapitalize="off"
+          onKeyDown={(e) => {
+            // Enter trong ô gõ không được nộp cả bài (các câu khác còn trống); chuyển sang ô kế tiếp.
+            if (e.key !== 'Enter') return;
+            e.preventDefault();
+            const inputs = Array.from(e.currentTarget.form?.querySelectorAll<HTMLInputElement>('input[data-exercise-input]') ?? []);
+            inputs[inputs.indexOf(e.currentTarget) + 1]?.focus();
+          }}
           onChange={(e) => onChange(e.target.value)} />
       ) : (
         <div className="mt-2 flex flex-wrap gap-4">
