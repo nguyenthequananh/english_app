@@ -7,7 +7,7 @@ import vn.ieltsapp.content.ContentModel.*;
 public final class ContentValidator {
     static final Set<String> LESSON_TYPES = Set.of("GRAMMAR", "PRONUNCIATION", "READING", "LISTENING");
     static final Set<String> DAYS = Set.of("MON", "TUE", "WED", "THU", "FRI", "SAT");
-    static final Set<String> EXERCISE_TYPES = Set.of("MCQ", "FILL", "MINIMAL_PAIR");
+    static final Set<String> EXERCISE_TYPES = Set.of("MCQ", "FILL", "MINIMAL_PAIR", "DICTATION");
     static final Set<String> SOURCES = Set.of("OXFORD", "AWL", "USER");
 
     private ContentValidator() {}

@@ -99,4 +99,14 @@ class ContentValidatorTest {
         assertThat(errors).contains("lessons[0].type: không hợp lệ", "lessons[0].day: phải là MON..SAT",
                 "lessons[0].exercises[0].type: không hợp lệ");
     }
+
+    @Test
+    void dictationNeedsNoOptions() {
+        UnitFile u = validUnit();
+        ExerciseDef d = new ExerciseDef("S0-U01-G1-E1", "DICTATION", "I live in Hanoi.", null,
+                "I live in Hanoi.", "Nghe chép");
+        UnitFile ok = new UnitFile(u.code(), u.stage(), u.title(), u.order(), u.words(),
+                List.of(new LessonDef("S0-U01-G1", "LISTENING", "FRI", "t", "b", List.of(d))), u.test());
+        assertThat(ContentValidator.validateUnit(ok, Set.of("S0"))).isEmpty();
+    }
 }

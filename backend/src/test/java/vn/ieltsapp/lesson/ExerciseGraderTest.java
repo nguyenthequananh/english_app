@@ -38,4 +38,27 @@ class ExerciseGraderTest {
     void emptyExerciseListScoresFull() {
         assertThat(ExerciseGrader.gradeAll(List.of(), Map.of()).score()).isEqualTo(1.0);
     }
+
+    @Test
+    void dictationIgnoresCasePunctuationAndExtraSpaces() {
+        String a = "She gets up at six o'clock.|She gets up at 6 o'clock.";
+        assertThat(ExerciseGrader.isCorrect("DICTATION", a, "she gets up at six o'clock")).isTrue();
+        assertThat(ExerciseGrader.isCorrect("DICTATION", a, "  She  gets up at 6 o’clock!! ")).isTrue();
+        assertThat(ExerciseGrader.isCorrect("DICTATION", a, "she gets up at six oclock")).isFalse();
+        assertThat(ExerciseGrader.isCorrect("DICTATION", a, "she get up at six o'clock")).isFalse();
+        assertThat(ExerciseGrader.isCorrect("DICTATION", a, "")).isFalse();
+        assertThat(ExerciseGrader.isCorrect("DICTATION", a, "   ")).isFalse();
+        assertThat(ExerciseGrader.isCorrect("DICTATION", a, null)).isFalse();
+    }
+
+    @Test
+    void dictationTreatsHyphenAsSpace() {
+        assertThat(ExerciseGrader.isCorrect("DICTATION", "He is twenty-one.", "he is twenty one")).isTrue();
+        assertThat(ExerciseGrader.isCorrect("DICTATION", "He is twenty-one.", "He is twenty-one")).isTrue();
+    }
+
+    @Test
+    void normalizeSentenceKeepsApostropheAndLetters() {
+        assertThat(ExerciseGrader.normalizeSentence(" I’m   Lan, from Huế. ")).isEqualTo("i'm lan from huế");
+    }
 }

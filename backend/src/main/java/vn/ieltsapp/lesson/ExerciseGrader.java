@@ -15,6 +15,11 @@ public final class ExerciseGrader {
             String g = normalize(given);
             return Arrays.stream(answer.split("\\|")).map(ExerciseGrader::normalize).anyMatch(g::equals);
         }
+        if ("DICTATION".equals(type)) {
+            String g = normalizeSentence(given);
+            if (g.isEmpty()) return false;
+            return Arrays.stream(answer.split("\\|")).map(ExerciseGrader::normalizeSentence).anyMatch(g::equals);
+        }
         return answer.equals(given.trim());
     }
 
@@ -33,5 +38,12 @@ public final class ExerciseGrader {
 
     static String normalize(String s) {
         return s.trim().toLowerCase(Locale.ROOT).replace('’', '\'').replaceAll("\\s+", " ");
+    }
+
+    /** Chuẩn hoá câu nghe chép: bỏ chữ hoa, dấu câu, khoảng trắng thừa; giữ chữ, số và dấu nháy đơn. */
+    static String normalizeSentence(String s) {
+        return s.toLowerCase(Locale.ROOT).replace('’', '\'')
+                .replaceAll("[^\\p{L}\\p{N}\\s']", " ")
+                .replaceAll("\\s+", " ").trim();
     }
 }
