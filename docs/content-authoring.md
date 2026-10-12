@@ -62,6 +62,7 @@ Kiểm tra sau khi soạn (trong `backend/`): `./mvnw test -Dtest=ContentFolderT
 - READING: `bodyMd` có hướng dẫn 1 dòng tiếng Việt rồi đoạn văn tiếng Anh 80–150 từ (dùng nhiều từ của unit), câu hỏi MCQ tiếng Anh đơn giản, 3 lựa chọn.
 - LISTENING: `bodyMd` hướng dẫn nghe chép (tiếng Việt) + mẹo nghe của unit. Câu DICTATION 4–10 từ, dùng từ vựng/ngữ pháp unit.
 - MINIMAL_PAIR: `prompt` là từ được đọc, `options` 2–3 từ dễ nhầm (thật, có nghĩa), `answer` = `prompt`. Đổi vị trí đáp án đúng giữa các câu.
+  - `prompt` có thể là câu ngắn khi hiện tượng chỉ nghe được trong câu (ví dụ can/can't); `options` là các câu chỉ khác nhau ở điểm cần nghe.
 - MCQ phát âm (unit 9–24): ví dụ "Which word has stress on the first syllable?" hoặc "How is -ed pronounced in 'watched'?" với options `/t/`, `/d/`, `/ɪd/`.
 - MCQ: 3 lựa chọn (đôi khi 2 hoặc 4), đáp án đúng nằm ở vị trí khác nhau giữa các câu. FILL: dạng "They ___ (live) near the sea."; mọi cách viết đúng khai báo trong `answer` bằng `|` (ví dụ `don't like|do not like`).
 - FILL có *to be*, *have*, *will*, *do*… phải khai báo cả dạng viết tắt: `are|'re`, `is|'s`, `'m not|am not`, `isn't|is not|'s not`.
