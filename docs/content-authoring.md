@@ -60,7 +60,7 @@ Kiểm tra sau khi soạn (trong `backend/`): `./mvnw test -Dtest=ContentFolderT
 
 - `bodyMd` tiếng Việt, Markdown: tiêu đề `##`, giải thích ngắn, bảng hoặc gạch đầu dòng, ví dụ in nghiêng. Ngữ pháp 150–300 từ; phát âm nêu khẩu hình + ví dụ từ.
 - READING: `bodyMd` có hướng dẫn 1 dòng tiếng Việt rồi đoạn văn tiếng Anh 80–150 từ (dùng nhiều từ của unit), câu hỏi MCQ tiếng Anh đơn giản, 3 lựa chọn.
-- LISTENING: `bodyMd` hướng dẫn nghe chép (tiếng Việt) + mẹo nghe của unit. Câu DICTATION 4–10 từ, dùng từ vựng/ngữ pháp unit.
+- LISTENING: `bodyMd` hướng dẫn nghe chép (tiếng Việt) + mẹo nghe của unit. Bài L1 của unit-01 phải nhắc người học chuyển bộ gõ tiếng Việt (Unikey/EVKey, Telex) sang tiếng Anh (E) trước khi gõ, vì Telex đổi *w* thành *ư*, *dd* thành *đ*. Câu DICTATION 4–10 từ, dùng từ vựng/ngữ pháp unit.
 - MINIMAL_PAIR: `prompt` là từ được đọc, `options` 2–3 từ dễ nhầm (thật, có nghĩa), `answer` = `prompt`. Đổi vị trí đáp án đúng giữa các câu.
   - `prompt` có thể là câu ngắn khi hiện tượng chỉ nghe được trong câu (ví dụ can/can't); `options` là các câu chỉ khác nhau ở điểm cần nghe.
 - MCQ phát âm (unit 9–24): ví dụ "Which word has stress on the first syllable?" hoặc "How is -ed pronounced in 'watched'?" với options `/t/`, `/d/`, `/ɪd/`.
