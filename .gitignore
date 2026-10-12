@@ -12,3 +12,4 @@ frontend/.node/
 frontend/test-results/
 frontend/playwright-report/
 /dist/
+*.tsbuildinfo

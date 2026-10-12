@@ -59,6 +59,15 @@ class ContentFolderTest {
         }
     }
 
+    /** Kiểm tra chung cho mọi câu: có explanationVi, DICTATION không có options, answer khớp prompt. */
+    static void checkExercise(String prefix, ExerciseDef x, List<String> problems) {
+        if (x.explanationVi() == null || x.explanationVi().isBlank()) problems.add(prefix + x.code() + " thiếu explanationVi");
+        if ("DICTATION".equals(x.type()) && x.options() != null && !x.options().isEmpty()) {
+            problems.add(prefix + x.code() + " DICTATION không có options");
+        }
+        checkAnswerMatchesPrompt(prefix, x, problems);
+    }
+
     @Test
     void stageFileIsValid() throws IOException {
         assertThat(ContentValidator.validateStage(stage())).isEmpty();
@@ -124,13 +133,7 @@ class ContentFolderTest {
                         }
                         default -> { }
                     }
-                    for (ExerciseDef x : xs) {
-                        if (x.explanationVi() == null || x.explanationVi().isBlank()) problems.add(lp + x.code() + " thiếu explanationVi");
-                        if ("DICTATION".equals(x.type()) && x.options() != null && !x.options().isEmpty()) {
-                            problems.add(lp + x.code() + " DICTATION không có options");
-                        }
-                        checkAnswerMatchesPrompt(lp, x, problems);
-                    }
+                    for (ExerciseDef x : xs) checkExercise(lp, x, problems);
                 }
             }
             TestDef t = u.test();
@@ -142,10 +145,7 @@ class ContentFolderTest {
                 if (xs.size() < 12 || xs.size() > 15) problems.add(at + "test cần 12–15 câu");
                 if (!codes(xs).equals(expectedCodes(tc, xs.size()))) problems.add(at + "mã câu test phải là " + tc + "-E1..En");
                 if (xs.stream().noneMatch(x -> "DICTATION".equals(x.type()))) problems.add(at + "test cần ít nhất 1 câu DICTATION");
-                for (ExerciseDef x : xs) {
-                    if (x.explanationVi() == null || x.explanationVi().isBlank()) problems.add(at + x.code() + " thiếu explanationVi");
-                    checkAnswerMatchesPrompt(at, x, problems);
-                }
+                for (ExerciseDef x : xs) checkExercise(at, x, problems);
             }
         }
         assertThat(problems).isEmpty();
@@ -196,6 +196,8 @@ class ContentFolderTest {
         assertThat(t.code()).isEqualTo("S0-T");
         assertThat(t.passRatio()).isEqualTo(0.7);
         assertThat(codes(t.exercises())).isEqualTo(expectedCodes("S0-T", 30));
-        assertThat(t.exercises()).allSatisfy(x -> assertThat(x.explanationVi()).isNotBlank());
+        List<String> problems = new ArrayList<>();
+        for (ExerciseDef x : t.exercises()) checkExercise("stage.json: ", x, problems);
+        assertThat(problems).isEmpty();
     }
 }
