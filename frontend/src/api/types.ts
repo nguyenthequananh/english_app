@@ -2,7 +2,7 @@ export type Grade = 'AGAIN' | 'HARD' | 'GOOD' | 'EASY';
 export type Status = 'LOCKED' | 'ACTIVE' | 'DONE';
 export type WordStatus = 'NEW' | 'LEARNING' | 'KNOWN';
 export type SessionStep = 'REVIEW' | 'NEW' | 'LESSON' | 'DONE';
-export type ExerciseType = 'MCQ' | 'FILL' | 'MINIMAL_PAIR';
+export type ExerciseType = 'MCQ' | 'FILL' | 'MINIMAL_PAIR' | 'DICTATION';
 
 export interface Health { app: string; status: string; recoveredFrom: string | null; restoredFrom: string | null }
 

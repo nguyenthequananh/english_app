@@ -41,3 +41,27 @@ test('có kết quả thì hiện đúng/sai, đáp án, giải thích và khoá
   expect(screen.getByLabelText('Câu 2')).toBeDisabled();
   expect(screen.queryByRole('button', { name: 'Nộp bài' })).not.toBeInTheDocument();
 });
+
+test('DICTATION: không lộ câu, có nút nghe thường và nghe chậm, gõ rồi nộp', async () => {
+  const user = userEvent.setup();
+  const spoken = stubSpeech();
+  const onSubmit = vi.fn();
+  render(<ExerciseSet exercises={[{ code: 'D1', type: 'DICTATION', prompt: 'I live in Hanoi.', options: null }]}
+    onSubmit={onSubmit} />);
+  expect(document.body.innerHTML).not.toContain('I live in Hanoi');
+  await user.click(screen.getByRole('button', { name: 'Nghe câu' }));
+  await user.click(screen.getByRole('button', { name: 'Nghe chậm' }));
+  expect(spoken.map((s) => [s.text, s.rate])).toEqual([['I live in Hanoi.', 1], ['I live in Hanoi.', 0.7]]);
+  await user.type(screen.getByLabelText('Câu 1'), 'i live in hanoi');
+  await user.click(screen.getByRole('button', { name: 'Nộp bài' }));
+  expect(onSubmit).toHaveBeenCalledWith({ D1: 'i live in hanoi' });
+});
+
+test('DICTATION: sau khi chấm thì hiện câu đáp án', () => {
+  stubSpeech();
+  render(<ExerciseSet exercises={[{ code: 'D1', type: 'DICTATION', prompt: 'I live in Hanoi.', options: null }]}
+    onSubmit={() => undefined}
+    results={[{ code: 'D1', given: 'i live in hanoy', correct: false, answer: 'I live in Hanoi.', explanationVi: null }]} />);
+  expect(screen.getByText('✗ Sai — đáp án: I live in Hanoi.')).toBeInTheDocument();
+  expect(screen.getByLabelText('Câu 1')).toBeDisabled();
+});

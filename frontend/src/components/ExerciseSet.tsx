@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { ExerciseResult, ExerciseView } from '../api/types';
+import { speak } from '../speech/speech';
 import { SpeakButton } from './SpeakButton';
 
 interface Props {
@@ -44,10 +45,16 @@ function ExerciseItem({ index, exercise, value, onChange, result, disabled }: {
           <span>Nghe và chọn từ đúng:</span>
           <SpeakButton text={exercise.prompt} label="Nghe từ" />
         </div>
+      ) : exercise.type === 'DICTATION' ? (
+        <div className="flex flex-wrap items-center gap-2">
+          <span>Nghe và chép lại câu:</span>
+          <button type="button" className="btn btn-ghost" aria-label="Nghe câu" onClick={() => speak(exercise.prompt)}>🔊 Nghe câu</button>
+          <button type="button" className="btn btn-ghost" aria-label="Nghe chậm" onClick={() => speak(exercise.prompt, { rate: 0.7 })}>🐢 Nghe chậm</button>
+        </div>
       ) : (
         <p className="font-medium">{exercise.prompt}</p>
       )}
-      {exercise.type === 'FILL' ? (
+      {exercise.type === 'FILL' || exercise.type === 'DICTATION' ? (
         <input className="input mt-2" aria-label={`Câu ${index}`} value={value} disabled={disabled}
           onChange={(e) => onChange(e.target.value)} />
       ) : (
