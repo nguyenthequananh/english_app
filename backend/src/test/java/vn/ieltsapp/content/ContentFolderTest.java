@@ -49,6 +49,17 @@ class ContentFolderTest {
         return out;
     }
 
+    /** DICTATION: phương án đầu của answer = prompt; MINIMAL_PAIR: answer = prompt. */
+    static void checkAnswerMatchesPrompt(String prefix, ExerciseDef x, List<String> problems) {
+        String answer = Objects.toString(x.answer(), "");
+        if ("DICTATION".equals(x.type()) && !answer.split("\\|")[0].equals(x.prompt())) {
+            problems.add(prefix + x.code() + " DICTATION: phương án đầu của answer phải trùng prompt");
+        }
+        if ("MINIMAL_PAIR".equals(x.type()) && !answer.equals(x.prompt())) {
+            problems.add(prefix + x.code() + " MINIMAL_PAIR: answer phải trùng prompt");
+        }
+    }
+
     @Test
     void stageFileIsValid() throws IOException {
         assertThat(ContentValidator.validateStage(stage())).isEmpty();
@@ -67,8 +78,8 @@ class ContentFolderTest {
             ContentValidator.validateUnit(u, Set.of("S0")).forEach(e -> problems.add(at + e));
             if (!code.equals(u.code())) problems.add(at + "code phải là " + code);
             if (!Integer.valueOf(n).equals(u.order())) problems.add(at + "order phải là " + n);
-            if (u.words() == null || u.words().size() < 40 || u.words().size() > 50) {
-                problems.add(at + "cần 40–50 từ");
+            if (u.words() == null || u.words().size() < 40 || u.words().size() > 45) {
+                problems.add(at + "cần 40–45 từ");
             }
             for (WordDef w : u.words() == null ? List.<WordDef>of() : u.words()) {
                 String wp = at + "từ '" + w.headword() + "': ";
@@ -119,6 +130,7 @@ class ContentFolderTest {
                         if ("DICTATION".equals(x.type()) && x.options() != null && !x.options().isEmpty()) {
                             problems.add(lp + x.code() + " DICTATION không có options");
                         }
+                        checkAnswerMatchesPrompt(lp, x, problems);
                     }
                 }
             }
@@ -133,6 +145,7 @@ class ContentFolderTest {
                 if (xs.stream().noneMatch(x -> "DICTATION".equals(x.type()))) problems.add(at + "test cần ít nhất 1 câu DICTATION");
                 for (ExerciseDef x : xs) {
                     if (x.explanationVi() == null || x.explanationVi().isBlank()) problems.add(at + x.code() + " thiếu explanationVi");
+                    checkAnswerMatchesPrompt(at, x, problems);
                 }
             }
         }

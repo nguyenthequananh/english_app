@@ -51,6 +51,7 @@ Kiểm tra sau khi soạn (trong `backend/`): `./mvnw test -Dtest=ContentFolderT
 - Từ cần cho ngữ pháp nhưng đã có ở unit trước thì cứ dùng trong câu, không khai báo lại.
 - `pos` (chữ thường, tiếng Anh): noun, verb, adjective, adverb, pronoun, preposition, determiner, conjunction, exclamation, number, modal verb, phrase.
 - `ipaUs`/`ipaUk` có dấu `/…/`, trọng âm `ˈ`; US dùng /oʊ/, /ɝː/, /ɑː/ cho "hot"; UK dùng /əʊ/, /ɜː/, /ɒ/. Viết theo cách phát âm chuẩn của từ điển, không phỏng đoán.
+- Kiểu IPA theo `unit-01.json`: không chấm tách âm tiết (`/ˈtiːtʃər/`, không `/ˈtiː.tʃər/`); UK không có r cuối và không ghi `(r)` (`/ˈtiːtʃə/`); `ˈ` cho trọng âm chính, `ˌ` cho trọng âm phụ (`/ˌæftərˈnuːn/`).
 - `meaningVi` ngắn gọn, đúng nghĩa được dùng trong ví dụ; nhiều nghĩa thì ngăn bằng `; `.
 - `exampleEn` 5–12 từ, chỉ dùng từ A1–A2 và ngữ pháp đã học đến unit đó; `exampleVi` dịch tự nhiên.
 - Bối cảnh Việt Nam: tên người (Lan, Minh, Hoa, Nam…), địa danh (Hanoi, Da Nang, Hue…).
@@ -63,6 +64,7 @@ Kiểm tra sau khi soạn (trong `backend/`): `./mvnw test -Dtest=ContentFolderT
 - MINIMAL_PAIR: `prompt` là từ được đọc, `options` 2–3 từ dễ nhầm (thật, có nghĩa), `answer` = `prompt`. Đổi vị trí đáp án đúng giữa các câu.
 - MCQ phát âm (unit 9–24): ví dụ "Which word has stress on the first syllable?" hoặc "How is -ed pronounced in 'watched'?" với options `/t/`, `/d/`, `/ɪd/`.
 - MCQ: 3 lựa chọn (đôi khi 2 hoặc 4), đáp án đúng nằm ở vị trí khác nhau giữa các câu. FILL: dạng "They ___ (live) near the sea."; mọi cách viết đúng khai báo trong `answer` bằng `|` (ví dụ `don't like|do not like`).
+- FILL có *to be*, *have*, *will*, *do*… phải khai báo cả dạng viết tắt: `are|'re`, `is|'s`, `'m not|am not`, `isn't|is not|'s not`.
 
 ## DICTATION
 
