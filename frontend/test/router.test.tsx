@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import { renderRoute } from '@test/render';
 import { mockApi } from '@test/mock-api';
 import { stubSpeech } from '@test/speech-stub';
@@ -11,25 +11,35 @@ function signedIn(extra: Record<string, () => { body?: unknown; status?: number 
   mockApi({ 'GET /profiles/current': () => ({ body: profile }), 'GET /health': () => ({ body: health }), ...extra });
 }
 
-test('/profiles nằm ngoài khung app', () => {
+test('/profiles nằm ngoài khung app', async () => {
   mockApi({ 'GET /profiles': () => ({ body: [] }) });
   renderRoute('/profiles');
-  expect(screen.getByTestId('page-profiles')).toBeInTheDocument();
+  // Trang tải lười: đợi chunk về rồi mới có nội dung.
+  expect(await screen.findByTestId('page-profiles')).toBeInTheDocument();
   expect(screen.queryByRole('navigation')).not.toBeInTheDocument();
 });
 
-test.each(['/', '/roadmap', '/words', '/ipa', '/stats', '/settings'])('%s dùng AppShell có điều hướng', async (path) => {
+test.each([
+  ['/', 'page-today'], ['/roadmap', 'page-roadmap'], ['/words', 'page-words'], ['/ipa', 'page-ipa'],
+  ['/stats', 'page-stats'], ['/settings', 'page-settings'],
+])('%s dùng AppShell có điều hướng', async (path, pageId) => {
   signedIn();
   renderRoute(path);
-  expect(await screen.findByTestId('app-shell')).toBeInTheDocument();
+  // Shell nạp sẵn; trang tải lười hiện bên trong shell khi chunk về.
+  const shell = await screen.findByTestId('app-shell');
+  expect(await within(shell).findByTestId(pageId)).toBeInTheDocument();
   expect(screen.getAllByRole('navigation')).toHaveLength(1);
+  expect(screen.queryByTestId('page-pending')).not.toBeInTheDocument();
 });
 
 test.each(['/session', '/review', '/lessons/S0-U01-G1', '/units/S0-U01/test', '/stages/S0/test'])(
   '%s dùng FocusShell không có điều hướng', async (path) => {
     signedIn();
     renderRoute(path);
-    expect(await screen.findByTestId('focus-shell')).toBeInTheDocument();
+    const shell = await screen.findByTestId('focus-shell');
+    // Mỗi màn tập trung tự có TopBar: thấy TopBar nghĩa là chunk của trang đã về và đang render trong shell.
+    await waitFor(() => expect(shell.querySelector('[data-top-bar]')).not.toBeNull());
+    expect(screen.queryByTestId('page-pending')).not.toBeInTheDocument();
     expect(screen.queryByRole('navigation')).not.toBeInTheDocument();
   });
 

@@ -1,5 +1,4 @@
-import Markdown, { type Components } from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import { lazy, Suspense } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { endpoints } from '../api/endpoints';
 import { Badge } from './ui/badge';
@@ -13,17 +12,12 @@ import { ExerciseSet } from './exercise-set';
 import { QueryError } from './query-error';
 import { dayLabel, lessonSkill, lessonTypeLabel } from './labels';
 
-/**
- * Bảng Markdown bọc trong khung cuộn ngang: mỗi cột rộng tối thiểu ~120px nên trên điện thoại bảng nhiều cột
- * cuộn ngang thay vì đẩy tràn trang; màn rộng đủ chỗ thì chữ trong ô tự xuống dòng, không cần cuộn.
+/*
+ * react-markdown + remark-gfm (~150 kB) chỉ cần khi thật sự hiện lý thuyết, nên tách thành chunk riêng.
+ * Không import tĩnh ở đây: LessonView nằm trong SessionPage, mà Hôm nay import SessionPage (SESSION_KEY)
+ * — import tĩnh sẽ kéo cả bộ Markdown vào chunk đầu của app.
  */
-const MARKDOWN_COMPONENTS: Components = {
-  table: ({ node: _node, ...props }) => (
-    <div className="markdown-table -mx-1 my-4 overflow-x-auto overscroll-x-contain px-1 [scrollbar-width:thin]" tabIndex={0} role="region" aria-label="Bảng">
-      <table {...props} className="w-full border-collapse text-base [&_td]:min-w-[7.5rem] [&_th]:min-w-[7.5rem]" />
-    </div>
-  ),
-};
+const LessonMarkdown = lazy(() => import('./lesson-markdown'));
 
 /**
  * Lý thuyết (Markdown) + bài tập của một bài. Dùng ở trang Bài học và bước LESSON của buổi học.
@@ -74,7 +68,9 @@ export function LessonView({ code, onDone, doneLabel = 'Xong', showTitle = true 
       </header>
 
       <Card as="section" className="markdown px-5 py-5 text-prose sm:px-6 [&_h2:first-child]:mt-0 [&_h3]:mt-6 [&_h2]:mt-7 [&_h2]:mb-3 [&_li]:my-1 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_table_td]:border-t [&_table_td]:border-separator [&_table_td]:px-3 [&_table_td]:py-2 [&_table_td]:align-top [&_table_th]:bg-fill [&_table_th]:px-3 [&_table_th]:py-2 [&_table_th]:text-left [&_table_th]:font-semibold [&_table_th:first-child]:rounded-l-lg [&_table_th:last-child]:rounded-r-lg [&_del]:text-text-3 [&_hr]:my-6 [&_hr]:border-separator">
-        <Markdown remarkPlugins={[remarkGfm]} components={MARKDOWN_COMPONENTS}>{lesson.bodyMd}</Markdown>
+        <Suspense fallback={<MarkdownSkeleton />}>
+          <LessonMarkdown source={lesson.bodyMd} />
+        </Suspense>
       </Card>
 
       {!noExercises && (
@@ -141,6 +137,18 @@ function LessonSkeleton() {
         <Skeleton className="h-4 w-4/5" />
         <Skeleton className="mt-4 h-28 w-full" />
       </div>
+    </div>
+  );
+}
+
+function MarkdownSkeleton() {
+  return (
+    <div className="space-y-3">
+      <span className="sr-only" role="status">Đang tải nội dung bài…</span>
+      <Skeleton className="h-7 w-2/3" />
+      <Skeleton className="h-4 w-full" />
+      <Skeleton className="h-4 w-11/12" />
+      <Skeleton className="h-4 w-4/5" />
     </div>
   );
 }
