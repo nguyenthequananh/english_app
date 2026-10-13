@@ -1254,11 +1254,15 @@ Tạo `src/styles/tokens.css` với **đúng các tên biến dưới đây** (c
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-danger: var(--danger);
-  --radius-card: var(--radius-card);
-  --radius-control: var(--radius-control);
-  --font-sans: var(--font-sans);
-  --ease-out: var(--ease-out);
-  --ease-in-out: var(--ease-in-out);
+}
+
+/* Không đổi theo sáng/tối → khai giá trị thẳng trong @theme (KHÔNG viết `--x: var(--x)` trong @theme inline: tự tham chiếu, thành vòng lặp nếu bị đặt vào layer/:host). */
+@theme static {
+  --radius-card: 22px;
+  --radius-control: 14px;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 }
 ```
 
