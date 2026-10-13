@@ -176,7 +176,7 @@ Mọi màn có trạng thái đang tải (skeleton), lỗi (`QueryError`) và r�
 
 - Toàn bộ chữ giao diện tiếng Việt; nội dung học tiếng Anh.
 - Phím tắt flashcard và các bảo vệ hiện có (bỏ `e.repeat`, bỏ phím có Ctrl/Alt/Meta, `Space` không lật khi focus ở nút/link khác; ô gõ tắt spellcheck, `Enter` không nộp cả bài).
-- Các `data-testid` hiện có (`page-*`, `session-step` + `data-step`, `stat-streak`, `layout`…) giữ nguyên tên và ý nghĩa.
+- Các `data-testid` hiện có (`page-*`, `session-step` + `data-step`, `stat-streak`…); khung app dùng `app-shell` / `focus-shell` thay cho `layout` cũ (không test hay E2E nào dùng `layout`) giữ nguyên tên và ý nghĩa.
 - `speech.ts`, `dates.ts`, `ipa/ipaData.ts`, `api/types.ts` không đổi hành vi.
 - Không gọi `fetch`/axios trực tiếp trong trang; mọi request qua `endpoints`.
 
