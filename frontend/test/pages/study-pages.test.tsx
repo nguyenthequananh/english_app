@@ -173,10 +173,14 @@ test('buổi học: chấm thẻ gửi đúng từ và chuyển sang thẻ kế'
   renderRoutes('/session');
   expect(await screen.findByText('hello')).toBeInTheDocument();
   expect(screen.getByTestId('session-step')).toHaveAttribute('data-step', 'NEW');
+  // Thẻ đầu khi mở trang không giành focus
+  expect(screen.getByRole('button', { name: /Lật thẻ/ })).not.toHaveFocus();
   fireEvent.keyDown(window, { key: ' ', code: 'Space' });
   fireEvent.keyDown(window, { key: '3' });
   expect(await screen.findByText('book')).toBeInTheDocument();
   expect(calls.find((c) => c.method === 'POST')?.body).toEqual({ grade: 'GOOD' });
+  // Thẻ kế nhận lại focus (thẻ cũ cùng nút chấm vừa bị gỡ, không để focus rơi về <body>)
+  expect(screen.getByRole('button', { name: /Lật thẻ/ })).toHaveFocus();
 });
 
 test('buổi học: bị 409 CARD_MISMATCH thì tự tải lại buổi học', async () => {
@@ -309,8 +313,10 @@ test('ôn thêm: đếm thẻ còn lại trên thanh trên', async () => {
   renderRoutes('/review');
   await screen.findByText('hello');
   expect(screen.getByText('Còn 2 thẻ')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: /Lật thẻ/ })).not.toHaveFocus();
   fireEvent.keyDown(window, { key: ' ', code: 'Space' });
   fireEvent.keyDown(window, { key: '3' });
   expect(await screen.findByText('book')).toBeInTheDocument();
   expect(screen.getByText('Còn 1 thẻ')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: /Lật thẻ/ })).toHaveFocus();
 });

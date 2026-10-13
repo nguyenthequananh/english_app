@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { motion, MotionConfig } from 'motion/react';
 import { endpoints } from '../api/endpoints';
@@ -83,6 +84,8 @@ export default function SessionPage() {
   const queryClient = useQueryClient();
   const sessionQuery = useQuery({ queryKey: SESSION_KEY, queryFn: endpoints.sessionToday });
   const v = sessionQuery.data;
+  /* Đã chấm ít nhất một thẻ trong lần mở trang này: thẻ kế tiếp nhận lại focus (xem `focusOnMount`). */
+  const [graded, setGraded] = useState(false);
   const answer = useMutation({
     mutationFn: ({ wordId, grade }: { wordId: number; grade: Grade }) => endpoints.answerCard(wordId, grade),
     onSuccess: (next) => queryClient.setQueryData(SESSION_KEY, next),
@@ -128,8 +131,11 @@ export default function SessionPage() {
       <div data-testid="page-session" className="space-y-5 pt-1">
         <StepBar step={v.step} reviewsLeft={v.reviewsLeft} newLeft={v.newLeft} />
         {(v.step === 'REVIEW' || v.step === 'NEW') && card && (
-          <Flashcard key={`${card.id}-${v.cardsDone}`} word={card} busy={answer.isPending}
-            onGrade={(grade) => answer.mutate({ wordId: card.id, grade })} />
+          <Flashcard key={`${card.id}-${v.cardsDone}`} word={card} busy={answer.isPending} focusOnMount={graded}
+            onGrade={(grade) => {
+              setGraded(true);
+              answer.mutate({ wordId: card.id, grade });
+            }} />
         )}
         {v.step === 'LESSON' && v.lessonCode && (
           <LessonView key={v.lessonCode} code={v.lessonCode} doneLabel="Hoàn thành buổi học"

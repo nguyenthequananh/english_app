@@ -4,7 +4,7 @@ import type { Grade, Word } from '../types/api';
 import { Button } from './ui/button';
 import { cn } from './ui/cn';
 import { Kbd } from './ui/kbd';
-import { FADE, FADE_NEXT_CARD, SPRING } from './ui/motion';
+import { FADE, FADE_NEXT_CARD, SPRING_FLIP } from './ui/motion';
 import { SpeakButton } from './speak-button';
 
 const GRADES: { grade: Grade; label: string; tone: string; key: string }[] = [
@@ -69,7 +69,17 @@ function Face({ hidden, back = false, reduce, onClick, children }: {
   );
 }
 
-export function Flashcard({ word, onGrade, busy = false }: { word: Word; onGrade: (g: Grade) => void; busy?: boolean }) {
+/**
+ * `focusOnMount`: trang cha bật cho các thẻ hiện ra SAU một lần chấm — thẻ cũ (và nút chấm đang giữ focus) vừa bị
+ * gỡ khỏi DOM, focus rơi về <body>; thẻ mới nhận focus vào nút Lật thẻ để người dùng bàn phím/trình đọc màn hình
+ * đi tiếp tại chỗ. Thẻ đầu tiên khi mở trang không bật — không giành focus lúc tải trang.
+ */
+export function Flashcard({ word, onGrade, busy = false, focusOnMount = false }: {
+  word: Word;
+  onGrade: (g: Grade) => void;
+  busy?: boolean;
+  focusOnMount?: boolean;
+}) {
   const [flipped, setFlipped] = useState(false);
   // Mặt sau chỉ dựng từ lần lật đầu (trước đó nghĩa không có trong DOM), rồi giữ lại để lật ngược vẫn thấy nó quay đi.
   const [revealed, setRevealed] = useState(false);
@@ -90,6 +100,14 @@ export function Flashcard({ word, onGrade, busy = false }: { word: Word; onGrade
    * rơi về <body>. Focus vào chính NHÓM, không vào nút "Quên": nếu không, bấm Space định lật lại sẽ thành chấm
    * "Quên" vào lịch ôn. Tab từ nhóm đi tiếp vào nút đầu tiên; phím 1–4 vẫn chấm như cũ.
    */
+  /* Chỉ nhận focus khi nó đang thất lạc (ở <body>): người dùng đã chủ động focus chỗ khác thì không giật lại. */
+  useEffect(() => {
+    if (!focusOnMount) return;
+    const active = document.activeElement;
+    if (!active || active === document.body) flipRef.current?.focus({ preventScroll: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- chỉ lúc thẻ gắn vào
+  }, []);
+
   useEffect(() => {
     if (!userFlipped.current) return;
     (flipped ? gradesRef.current : flipRef.current)?.focus({ preventScroll: true });
@@ -124,7 +142,7 @@ export function Flashcard({ word, onGrade, busy = false }: { word: Word; onGrade
           // rotateY dạng SỐ (motion value có theo dõi vận tốc) + lò xo vật lý: chạm lần nữa giữa lúc đang lật thì
           // thẻ quay đầu mượt, giữ đà, không khựng lại. Lật là thao tác chạm ⇒ tới hạn, không nảy.
           animate={reduce ? undefined : { rotateY: flipped ? 180 : 0 }}
-          transition={SPRING}
+          transition={SPRING_FLIP}
           className="grid min-h-[clamp(18rem,calc(100dvh_-_16rem),34rem)] [transform-style:preserve-3d]"
         >
           <Face hidden={flipped} reduce={reduce} onClick={flipped ? undefined : toggle}>

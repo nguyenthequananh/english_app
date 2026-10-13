@@ -74,7 +74,8 @@ export default function ReviewPage() {
       {topBar}
       <div data-testid="page-review" className="space-y-5 pt-1">
         <ProgressBar value={index / cards.length} label="Tiến độ ôn thẻ" />
-        <Flashcard key={card.id} word={card} busy={review.isPending}
+        {/* Thẻ từ thứ hai trở đi hiện ra sau một lần chấm ⇒ nhận lại focus (index về 0 mỗi lần mở trang). */}
+        <Flashcard key={card.id} word={card} busy={review.isPending} focusOnMount={index > 0}
           onGrade={(grade) => review.mutate({ wordId: card.id, grade })} />
       </div>
     </>

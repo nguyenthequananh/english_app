@@ -124,3 +124,22 @@ test('lật xong focus về nhóm nút chấm (bàn phím đi tiếp vào nút c
   // Lật lại: focus về nút Lật thẻ (nút đang focus vừa biến mất)
   expect(screen.getByRole('button', { name: /Lật thẻ/ })).toHaveFocus();
 });
+
+test('focusOnMount: thẻ hiện ra sau một lần chấm nhận focus ở nút Lật thẻ, Space vẫn lật', () => {
+  stubSpeech();
+  render(<Flashcard word={word} onGrade={() => undefined} focusOnMount />);
+  const flipBtn = screen.getByRole('button', { name: /Lật thẻ/ });
+  expect(flipBtn).toHaveFocus();
+  fireEvent.keyDown(flipBtn, { key: ' ', code: 'Space' });
+  expect(screen.getByTestId('card-back')).toBeInTheDocument();
+});
+
+test('focusOnMount không giật focus khi người dùng đang focus chỗ khác', () => {
+  stubSpeech();
+  const outside = document.createElement('button');
+  document.body.append(outside);
+  outside.focus();
+  render(<Flashcard word={word} onGrade={() => undefined} focusOnMount />);
+  expect(outside).toHaveFocus();
+  outside.remove();
+});

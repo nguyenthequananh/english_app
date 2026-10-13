@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { appleSpring, DURATION, project, rubberband, SPRING, SPRING_SETTLE } from '@/components/ui/motion';
+import { appleSpring, DURATION, project, rubberband, SPRING, SPRING_FLIP, SPRING_SETTLE } from '@/components/ui/motion';
 
 test('lò xo khai theo damping ratio + response của Apple, quy ra vật lý (giữ vận tốc khi đổi đích)', () => {
   const s = appleSpring(0.8, 0.3);
@@ -12,6 +12,8 @@ test('lò xo khai theo damping ratio + response của Apple, quy ra vật lý (g
   expect(s).toEqual(SPRING_SETTLE);
   // Mặc định cho chạm/nhấn: tới hạn, không nảy
   expect(SPRING.damping / (2 * Math.sqrt(SPRING.stiffness))).toBeCloseTo(1, 6);
+  // Lật thẻ: tới hạn, response 0.3s
+  expect(SPRING_FLIP).toEqual(appleSpring(1, 0.3));
   // Không dùng tham số theo thời gian (motion 14 bỏ vận tốc thừa hưởng với chúng)
   expect(SPRING).not.toHaveProperty('bounce');
   expect(SPRING).not.toHaveProperty('visualDuration');

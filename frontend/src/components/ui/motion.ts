@@ -30,6 +30,8 @@ export const SPRING = appleSpring(1, 0.4);
 export const SPRING_EXIT = appleSpring(1, 0.3);
 /** Trả về chỗ cũ sau khi THẢ một cử chỉ kéo — chỉ ở đây mới nảy nhẹ (Apple "drawer/sheet" 0.8 / 0.3). */
 export const SPRING_SETTLE = appleSpring(0.8, 0.3);
+/** Lật thẻ ghi nhớ: thao tác chạm lặp liên tục trong buổi ôn ⇒ tới hạn, nhanh hơn `SPRING` một nhịp. */
+export const SPRING_FLIP = appleSpring(1, 0.3);
 
 /** Đường cong ease-out mạnh, trùng `--ease-out` trong tokens.css. */
 export const EASE_OUT = [0.23, 1, 0.32, 1] as const;
