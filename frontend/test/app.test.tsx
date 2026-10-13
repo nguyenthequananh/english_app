@@ -1,20 +1,21 @@
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
+import { render } from '@testing-library/react';
+import { createMemoryRouter } from 'react-router';
 import App from '@/app';
-import { renderAt } from '@test/render';
-import { mockApi } from '@test/mock-api';
+import { createQueryClient } from '@/config/query-client';
+import { routes } from '@/router';
+import { mockApi, problem } from '@test/mock-api';
 import { stubSpeech } from '@test/speech-stub';
 
-test('route /profiles hiển thị trang chọn hồ sơ', () => {
-  renderAt(<App />, '/profiles');
-  expect(screen.getByTestId('page-profiles')).toBeInTheDocument();
-});
-
-test('route lạ quay về trang chủ', async () => {
+test('PROFILE_REQUIRED ở bất kỳ request nào đưa về /profiles', async () => {
   stubSpeech();
   mockApi({
-    'GET /profiles/current': () => ({ body: { id: 1, name: 'Lan', avatar: null, hasPin: false, dailyMinutes: 30, voice: null, speechRate: 1 } }),
+    'GET /profiles/current': () => problem(401, 'PROFILE_REQUIRED', 'Chưa chọn hồ sơ'),
+    'GET /profiles': () => ({ body: [] }),
     'GET /health': () => ({ body: { app: 'ielts-app', status: 'UP', recoveredFrom: null, restoredFrom: null } }),
   });
-  renderAt(<App />, '/khong-co');
-  expect(await screen.findByTestId('layout')).toBeInTheDocument();
+  const router = createMemoryRouter(routes, { initialEntries: ['/stats'] });
+  render(<App router={router} queryClient={createQueryClient()} />);
+  await waitFor(() => expect(router.state.location.pathname).toBe('/profiles'));
+  expect(await screen.findByTestId('page-profiles')).toBeInTheDocument();
 });
