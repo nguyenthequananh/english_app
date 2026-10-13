@@ -150,7 +150,12 @@
   --radius-card: 22px;
   --radius-control: 14px;
   --radius-pill: 9999px;
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  /*
+   * Máy Apple: SF Pro của hệ điều hành (-apple-system/BlinkMacSystemFont, không nhúng file font Apple).
+   * Máy khác: "Inter Variable" đóng gói kèm (@fontsource-variable/inter, import ở main.tsx).
+   * Không thêm system-ui: trên Windows nó khớp Segoe UI trước Inter.
+   */
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter Variable", "Segoe UI", Roboto, sans-serif;
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 }
