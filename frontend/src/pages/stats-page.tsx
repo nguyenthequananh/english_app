@@ -1,57 +1,208 @@
+import type { ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { endpoints } from '../api/endpoints';
+import type { Roadmap, Stats, Summary } from '../types/api';
 import { Heatmap } from '../components/heatmap';
 import { KnownChart } from '../components/known-chart';
 import { QueryError } from '../components/query-error';
+import { PageHeader } from '../ui/page-header';
+import { Card } from '../ui/card';
+import { StatTile } from '../ui/stat-tile';
+import { ProgressRing } from '../ui/progress-ring';
+import { ProgressBar } from '../ui/progress-bar';
+import { ListGroup, ListRow } from '../ui/list-row';
+import { Badge } from '../ui/badge';
+import { EmptyState } from '../ui/empty-state';
+import { Skeleton } from '../ui/skeleton';
+import { Icon } from '../ui/icons';
+
+const num = new Intl.NumberFormat('vi-VN');
+
+function encouragement(stats: Stats | undefined) {
+  if (!stats) return 'Nhìn lại chặng đường bạn đã đi.';
+  if (stats.streak >= 7) return `${num.format(stats.streak)} ngày liên tiếp — phong độ rất tốt, giữ vững nhé!`;
+  if (stats.streak >= 2) return `Chuỗi ${stats.streak} ngày đang chạy — mai học tiếp để nối dài.`;
+  if (stats.streak === 1) return 'Hôm nay đã có một buổi. Mai học tiếp để bắt đầu chuỗi ngày.';
+  return 'Học một buổi hôm nay để bắt đầu chuỗi ngày mới.';
+}
+
+/** Tổng thời gian học dạng gọn "14g 30p" (đơn vị nhỏ hơn số) để vừa ô 1/3 bề ngang điện thoại; ≥10 giờ bỏ phút. */
+function StudyTime({ minutes }: { minutes: number }) {
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  const unit = 'ml-[1px] text-[0.8125rem] font-semibold tracking-normal text-text-2';
+  const full = h > 0 ? `${num.format(h)} giờ${m ? ` ${m} phút` : ''}` : `${m} phút`;
+  return (
+    <>
+      <span aria-hidden="true" className="whitespace-nowrap">
+        {h > 0 && <>{num.format(h)}<span className={unit}>g</span></>}
+        {(h === 0 || (h < 10 && m > 0)) && <>{h > 0 && ' '}{m}<span className={unit}>p</span></>}
+      </span>
+      <span className="sr-only">{full}</span>
+    </>
+  );
+}
+
+function formatDate(iso: string) {
+  const [y, m, d] = iso.slice(0, 10).split('-');
+  return `${d}/${m}/${y}`;
+}
+
+/** Thẻ tổng quan: chặng đang học (% unit đã xong) + unit hiện tại. Thiếu dữ liệu lộ trình thì không hiện. */
+function OverviewCard({ roadmap, summary }: { roadmap: Roadmap | undefined; summary: Summary | undefined }) {
+  if (!roadmap || roadmap.stages.length === 0) return null;
+  const stage = roadmap.stages.find((s) => s.status === 'ACTIVE');
+  if (!stage) {
+    const allDone = roadmap.stages.every((s) => s.status === 'DONE');
+    if (!allDone) return null;
+    return (
+      <Card className="flex items-center gap-4">
+        <span className="tone-success tone-chip inline-flex size-12 shrink-0 items-center justify-center rounded-full">
+          <Icon name="check" size={24} strokeWidth={2.4} />
+        </span>
+        <div className="min-w-0">
+          <p className="text-[1.0625rem] font-bold text-text">Đã xong toàn bộ lộ trình</p>
+          <p className="mt-0.5 text-[0.9375rem] text-text-2">{roadmap.stages.length} chặng đã hoàn thành.</p>
+        </div>
+      </Card>
+    );
+  }
+  const done = stage.units.filter((u) => u.status === 'DONE').length;
+  const total = stage.units.length;
+  const ratio = total ? done / total : 0;
+  const unit = summary?.currentUnit ?? null;
+  return (
+    <Card className="space-y-4">
+      <div className="flex items-center gap-4">
+        <ProgressRing value={ratio} size={84} label={`Hoàn thành chặng ${stage.title}`}>
+          <span className="text-[1.375rem] font-bold leading-none tracking-[-0.02em] tabular-nums text-text">
+            {Math.round(ratio * 100)}<span className="text-[0.75rem] font-semibold text-text-2">%</span>
+          </span>
+        </ProgressRing>
+        <div className="min-w-0 flex-1">
+          <p className="text-[0.8125rem] font-semibold text-accent-text">Chặng đang học · Band {stage.targetBand}</p>
+          <p className="mt-0.5 text-[1.1875rem] font-bold leading-snug tracking-[-0.015em] text-balance break-words text-text">{stage.title}</p>
+          <p className="mt-0.5 text-[0.875rem] tabular-nums text-text-2">{done}/{total} unit đã xong</p>
+        </div>
+      </div>
+      {unit && (
+        <div className="rounded-control bg-fill px-3.5 py-3">
+          <div className="flex items-baseline justify-between gap-3">
+            <p className="min-w-0 truncate text-[0.9375rem] font-semibold text-text">
+              <span className="font-normal text-text-2">Unit: </span>{unit.title}
+            </p>
+            <span className="shrink-0 text-[0.8125rem] tabular-nums text-text-2">{unit.lessonsDone}/{unit.lessonsTotal} bài</span>
+          </div>
+          <ProgressBar className="mt-2" value={unit.lessonsTotal ? unit.lessonsDone / unit.lessonsTotal : 0} label={`Tiến độ unit ${unit.title}`} />
+        </div>
+      )}
+    </Card>
+  );
+}
+
+function SectionTitle({ id, children, aside }: { id: string; children: string; aside?: ReactNode }) {
+  return (
+    <div className="mb-3 flex items-baseline justify-between gap-3">
+      <h2 id={id} className="text-[1.0625rem] font-bold tracking-[-0.01em] text-text">{children}</h2>
+      {aside}
+    </div>
+  );
+}
+
+function StatsSkeleton() {
+  return (
+    <div className="space-y-4" aria-busy="true">
+      <span className="sr-only">Đang tải…</span>
+      <Skeleton className="h-36 rounded-card" />
+      <div className="grid grid-cols-3 gap-2.5"><Skeleton className="h-28 rounded-card" /><Skeleton className="h-28 rounded-card" /><Skeleton className="h-28 rounded-card" /></div>
+      <Skeleton className="h-48 rounded-card" />
+    </div>
+  );
+}
 
 export default function StatsPage() {
   const statsQuery = useQuery({ queryKey: ['stats'], queryFn: endpoints.stats });
+  // Thẻ tổng quan dùng chung cache với Hôm nay/Lộ trình; lỗi thì chỉ ẩn thẻ (không chặn trang, không báo trùng).
+  const summaryQuery = useQuery({ queryKey: ['summary'], queryFn: endpoints.summary, meta: { silent: true } });
+  const roadmapQuery = useQuery({ queryKey: ['roadmap'], queryFn: endpoints.roadmap, meta: { silent: true } });
   const s = statsQuery.data;
-  if (statsQuery.error) return <QueryError error={statsQuery.error} onRetry={() => statsQuery.refetch()} />;
-  if (!s) return <p className="text-slate-500">Đang tải thống kê…</p>;
-  const tile = (testId: string, label: string, value: number) => (
-    <div className="card">
-      <p className="text-sm text-slate-500">{label}</p>
-      <p data-testid={testId} className="text-3xl font-bold">{value}</p>
-    </div>
-  );
+  const minutes = s ? s.heatmap.reduce((sum, d) => sum + d.minutes, 0) : 0;
+
   return (
-    <div data-testid="page-stats" className="space-y-4">
-      <h1 className="text-2xl font-bold">Thống kê</h1>
-      <div className="grid gap-4 sm:grid-cols-3">
-        {tile('stat-streak', 'Chuỗi ngày học', s.streak)}
-        {tile('stat-known', 'Từ đã thuộc', s.knownWords)}
-        {tile('stat-learning', 'Từ đang học', s.learningWords)}
-      </div>
-      <section className="card space-y-2">
-        <h2 className="font-semibold">Lịch học</h2>
-        <Heatmap days={s.heatmap} />
-      </section>
-      <section className="card space-y-2">
-        <h2 className="font-semibold">Số từ đã thuộc theo tuần</h2>
-        <KnownChart points={s.knownByWeek} />
-      </section>
-      <section className="card space-y-2">
-        <h2 className="font-semibold">Kết quả bài kiểm tra</h2>
-        {s.tests.length === 0 ? <p className="text-sm text-slate-500">Chưa làm bài kiểm tra nào.</p> : (
-          <table className="w-full text-sm">
-            <thead className="text-left text-slate-500">
-              <tr><th className="p-1">Bài</th><th className="p-1">Loại</th><th className="p-1">Điểm</th><th className="p-1">Kết quả</th><th className="p-1">Ngày</th></tr>
-            </thead>
-            <tbody>
-              {s.tests.map((t) => (
-                <tr key={`${t.testCode}-${t.takenAt}`} className="border-t border-slate-100">
-                  <td className="p-1">{t.testCode}</td>
-                  <td className="p-1">{t.kind === 'UNIT' ? 'Unit' : 'Chặng'}</td>
-                  <td className="p-1">{Math.round(t.score * 100)}%</td>
-                  <td className="p-1">{t.passed ? '✓' : '✗'}</td>
-                  <td className="p-1">{t.takenAt.slice(0, 10)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </section>
+    <div data-testid="page-stats">
+      <PageHeader title="Tiến độ" subtitle={encouragement(s)} />
+      {statsQuery.error ? (
+        <QueryError error={statsQuery.error} onRetry={() => statsQuery.refetch()} />
+      ) : !s ? (
+        <StatsSkeleton />
+      ) : (
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:items-start lg:gap-5">
+          <div className="min-w-0 space-y-4 lg:space-y-5">
+            {roadmapQuery.isPending ? <Skeleton className="h-36 rounded-card" /> : <OverviewCard roadmap={roadmapQuery.data} summary={summaryQuery.data} />}
+            <div className="grid grid-cols-3 gap-2.5 sm:gap-3">
+              <StatTile icon="flame" tone="warning" value={num.format(s.streak)} label="Chuỗi ngày" testId="stat-streak" />
+              <StatTile icon="clock" value={<StudyTime minutes={minutes} />} label="Giờ học" />
+              <StatTile icon="star" value={num.format(s.heatmap.length)} label="Buổi đã xong" />
+            </div>
+            <Card as="section" aria-labelledby="stats-heatmap">
+              <SectionTitle id="stats-heatmap" aside={<span className="text-[0.8125rem] text-text-3">26 tuần gần nhất</span>}>Lịch học</SectionTitle>
+              <Heatmap days={s.heatmap} />
+            </Card>
+          </div>
+
+          <div className="min-w-0 space-y-4 lg:space-y-5">
+            <Card as="section" aria-labelledby="stats-known">
+              <SectionTitle id="stats-known">Từ vựng</SectionTitle>
+              <div className="mb-4 flex gap-6">
+                <div>
+                  <p className="text-[1.75rem] font-bold leading-none tracking-[-0.02em] tabular-nums text-text">
+                    <span data-testid="stat-known">{num.format(s.knownWords)}</span>
+                  </p>
+                  <p className="mt-1.5 flex items-center gap-1.5 text-[0.8125rem] text-text-2">
+                    <span aria-hidden="true" className="size-2 rounded-full bg-accent" />Đã thuộc
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[1.75rem] font-bold leading-none tracking-[-0.02em] tabular-nums text-text-2">
+                    <span data-testid="stat-learning">{num.format(s.learningWords)}</span>
+                  </p>
+                  <p className="mt-1.5 flex items-center gap-1.5 text-[0.8125rem] text-text-2">
+                    <span aria-hidden="true" className="size-2 rounded-full bg-fill-strong" />Đang học
+                  </p>
+                </div>
+              </div>
+              <KnownChart points={s.knownByWeek} />
+            </Card>
+
+            {s.tests.length === 0 ? (
+              <ListGroup title="Bài kiểm tra">
+                <li><EmptyState icon="star" title="Chưa làm bài kiểm tra nào" description="Xong một unit là có bài kiểm tra để đo mức nắm bài." /></li>
+              </ListGroup>
+            ) : (
+              <ListGroup title="Bài kiểm tra">
+                {s.tests.map((t) => (
+                  <ListRow
+                    key={`${t.testCode}-${t.takenAt}`}
+                    leading={
+                      <span className={`${t.passed ? 'tone-success' : 'tone-danger'} inline-flex size-8 items-center justify-center rounded-full bg-[var(--tone-soft)] text-[var(--tone-text)]`}>
+                        <Icon name={t.passed ? 'check' : 'cross'} size={16} strokeWidth={2.6} />
+                      </span>
+                    }
+                    title={t.testCode}
+                    subtitle={`${t.kind === 'UNIT' ? 'Kiểm tra unit' : 'Kiểm tra chặng'} · ${formatDate(t.takenAt)}`}
+                    trailing={
+                      <>
+                        <span className="text-[1rem] font-semibold tabular-nums text-text">{Math.round(t.score * 100)}%</span>
+                        <Badge tone={t.passed ? 'success' : 'danger'} className="max-sm:sr-only">{t.passed ? 'Đạt' : 'Chưa đạt'}</Badge>
+                      </>
+                    }
+                  />
+                ))}
+              </ListGroup>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

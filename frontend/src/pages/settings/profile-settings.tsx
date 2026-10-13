@@ -1,46 +1,43 @@
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { endpoints } from '../../api/endpoints';
 import type { Profile } from '../../types/api';
 import { AvatarPicker } from '../../components/avatar-picker';
-import { QueryError } from '../../components/query-error';
-import { toast } from '../../components/toaster';
-import { configureSpeech, speak, useEnglishVoices } from '../../speech/speech';
+import { ButtonLink, Button } from '../../ui/button';
+import { Card } from '../../ui/card';
+import { ListGroup, ListRow } from '../../ui/list-row';
+import { Sheet } from '../../ui/sheet';
+import { ConfirmDialog } from '../../ui/dialog';
+import { TextField } from '../../ui/text-field';
+import { Switch } from '../../ui/switch';
+import { IconChip } from './settings-rows';
+import { useSaveProfile } from './use-save-profile';
 
-export function ProfileSettings() {
-  const profileQuery = useQuery({ queryKey: ['profile', 'current'], queryFn: endpoints.currentProfile });
-  const profile = profileQuery.data;
-  if (profileQuery.error) return <QueryError error={profileQuery.error} onRetry={() => profileQuery.refetch()} />;
-  if (!profile) return null;
-  return <ProfileForm key={profile.id} profile={profile} />;
+/** Thẻ đầu trang Cá nhân: avatar lớn, tên, số phút/ngày + "Đổi hồ sơ". */
+export function ProfileCard({ profile }: { profile: Profile }) {
+  return (
+    <Card className="flex items-center gap-4">
+      <span aria-hidden="true" className="inline-flex size-16 shrink-0 items-center justify-center rounded-full bg-accent-soft text-[2.125rem] leading-none font-semibold text-accent-text">
+        {profile.avatar || profile.name.charAt(0).toUpperCase() || '?'}
+      </span>
+      <div className="min-w-0 flex-1">
+        <p className="line-clamp-2 text-[1.25rem] leading-tight font-bold tracking-[-0.015em] break-words text-text" title={profile.name}>{profile.name}</p>
+        <p className="mt-0.5 text-[0.875rem] tabular-nums text-text-2">
+          {profile.dailyMinutes} phút mỗi ngày{profile.hasPin ? ' · Có mã PIN' : ''}
+        </p>
+      </div>
+      <ButtonLink to="/profiles?manual=1" variant="secondary" size="sm">Đổi hồ sơ</ButtonLink>
+    </Card>
+  );
 }
 
-function ProfileForm({ profile }: { profile: Profile }) {
+/** Nhóm "Hồ sơ": sửa thông tin trong Sheet, xoá hồ sơ qua hộp xác nhận. */
+export function ProfileSettings({ profile }: { profile: Profile }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { voices } = useEnglishVoices();
-  const [name, setName] = useState(profile.name);
-  const [avatar, setAvatar] = useState(profile.avatar ?? '');
-  const [dailyMinutes, setDailyMinutes] = useState(profile.dailyMinutes);
-  const [voice, setVoice] = useState(profile.voice ?? '');
-  const [speechRate, setSpeechRate] = useState(profile.speechRate);
-  const [pin, setPin] = useState('');
-  const [removePin, setRemovePin] = useState(false);
-
-  const save = useMutation({
-    mutationFn: () => endpoints.updateProfile({
-      name: name.trim(), avatar: avatar || undefined, dailyMinutes, voice, speechRate,
-      pin: !removePin && pin ? pin : undefined, removePin: removePin || undefined,
-    }),
-    onSuccess: (updated) => {
-      queryClient.setQueryData(['profile', 'current'], updated);
-      configureSpeech({ voice: updated.voice, rate: updated.speechRate });
-      setPin('');
-      setRemovePin(false);
-      toast('Đã lưu hồ sơ');
-    },
-  });
+  const [editing, setEditing] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const remove = useMutation({
     mutationFn: endpoints.deleteProfile,
     onSuccess: () => {
@@ -50,65 +47,92 @@ function ProfileForm({ profile }: { profile: Profile }) {
   });
 
   return (
-    <section className="card space-y-4">
-      <h2 className="text-lg font-semibold">Hồ sơ</h2>
-      <form className="grid gap-4 sm:grid-cols-2"
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (name.trim()) save.mutate();
-        }}>
-        <div>
-          <label htmlFor="p-name" className="mb-1 block text-sm font-medium">Tên hồ sơ</label>
-          <input id="p-name" className="input" required maxLength={30} value={name} onChange={(e) => setName(e.target.value)} />
-        </div>
-        <div>
-          <label htmlFor="p-minutes" className="mb-1 block text-sm font-medium">Số phút mỗi ngày</label>
-          <input id="p-minutes" className="input" type="number" min={10} max={240} value={dailyMinutes}
-            onChange={(e) => setDailyMinutes(Number(e.target.value))} />
-        </div>
-        <div className="sm:col-span-2">
-          <span className="mb-1 block text-sm font-medium">Avatar</span>
-          <AvatarPicker value={avatar} onChange={setAvatar} />
-        </div>
-        <div>
-          <label htmlFor="p-voice" className="mb-1 block text-sm font-medium">Giọng đọc</label>
-          <select id="p-voice" className="input" value={voice} onChange={(e) => setVoice(e.target.value)}>
-            <option value="">Tự chọn (Anh-Mỹ)</option>
-            {voices.map((v) => <option key={v.name} value={v.name}>{v.name} ({v.lang})</option>)}
-          </select>
-        </div>
-        <div>
-          <label htmlFor="p-rate" className="mb-1 block text-sm font-medium">Tốc độ đọc ({speechRate.toFixed(1)}×)</label>
-          <div className="flex items-center gap-2">
-            <input id="p-rate" type="range" min={0.5} max={2} step={0.1} value={speechRate} className="flex-1"
-              onChange={(e) => setSpeechRate(Number(e.target.value))} />
-            <button type="button" className="btn bg-slate-100"
-              onClick={() => speak('Hello, welcome to your English lesson.', { voice: voice || null, rate: speechRate })}>
-              Nghe thử
-            </button>
-          </div>
-        </div>
-        <div>
-          <label htmlFor="p-pin" className="mb-1 block text-sm font-medium">Mã PIN mới</label>
-          <input id="p-pin" className="input" type="password" inputMode="numeric" pattern="\d{4,6}" title="4–6 chữ số"
-            disabled={removePin} value={pin} onChange={(e) => setPin(e.target.value)} />
-        </div>
-        {profile.hasPin && (
-          <label className="flex items-center gap-2 self-end text-sm">
-            <input type="checkbox" checked={removePin} onChange={(e) => setRemovePin(e.target.checked)} />
-            Bỏ mã PIN
-          </label>
-        )}
-        <div className="flex gap-2 sm:col-span-2">
-          <button type="submit" className="btn btn-primary" disabled={save.isPending}>Lưu hồ sơ</button>
-          <button type="button" className="btn btn-danger ml-auto" disabled={remove.isPending}
-            onClick={() => {
-              if (window.confirm(`Xoá hồ sơ "${profile.name}" và toàn bộ tiến độ? Không thể hoàn tác.`)) remove.mutate();
-            }}>
-            Xoá hồ sơ
-          </button>
-        </div>
-      </form>
-    </section>
+    <>
+      <ListGroup title="Hồ sơ">
+        <ListRow
+          leading={<IconChip icon="person" />}
+          title="Sửa hồ sơ"
+          subtitle="Tên, avatar, mã PIN, số phút mỗi ngày"
+          chevron
+          onClick={() => setEditing(true)}
+        />
+        <ListRow
+          leading={<IconChip icon="close" tone="danger" />}
+          title={<span className="font-medium text-danger-text">{remove.isPending ? 'Đang xoá hồ sơ…' : 'Xoá hồ sơ'}</span>}
+          onClick={() => { if (!remove.isPending) setConfirmDelete(true); }}
+        />
+      </ListGroup>
+
+      <Sheet open={editing} onOpenChange={setEditing} title="Sửa hồ sơ">
+        <ProfileForm profile={profile} onSaved={() => setEditing(false)} />
+      </Sheet>
+
+      <ConfirmDialog
+        open={confirmDelete}
+        onOpenChange={setConfirmDelete}
+        title={`Xoá hồ sơ "${profile.name}" và toàn bộ tiến độ?`}
+        description="Không thể hoàn tác."
+        confirmLabel="Xoá hồ sơ"
+        destructive
+        onConfirm={() => remove.mutate()}
+      />
+    </>
+  );
+}
+
+function ProfileForm({ profile, onSaved }: { profile: Profile; onSaved: () => void }) {
+  const [name, setName] = useState(profile.name);
+  const [avatar, setAvatar] = useState(profile.avatar ?? '');
+  const [dailyMinutes, setDailyMinutes] = useState(profile.dailyMinutes);
+  const [pin, setPin] = useState('');
+  const [removePin, setRemovePin] = useState(false);
+  const save = useSaveProfile(profile, { message: 'Đã lưu hồ sơ', onSaved });
+
+  function submit(e: FormEvent) {
+    e.preventDefault();
+    if (!name.trim()) return;
+    save.mutate({
+      name: name.trim(),
+      avatar: avatar || undefined,
+      dailyMinutes,
+      pin: !removePin && pin ? pin : undefined,
+      removePin: removePin || undefined,
+    });
+  }
+
+  return (
+    <form className="space-y-5" onSubmit={submit}>
+      <TextField label="Tên hồ sơ" required maxLength={30} autoComplete="off" value={name} onChange={(e) => setName(e.target.value)} />
+      <fieldset>
+        <legend className="mb-2 px-1 text-[0.875rem] font-semibold text-text-2">Avatar</legend>
+        <AvatarPicker value={avatar} onChange={setAvatar} />
+      </fieldset>
+      <TextField
+        label="Số phút mỗi ngày"
+        type="number"
+        inputMode="numeric"
+        min={10}
+        max={240}
+        hint="Từ 10 đến 240 phút."
+        value={dailyMinutes}
+        onChange={(e) => setDailyMinutes(Number(e.target.value))}
+      />
+      <div className="space-y-2">
+        <TextField
+          label={profile.hasPin ? 'Mã PIN mới' : 'Đặt mã PIN'}
+          type="password"
+          inputMode="numeric"
+          autoComplete="new-password"
+          pattern="\d{4,6}"
+          title="4–6 chữ số"
+          hint="4–6 chữ số. Để trống nếu không đổi."
+          disabled={removePin}
+          value={pin}
+          onChange={(e) => setPin(e.target.value)}
+        />
+        {profile.hasPin && <Switch label="Bỏ mã PIN" checked={removePin} onCheckedChange={setRemovePin} className="px-1" />}
+      </div>
+      <Button type="submit" block size="lg" loading={save.isPending}>Lưu hồ sơ</Button>
+    </form>
   );
 }

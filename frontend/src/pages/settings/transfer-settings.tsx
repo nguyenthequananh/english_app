@@ -2,7 +2,10 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { downloads, endpoints } from '../../api/endpoints';
 import { ApiError } from '../../api/api-error';
 import { notifyError, toast } from '../../components/toaster';
+import { ListGroup } from '../../ui/list-row';
+import { DownloadRow, FileRow, IconChip } from './settings-rows';
 
+/** Nhóm "Chuyển hồ sơ": xuất hồ sơ hiện tại ra JSON, nhập hồ sơ từ file. */
 export function TransferSettings() {
   const queryClient = useQueryClient();
   const importProfile = useMutation({
@@ -26,21 +29,16 @@ export function TransferSettings() {
     meta: { silent: true },
   });
   return (
-    <section className="card space-y-3">
-      <h2 className="text-lg font-semibold">Xuất / nhập hồ sơ</h2>
-      <p className="text-sm text-slate-500">Dùng để chuyển một hồ sơ sang máy khác. File có chứa mã PIN đã mã hoá, hãy giữ kín.</p>
-      <div className="flex flex-wrap items-center gap-3">
-        <a className="btn bg-slate-100" href={downloads.profileExport} download>Xuất hồ sơ (JSON)</a>
-        <label className="btn bg-slate-100 cursor-pointer">
-          Nhập hồ sơ từ file
-          <input type="file" accept=".json,application/json" className="sr-only" aria-label="Nhập hồ sơ từ file"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) importProfile.mutate(file);
-              e.target.value = '';
-            }} />
-        </label>
-      </div>
-    </section>
+    <ListGroup title="Chuyển hồ sơ" footer="Dùng để chuyển một hồ sơ sang máy khác. File có chứa mã PIN đã mã hoá, hãy giữ kín.">
+      <DownloadRow href={downloads.profileExport} leading={<IconChip icon="download" tone="listening" />} title="Xuất hồ sơ (JSON)" />
+      <FileRow
+        leading={<IconChip icon="upload" tone="listening" />}
+        title="Nhập hồ sơ từ file"
+        inputLabel="Nhập hồ sơ từ file"
+        accept=".json,application/json"
+        busy={importProfile.isPending}
+        onFiles={([file]) => importProfile.mutate(file)}
+      />
+    </ListGroup>
   );
 }

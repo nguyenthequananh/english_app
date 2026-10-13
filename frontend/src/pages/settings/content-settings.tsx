@@ -1,6 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { endpoints } from '../../api/endpoints';
+import { ListGroup } from '../../ui/list-row';
+import { Badge } from '../../ui/badge';
+import { Icon } from '../../ui/icons';
+import { FileRow, GroupItem, IconChip } from './settings-rows';
 
+/** Nhóm "Nội dung": nhập thêm file bài học (.json), hiện kết quả từng file. */
 export function ContentSettings() {
   const queryClient = useQueryClient();
   const importContent = useMutation({
@@ -8,27 +13,37 @@ export function ContentSettings() {
     onSuccess: () => queryClient.invalidateQueries(),
   });
   return (
-    <section className="card space-y-3">
-      <h2 className="text-lg font-semibold">Nội dung học</h2>
-      <p className="text-sm text-slate-500">Nhập thêm file nội dung (.json) theo mẫu trong thư mục content/.</p>
-      <input type="file" multiple accept=".json,application/json" aria-label="Chọn file nội dung (.json)"
-        onChange={(e) => {
-          const files = Array.from(e.target.files ?? []);
-          if (files.length) importContent.mutate(files);
-          e.target.value = '';
-        }} />
-      {importContent.data && (
-        <ul className="space-y-2 text-sm">
-          {importContent.data.map((r) => (
-            <li key={r.file} className={r.ok ? 'text-emerald-700' : 'text-rose-700'}>
-              {r.ok ? '✓' : '✗'} {r.file}
+    <ListGroup title="Nội dung" footer="Thêm bài học theo mẫu trong thư mục content/ của app.">
+      <FileRow
+        leading={<IconChip icon="book" tone="grammar" />}
+        title="Nhập file nội dung"
+        subtitle="Một hoặc nhiều file .json"
+        inputLabel="Chọn file nội dung (.json)"
+        accept=".json,application/json"
+        multiple
+        busy={importContent.isPending}
+        onFiles={(files) => importContent.mutate(files)}
+      />
+      {importContent.data?.map((r) => (
+        <GroupItem key={r.file}>
+          <div className="flex items-start gap-3">
+            <span className={`${r.ok ? 'tone-success' : 'tone-danger'} mt-0.5 inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-[var(--tone-soft)] text-[var(--tone-text)]`}>
+              <Icon name={r.ok ? 'check' : 'cross'} size={14} strokeWidth={2.8} />
+            </span>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center justify-between gap-2">
+                <span className="min-w-0 text-[0.9375rem] font-medium break-all text-text">{r.file}</span>
+                <Badge tone={r.ok ? 'success' : 'danger'}>{r.ok ? 'Đã nhập' : 'Lỗi'}</Badge>
+              </div>
               {r.errors.length > 0 && (
-                <ul className="ml-6 list-disc text-slate-700">{r.errors.map((err) => <li key={err}>{err}</li>)}</ul>
+                <ul className="mt-1.5 space-y-1 text-[0.8125rem] leading-snug break-words text-text-2">
+                  {r.errors.map((err) => <li key={err}>{err}</li>)}
+                </ul>
               )}
-            </li>
-          ))}
-        </ul>
-      )}
-    </section>
+            </div>
+          </div>
+        </GroupItem>
+      ))}
+    </ListGroup>
   );
 }

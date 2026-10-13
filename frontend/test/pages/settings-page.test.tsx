@@ -32,22 +32,27 @@ test('lưu hồ sơ gửi các trường đã sửa và bỏ PIN', async () => {
   stubSpeech();
   const calls = mockApi({ ...base, 'PUT /profiles/current': (body) => ({ body: { ...profile, ...(body as object), hasPin: false } }) });
   renderSettings();
-  const name = await screen.findByLabelText('Tên hồ sơ');
+  await user.click(await screen.findByRole('button', { name: /Sửa hồ sơ/ }));
+  const sheet = await screen.findByRole('dialog', { name: 'Sửa hồ sơ' });
+  const name = within(sheet).getByLabelText('Tên hồ sơ');
   await user.clear(name);
   await user.type(name, 'Lan Anh');
-  await user.click(screen.getByLabelText('Bỏ mã PIN'));
-  await user.click(screen.getByRole('button', { name: 'Lưu hồ sơ' }));
+  await user.click(within(sheet).getByRole('switch', { name: 'Bỏ mã PIN' }));
+  await user.click(within(sheet).getByRole('button', { name: 'Lưu hồ sơ' }));
   await screen.findByText('Đã lưu hồ sơ');
+  await waitFor(() => expect(screen.queryByRole('dialog', { name: 'Sửa hồ sơ' })).not.toBeInTheDocument());
   expect(calls.find((c) => c.method === 'PUT')?.body).toMatchObject({ name: 'Lan Anh', removePin: true, dailyMinutes: 30, speechRate: 1 });
 });
 
 test('xoá hồ sơ sau khi xác nhận thì về trang chọn hồ sơ', async () => {
   const user = userEvent.setup();
   stubSpeech();
-  vi.spyOn(window, 'confirm').mockReturnValue(true);
   const calls = mockApi({ ...base, 'DELETE /profiles/current': () => ({ status: 204 }) });
   renderSettings();
   await user.click(await screen.findByRole('button', { name: 'Xoá hồ sơ' }));
+  const confirm = await screen.findByRole('alertdialog', { name: 'Xoá hồ sơ "Lan" và toàn bộ tiến độ?' });
+  expect(calls.some((c) => c.method === 'DELETE')).toBe(false);
+  await user.click(within(confirm).getByRole('button', { name: 'Xoá hồ sơ' }));
   expect(await screen.findByText('TRANG CHỌN HỒ SƠ')).toBeInTheDocument();
   expect(calls.some((c) => c.method === 'DELETE')).toBe(true);
 });
@@ -66,7 +71,8 @@ test('nhập file nội dung hiện kết quả từng file', async () => {
     new File(['{}'], 'unit-03.json', { type: 'application/json' }),
   ]);
   expect(await screen.findByText('lessons[0].day: phải là MON..SAT')).toBeInTheDocument();
-  expect(screen.getByText(/✓ unit-02.json/)).toBeInTheDocument();
+  expect(within(screen.getByText('unit-02.json').closest('li')!).getByText('Đã nhập')).toBeInTheDocument();
+  expect(within(screen.getByText('unit-03.json').closest('li')!).getByText('Lỗi')).toBeInTheDocument();
 });
 
 test('nhập hồ sơ từ file JSON', async () => {
@@ -83,14 +89,16 @@ test('nhập hồ sơ từ file JSON', async () => {
 test('khôi phục bản sao lưu rồi tắt app', async () => {
   const user = userEvent.setup();
   stubSpeech();
-  vi.spyOn(window, 'confirm').mockReturnValue(true);
-  mockApi({
+  const calls = mockApi({
     ...base,
     'POST /backups/ielts-20261006-090000-auto.db/restore': () => ({ body: { message: 'Đã lên lịch khôi phục. Hãy tắt app (nút Tắt app) rồi mở lại để hoàn tất.' } }),
     'POST /app/shutdown': () => ({ status: 202, body: { message: 'Đang tắt app...' } }),
   });
   renderSettings();
   await user.click(await screen.findByRole('button', { name: 'Khôi phục ielts-20261006-090000-auto.db' }));
+  const ask = await screen.findByRole('alertdialog', { name: 'Khôi phục dữ liệu về bản ielts-20261006-090000-auto.db?' });
+  expect(calls.some((c) => c.path.endsWith('/restore'))).toBe(false);
+  await user.click(within(ask).getByRole('button', { name: 'Khôi phục' }));
   expect(await screen.findByText(/Đã lên lịch khôi phục/)).toBeInTheDocument();
   await user.click(screen.getAllByRole('button', { name: 'Tắt app' })[0]);
   const confirm = await screen.findByRole('alertdialog', { name: 'Tắt app?' });
@@ -108,9 +116,32 @@ test('chọn lại giọng tự động gửi voice rỗng', async () => {
     'PUT /profiles/current': (body) => ({ body: { ...withVoice, ...(body as object), voice: null } }),
   });
   renderSettings();
-  const select = await screen.findByLabelText('Giọng đọc');
+  const select = await screen.findByRole('combobox', { name: 'Giọng đọc' });
+  expect(screen.getByRole('button', { name: 'Lưu giọng đọc' })).toBeDisabled();
   await user.selectOptions(select, '');
-  await user.click(screen.getByRole('button', { name: 'Lưu hồ sơ' }));
+  await user.click(screen.getByRole('button', { name: 'Lưu giọng đọc' }));
   await waitFor(() => expect(calls.some((c) => c.method === 'PUT')).toBe(true));
   expect(calls.find((c) => c.method === 'PUT')?.body).toHaveProperty('voice', '');
+});
+
+test('huỷ ở hộp xác nhận thì không xoá hồ sơ', async () => {
+  const user = userEvent.setup();
+  stubSpeech();
+  const calls = mockApi(base);
+  renderSettings();
+  await user.click(await screen.findByRole('button', { name: 'Xoá hồ sơ' }));
+  const confirm = await screen.findByRole('alertdialog');
+  await user.click(within(confirm).getByRole('button', { name: 'Huỷ' }));
+  await waitFor(() => expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument());
+  expect(calls.some((c) => c.method === 'DELETE')).toBe(false);
+  expect(screen.queryByText('TRANG CHỌN HỒ SƠ')).not.toBeInTheDocument();
+});
+
+test('thẻ hồ sơ có nút Đổi hồ sơ trỏ về trang chọn hồ sơ (không tự vào)', async () => {
+  stubSpeech();
+  mockApi(base);
+  renderSettings();
+  const page = await screen.findByTestId('page-settings');
+  expect(await within(page).findByRole('link', { name: 'Đổi hồ sơ' })).toHaveAttribute('href', '/profiles?manual=1');
+  expect(within(page).getByText('30 phút mỗi ngày · Có mã PIN')).toBeInTheDocument();
 });

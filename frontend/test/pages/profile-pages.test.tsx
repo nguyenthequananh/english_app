@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Route, Routes } from 'react-router';
 import ProfileSelectPage from '@/pages/profile-select-page';
@@ -39,6 +39,7 @@ test('bấm Đổi hồ sơ (?manual=1) thì không tự vào', async () => {
   const calls = mockApi({ 'GET /profiles': () => ({ body: [lan] }) });
   renderPages('/profiles?manual=1');
   expect(await screen.findByRole('button', { name: /Lan/ })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Thêm hồ sơ' })).toHaveAttribute('href', '/profiles/new');
   await new Promise((r) => setTimeout(r, 50));
   expect(calls.some((c) => c.method === 'POST')).toBe(false);
   expect(screen.queryByText('TRANG CHỦ')).not.toBeInTheDocument();
@@ -53,12 +54,15 @@ test('hồ sơ có PIN: sai PIN báo lỗi, đúng PIN thì vào', async () => {
   });
   renderPages('/profiles');
   await user.click(await screen.findByRole('button', { name: /Minh/ }));
-  await user.type(screen.getByLabelText('Mã PIN'), '9999');
-  await user.click(screen.getByRole('button', { name: 'Vào' }));
-  expect(await screen.findByText('Mã PIN không đúng')).toBeInTheDocument();
-  await user.clear(screen.getByLabelText('Mã PIN'));
-  await user.type(screen.getByLabelText('Mã PIN'), '1234');
-  await user.click(screen.getByRole('button', { name: 'Vào' }));
+  const sheet = await screen.findByRole('dialog', { name: 'Nhập mã PIN' });
+  const pin = within(sheet).getByLabelText('Mã PIN');
+  expect(pin).toHaveAttribute('inputmode', 'numeric');
+  await user.type(pin, '9999');
+  await user.click(within(sheet).getByRole('button', { name: 'Vào' }));
+  expect(await within(sheet).findByText('Mã PIN không đúng')).toBeInTheDocument();
+  await user.clear(within(sheet).getByLabelText('Mã PIN'));
+  await user.type(within(sheet).getByLabelText('Mã PIN'), '1234');
+  await user.click(within(sheet).getByRole('button', { name: 'Vào' }));
   expect(await screen.findByText('TRANG CHỦ')).toBeInTheDocument();
 });
 
@@ -94,4 +98,15 @@ test('tạo hồ sơ xong mà chọn lỗi thì thử lại không tạo trùng'
   await user.click(await screen.findByRole('button', { name: 'Tạo hồ sơ' }));
   expect(await screen.findByText('TRANG CHỦ')).toBeInTheDocument();
   expect(calls.filter((c) => c.method === 'POST' && c.path === '/profiles')).toHaveLength(1);
+});
+
+test('tải danh sách hồ sơ lỗi thì hiện thông báo, thử lại được', async () => {
+  const user = userEvent.setup();
+  let fail = true;
+  mockApi({ 'GET /profiles': () => (fail ? problem(500, 'INTERNAL', 'Máy chủ lỗi') : { body: [lan, minh] }) });
+  renderPages('/profiles?manual=1');
+  expect(await screen.findByRole('alert')).toHaveTextContent('Máy chủ lỗi');
+  fail = false;
+  await user.click(screen.getByRole('button', { name: 'Thử lại' }));
+  expect(await screen.findByRole('button', { name: /Minh/ })).toBeInTheDocument();
 });
