@@ -8,10 +8,12 @@ import { ContentSettings } from './settings/content-settings';
 import { BackupSettings } from './settings/backup-settings';
 import { TransferSettings } from './settings/transfer-settings';
 import { AppSettings } from './settings/app-settings';
+import { AppearanceSettings } from './settings/appearance-settings';
+import { ThemeToggle } from '../components/ui/theme-toggle';
 
 /**
  * Cá nhân: thẻ hồ sơ + các nhóm cài đặt kiểu iOS. Điện thoại một cột; ≥lg hai cột
- * (trái: hồ sơ, giọng đọc; phải: nội dung, sao lưu, chuyển hồ sơ, ứng dụng).
+ * (trái: hồ sơ, giọng đọc, giao diện; phải: nội dung, sao lưu, chuyển hồ sơ, ứng dụng).
  */
 export default function SettingsPage() {
   const profileQuery = useCurrentProfile();
@@ -19,7 +21,8 @@ export default function SettingsPage() {
 
   return (
     <div data-testid="page-settings">
-      <PageHeader title="Cá nhân" subtitle="Hồ sơ, giọng đọc và dữ liệu của bạn." />
+      {/* Nút sáng/tối nhanh ở tiêu đề chỉ dưới lg — ≥lg nút đó đã nằm cuối sidebar (tránh hai nút trùng tên). */}
+      <PageHeader title="Cá nhân" subtitle="Hồ sơ, giọng đọc và dữ liệu của bạn." actions={<ThemeToggle className="lg:hidden" />} />
       {profileQuery.error ? (
         <QueryError error={profileQuery.error} onRetry={() => profileQuery.refetch()} />
       ) : !profile ? (
@@ -35,6 +38,7 @@ export default function SettingsPage() {
             <ProfileCard profile={profile} />
             <ProfileSettings profile={profile} />
             <VoiceSettings key={profile.id} profile={profile} />
+            <AppearanceSettings />
           </div>
           <div className="min-w-0 space-y-6">
             <ContentSettings />

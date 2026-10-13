@@ -125,13 +125,28 @@ const PATHS: Record<IconName, { body: ReactNode; fillable?: boolean }> = {
       </>
     ),
   },
+  /* sun.max: đĩa tròn + 8 tia ngắn tách khỏi đĩa. */
+  sun: {
+    fillable: true,
+    body: (
+      <>
+        <circle cx="12" cy="12" r="4.2" />
+        <path d="M12 2.6v2.1M12 19.3v2.1M2.6 12h2.1M19.3 12h2.1M5.35 5.35l1.5 1.5M17.15 17.15l1.5 1.5M5.35 18.65l1.5-1.5M17.15 6.85l1.5-1.5" fill="none" />
+      </>
+    ),
+  },
+  /* moon: lưỡi liềm nghiêng, hở về phía trên-phải. */
+  moon: {
+    fillable: true,
+    body: <path d="M20.4 14.6A8.4 8.4 0 0 1 9.4 3.6a.5.5 0 0 0-.66-.62A9 9 0 1 0 21.02 15.26a.5.5 0 0 0-.62-.66z" />,
+  },
 };
 
 export function Icon({ name, size = 22, className, filled = false, strokeWidth = 1.85 }: {
   name: IconName;
   size?: number;
   className?: string;
-  /** Tô đặc phần thân (chỉ có tác dụng với icon có thân kín: home, map, person, play, flame, star, sparkle). */
+  /** Tô đặc phần thân (chỉ có tác dụng với icon có thân kín: home, map, person, play, flame, star, sparkle, sun, moon). */
   filled?: boolean;
   strokeWidth?: number;
 }) {

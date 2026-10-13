@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import { NavBar } from '@/shell/nav-bar';
 import { renderAt } from '@test/render';
 import { mockApi } from '@test/mock-api';
@@ -30,6 +30,15 @@ test('chỉ một <nav>; thẻ hồ sơ có tên hồ sơ và link Đổi hồ s
   expect(screen.getAllByRole('navigation')).toHaveLength(1);
   expect(await screen.findByText('Lan')).toBeInTheDocument();
   expect(screen.getByRole('link', { name: 'Đổi hồ sơ' })).toHaveAttribute('href', '/profiles?manual=1');
+});
+
+test('cuối sidebar có nút sáng/tối ngay sau "Đổi hồ sơ"', () => {
+  mockApi({ 'GET /profiles/current': () => ({ body: profile }) });
+  renderAt(<NavBar />, '/');
+  const nav = screen.getByRole('navigation');
+  const toggle = within(nav).getByRole('button', { name: 'Chuyển sang giao diện tối' });
+  const switchProfile = within(nav).getByRole('link', { name: 'Đổi hồ sơ' });
+  expect(switchProfile.compareDocumentPosition(toggle) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
 });
 
 test('nút giữa đứng trước "Hôm nay" trong DOM — thứ tự Tab khớp thứ tự nhìn của sidebar', () => {

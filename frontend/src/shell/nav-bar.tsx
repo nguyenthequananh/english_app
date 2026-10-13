@@ -3,6 +3,7 @@ import { motion, MotionConfig } from 'motion/react';
 import type { IconName } from '../types/icon';
 import { Icon } from '../components/ui/icons';
 import { SPRING } from '../components/ui/motion';
+import { ThemeToggle } from '../components/ui/theme-toggle';
 import { CenterAction } from './center-action';
 import { useCurrentProfile } from './require-profile';
 
@@ -61,19 +62,22 @@ function ProfileCard() {
           <p className="text-xs text-text-3">Hồ sơ đang dùng</p>
         </div>
       </div>
-      <Link
-        to="/profiles?manual=1"
-        className="pressable focus-ring mt-2 flex h-10 items-center justify-center rounded-xl text-base font-semibold text-accent-text hover:bg-fill"
-      >
-        Đổi hồ sơ
-      </Link>
+      <div className="mt-2 flex items-center gap-1">
+        <Link
+          to="/profiles?manual=1"
+          className="pressable focus-ring flex h-10 flex-1 items-center rounded-xl px-3 text-base font-semibold text-accent-text hover:bg-fill"
+        >
+          Đổi hồ sơ
+        </Link>
+        <ThemeToggle appearance="plain" />
+      </div>
     </div>
   );
 }
 
 /**
  * MỘT phần tử <nav> cho mọi kích thước: <lg là tab bar kính mờ dính đáy (4 mục + nút tròn giữa),
- * ≥lg là sidebar kính mờ bên trái (nút chính ở đầu, thẻ hồ sơ + "Đổi hồ sơ" ở cuối).
+ * ≥lg là sidebar kính mờ bên trái (nút chính ở đầu, thẻ hồ sơ + "Đổi hồ sơ" + nút sáng/tối ở cuối).
  * Không render hai bộ link song song — phần chỉ có ở sidebar được ẩn bằng CSS dưới lg.
  *
  * Nút chính đứng TRƯỚC danh sách trong DOM để thứ tự Tab khớp thứ tự nhìn của sidebar (không dùng `order`).

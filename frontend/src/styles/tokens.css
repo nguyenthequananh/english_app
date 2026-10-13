@@ -9,9 +9,35 @@
  *         --accent-text trên --surface 8.0
  * --accent giữ một giá trị ở cả hai chế độ để chữ trắng trên nút luôn đạt AA; bản "sáng hơn một bậc" cho
  * chữ/icon trên nền tối là --accent-text.
+ *
+ * Sáng/tối: `data-theme` trên <html> là lựa chọn của người dùng (src/config/theme.ts, script đầu index.html).
+ * Không có thuộc tính = Tự động theo hệ thống. Token sáng là mặc định; token tối nằm trong `@variant dark`
+ * bên dưới — Tailwind trải nó thành hai quy tắc (data-theme="dark", hoặc hệ thống tối mà không ép sáng), nên
+ * bản tối chỉ viết MỘT lần. Lớp `dark:` của Tailwind dùng đúng điều kiện đó.
  */
+@custom-variant dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(:root:not([data-theme="light"]), :root:not([data-theme="light"]) *) {
+      @slot;
+    }
+  }
+}
+
+/* Thanh cuộn, ô nhập gốc, nền canvas của trình duyệt theo đúng chế độ đang hiển thị. */
 :root {
   color-scheme: light dark;
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+:root {
 
   --bg-base: #F4F6FB;
   --bg-gradient:
@@ -78,8 +104,9 @@
   --sidebar-width: 264px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
+/* Bản tối — áp khi data-theme="dark", hoặc Tự động + hệ thống tối (xem `@custom-variant dark` ở trên). */
+:root {
+  @variant dark {
     --bg-base: #0B0E17;
     --bg-gradient:
       radial-gradient(at 0% 0%, rgb(56 88 160 / 0.35) 0, transparent 55%),

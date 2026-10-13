@@ -145,3 +145,44 @@ test('thẻ hồ sơ có nút Đổi hồ sơ trỏ về trang chọn hồ sơ (
   expect(await within(page).findByRole('link', { name: 'Đổi hồ sơ' })).toHaveAttribute('href', '/profiles?manual=1');
   expect(within(page).getByText('30 phút mỗi ngày · Có mã PIN')).toBeInTheDocument();
 });
+
+describe('Giao diện (sáng/tối)', () => {
+  afterEach(() => {
+    document.documentElement.removeAttribute('data-theme');
+    localStorage.clear();
+  });
+
+  test('Segmented "Giao diện" chọn được Tự động · Sáng · Tối, lưu theo máy', async () => {
+    const user = userEvent.setup();
+    stubSpeech();
+    mockApi(base);
+    renderSettings();
+    const group = await screen.findByRole('radiogroup', { name: 'Giao diện' });
+    expect(within(group).getByRole('radio', { name: 'Tự động' })).toHaveAttribute('aria-checked', 'true');
+
+    await user.click(within(group).getByRole('radio', { name: 'Tối' }));
+    expect(localStorage.getItem('ielts-theme')).toBe('dark');
+    expect(document.documentElement).toHaveAttribute('data-theme', 'dark');
+    expect(within(group).getByRole('radio', { name: 'Tối' })).toHaveAttribute('aria-checked', 'true');
+
+    await user.click(within(group).getByRole('radio', { name: 'Sáng' }));
+    expect(localStorage.getItem('ielts-theme')).toBe('light');
+    expect(document.documentElement).toHaveAttribute('data-theme', 'light');
+
+    await user.click(within(group).getByRole('radio', { name: 'Tự động' }));
+    expect(localStorage.getItem('ielts-theme')).toBeNull();
+    expect(document.documentElement).not.toHaveAttribute('data-theme');
+  });
+
+  test('nút nhanh ở tiêu đề trang đổi giao diện và Segmented theo cùng', async () => {
+    const user = userEvent.setup();
+    stubSpeech();
+    mockApi(base);
+    renderSettings();
+    const page = await screen.findByTestId('page-settings');
+    await user.click(within(page).getByRole('button', { name: 'Chuyển sang giao diện tối' }));
+    expect(document.documentElement).toHaveAttribute('data-theme', 'dark');
+    expect(await within(page).findByRole('radio', { name: 'Tối' })).toHaveAttribute('aria-checked', 'true');
+    expect(within(page).getByRole('button', { name: 'Chuyển sang giao diện sáng' })).toBeInTheDocument();
+  });
+});
