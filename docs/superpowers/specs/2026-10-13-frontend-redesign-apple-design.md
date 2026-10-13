@@ -104,6 +104,13 @@ Mọi file và thư mục trong `frontend/src/` và `frontend/e2e/` dùng **keba
 - Test tách khỏi `src/`: mọi `*.test.ts(x)` nằm trong `frontend/test/` ngang hàng `src/`, cùng cấu trúc thư mục; helper test ở `frontend/test/support/`. Test import code bằng alias `@/` (→ `src/`), helper bằng `@test/` (→ `test/support/`). Commit riêng, ngay sau commit đổi tên.
 - Làm thành **một commit riêng chỉ đổi tên + sửa import**, test xanh, trước mọi thay đổi giao diện — để diff design không lẫn với diff đổi tên.
 
+### Cấu trúc thư mục `src/`
+
+- `src/config/`: cấu hình hạ tầng — instance axios (`axios.ts`), interceptor (`interceptors.ts`), TanStack Query (`query-client.ts`).
+- `src/types/`: kiểu dữ liệu dùng chung (`api.ts` — DTO backend; `skill.ts`…). Chỉ chứa kiểu, không chứa giá trị.
+- `src/api/`: `api-error.ts` (class `ApiError`), `client.ts` (wrapper `api.get/post/put/del`), `endpoints.ts`.
+- Chiều phụ thuộc một chiều: `api/client` → `config/axios` → `config/interceptors` → `api/api-error`.
+
 ### Định tuyến
 
 - `src/router.tsx` khai báo cây route bằng `createBrowserRouter`; `main.tsx` render `<RouterProvider>` bên trong `QueryClientProvider`.

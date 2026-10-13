@@ -4,7 +4,7 @@
 
 **Goal:** Làm lại toàn bộ giao diện `frontend/` theo spec `docs/superpowers/specs/2026-10-13-frontend-redesign-apple-design.md`: mobile-first, sáng/tối theo hệ thống, axios + `createBrowserRouter` + TanStack Query, file kebab-case.
 
-**Architecture:** Các task nền chạy tuần tự (đổi tên → tách test ra `test/` → axios → router + khung app → token + thành phần UI), sau đó ba task làm màn chạy song song trên các nhóm file rời nhau, rồi cập nhật E2E và review. Logic dữ liệu (`endpoints`, `types`, `speech`, `dates`) không đổi; chỉ đổi tầng gọi HTTP, định tuyến và trình bày.
+**Architecture:** Các task nền chạy tuần tự (đổi tên → tách test ra `test/` → axios → tách `src/config`, `src/types` → router + khung app → token + thành phần UI), sau đó ba task làm màn chạy song song trên các nhóm file rời nhau, rồi cập nhật E2E và review. Logic dữ liệu (`endpoints`, `types`, `speech`, `dates`) không đổi; chỉ đổi tầng gọi HTTP, định tuyến và trình bày.
 
 **Tech Stack:** React 19, React Router 8 (`createBrowserRouter`), TanStack Query 5, axios 1.20, Tailwind 4, motion 14, sonner 2, @base-ui/react 1.9, clsx, class-variance-authority, Vitest 5 + Testing Library, Playwright.
 
@@ -24,9 +24,14 @@ frontend/src/
   main.tsx                      tạo queryClient + router, render <App>
   app.tsx                       QueryClientProvider + RouterProvider + Toaster, đăng ký PROFILE_REQUIRED
   router.tsx                    cây route (routes) + createAppRouter()
-  api/client.ts                 axios instance `http`, ApiError, api.get/post/put/del
-  api/query-client.ts           (đổi tên) createQueryClient
-  api/endpoints.ts, types.ts    giữ nguyên
+  config/axios.ts               axios instance `http` + gắn interceptor
+  config/interceptors.ts        toApiError, setupInterceptors, setProfileRequiredHandler
+  config/query-client.ts        createQueryClient
+  api/api-error.ts              class ApiError
+  api/client.ts                 api.get/post/put/del
+  api/endpoints.ts              giữ nguyên
+  types/api.ts                  kiểu dữ liệu API (chuyển từ api/types.ts)
+  types/skill.ts                kiểu Skill dùng chung
   styles/tokens.css             biến CSS sáng/tối + @theme inline
   index.css                     import tailwind + tokens, base, lớp tiện ích chung
   ui/                           thành phần dùng chung (kebab-case)
@@ -532,6 +537,148 @@ git commit -m "feat(frontend): gọi API bằng axios, test giả backend qua ad
 
 Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>"
 ```
+
+---
+
+### Task 2b: Tách cấu hình ra `src/config/`, kiểu dữ liệu ra `src/types/`
+
+**Mục tiêu:** cấu hình hạ tầng (axios, interceptor, TanStack Query) nằm ở `src/config/`; kiểu dữ liệu dùng chung nằm ở `src/types/`; `src/api/` chỉ còn lớp gọi API.
+
+**Cấu trúc đích:**
+
+```
+src/config/axios.ts          tạo instance `http` (baseURL '/api') và gắn interceptor
+src/config/interceptors.ts   toApiError + setupInterceptors(instance) + setProfileRequiredHandler
+src/config/query-client.ts   createQueryClient (chuyển từ src/api/query-client.ts, nội dung giữ nguyên)
+src/api/api-error.ts         class ApiError (không phụ thuộc gì — tránh import vòng config ↔ api)
+src/api/client.ts            request<T>() + api.get/post/put/del (dùng `http` từ config/axios)
+src/api/endpoints.ts         giữ nguyên, import kiểu từ ../types/api
+src/types/api.ts             chuyển từ src/api/types.ts, nội dung giữ nguyên
+```
+
+Chiều phụ thuộc: `api/client` → `config/axios` → `config/interceptors` → `api/api-error`. `types/*` không import gì ngoài kiểu.
+
+**Files:**
+- Create: `src/config/axios.ts`, `src/config/interceptors.ts`, `src/api/api-error.ts`
+- Move: `src/api/query-client.ts` → `src/config/query-client.ts`; `src/api/types.ts` → `src/types/api.ts`
+- Modify: `src/api/client.ts`, mọi file import `ApiError`, `setProfileRequiredHandler`, `http`, `createQueryClient`, hoặc `../api/types`; `test/support/mock-api.ts`, `test/support/render.tsx`, test liên quan; `frontend/CLAUDE.md`
+
+- [ ] **Step 1: Mốc xanh** — `npm test` ghi số test.
+
+- [ ] **Step 2: Chuyển file bằng `git mv`**
+
+```bash
+cd frontend
+mkdir -p src/config src/types
+git mv src/api/query-client.ts src/config/query-client.ts
+git mv src/api/types.ts src/types/api.ts
+```
+
+- [ ] **Step 3: Tách `client.ts`**
+
+`src/api/api-error.ts`:
+
+```ts
+export class ApiError extends Error {
+  constructor(public status: number, public code: string, message: string, public errors: string[] = []) {
+    super(message);
+    this.name = 'ApiError';
+  }
+}
+```
+
+`src/config/interceptors.ts`:
+
+```ts
+import axios, { type AxiosInstance } from 'axios';
+import { ApiError } from '../api/api-error';
+
+let profileRequiredHandler: () => void = () => undefined;
+
+/** App đăng ký hành động khi backend báo chưa chọn hồ sơ (xoá cache + về /profiles). */
+export function setProfileRequiredHandler(fn: () => void) {
+  profileRequiredHandler = fn;
+}
+
+export function toApiError(error: unknown): ApiError {
+  if (!axios.isAxiosError(error) || !error.response) {
+    return new ApiError(0, 'NETWORK', 'Không kết nối được tới app. App có thể đã tắt, hãy mở lại.');
+  }
+  const { status, data } = error.response;
+  const problem = (data !== null && typeof data === 'object' ? data : {}) as { code?: string; detail?: string; errors?: string[] };
+  const err = new ApiError(status, problem.code ?? `HTTP_${status}`, problem.detail ?? `Lỗi ${status}`, problem.errors ?? []);
+  if (err.code === 'PROFILE_REQUIRED') profileRequiredHandler();
+  return err;
+}
+
+export function setupInterceptors(instance: AxiosInstance) {
+  instance.interceptors.response.use((res) => res, (error: unknown) => Promise.reject(toApiError(error)));
+}
+```
+
+`src/config/axios.ts`:
+
+```ts
+import axios from 'axios';
+import { setupInterceptors } from './interceptors';
+
+/** Instance axios duy nhất của app. Test thay `http.defaults.adapter` (xem test/support/mock-api.ts). */
+export const http = axios.create({ baseURL: '/api' });
+
+setupInterceptors(http);
+```
+
+`src/api/client.ts` chỉ còn:
+
+```ts
+import { http } from '../config/axios';
+
+async function request<T>(method: 'get' | 'post' | 'put' | 'delete', path: string, body?: unknown): Promise<T> {
+  const res = await http.request<T>({ method, url: path, data: body });
+  return (res.status === 204 || (res.data as unknown) === '' ? undefined : res.data) as T;
+}
+
+export const api = {
+  get: <T>(path: string) => request<T>('get', path),
+  post: <T>(path: string, body?: unknown) => request<T>('post', path, body),
+  put: <T>(path: string, body?: unknown) => request<T>('put', path, body),
+  del: <T>(path: string) => request<T>('delete', path),
+};
+```
+
+(Nếu Task 2 đã viết khác đôi chút — ví dụ kiểu hay chú thích — giữ phần tốt hơn, miễn đúng cấu trúc đích và hợp đồng: `ApiError(status, code, message, errors)`, 204/rỗng → `undefined`, lỗi mạng → `NETWORK`, `PROFILE_REQUIRED` → handler.)
+
+- [ ] **Step 4: Sửa import toàn bộ**
+
+- `ApiError` → `../api/api-error` (trong `src/`) / `@/api/api-error` (trong `test/`).
+- `setProfileRequiredHandler` → `config/interceptors`.
+- `http` → `config/axios` (gồm `test/support/mock-api.ts`: `import { http } from '@/config/axios'`).
+- `createQueryClient` → `config/query-client` (`main.tsx`, `test/support/render.tsx`, …).
+- `../api/types` / `./types` → `../types/api` (hoặc `@/types/api` trong test).
+- `test/api/client.test.ts` import `api` từ `@/api/client`, `ApiError` từ `@/api/api-error`, `setProfileRequiredHandler` từ `@/config/interceptors`.
+
+Kiểm tra: `grep -rnE "api/(types|query-client)|from '\./types'" src test` → rỗng; `grep -rn "ApiError" src test | grep "api/client"` → rỗng.
+
+- [ ] **Step 5: Test + build** — `npm test && npm run build`: cùng số test, PASS.
+
+- [ ] **Step 6: Cập nhật `frontend/CLAUDE.md`** — mục "Gọi API" và "TanStack Query": `src/api/client.ts` → `src/api/client.ts` (wrapper) + `src/config/axios.ts` / `src/config/interceptors.ts`; `src/api/types.ts` → `src/types/api.ts`; `src/api/queryClient.ts`/`query-client.ts` → `src/config/query-client.ts`. Thêm dòng:
+
+```
+**Cấu trúc**: hạ tầng (axios, interceptor, TanStack Query) ở `src/config/`; kiểu dữ liệu dùng chung ở `src/types/`; `src/api/` chỉ có `ApiError`, wrapper `api.*` và `endpoints`.
+```
+
+- [ ] **Step 7: Commit**
+
+```bash
+git add src test CLAUDE.md
+git commit -m "refactor(frontend): tách cấu hình axios/query ra src/config, kiểu dữ liệu ra src/types
+
+Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>"
+```
+
+---
+
+> **Quy đổi bổ sung sau Task 2b (cho Task 3–9):** `createQueryClient` import từ `config/query-client` (không còn `api/query-client`); `setProfileRequiredHandler` từ `config/interceptors`; `ApiError` từ `api/api-error`; `http` từ `config/axios`; kiểu từ `types/api` (không còn `api/types`). Kiểu dùng chung mới (ví dụ `Skill` ở Task 4) đặt ở `src/types/` (`src/types/skill.ts`), còn dữ liệu/giá trị (`SKILL_META`) ở nơi dùng (`src/ui/skill.ts`).
 
 ---
 
