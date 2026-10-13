@@ -44,3 +44,7 @@ test('lỗi 4xx không có đường quay về thì không hiện hàng nút tr�
   expect(screen.queryByRole('button')).not.toBeInTheDocument();
   expect(screen.queryByRole('link')).not.toBeInTheDocument();
 });
+
+test.each([200, 204, 304])('ApiError mang mã %i (không phải lỗi mạng/máy chủ) không mời "Thử lại"', (status) => {
+  expect(isRetryable(new ApiError(status, `HTTP_${status}`, 'Phản hồi lạ'))).toBe(false);
+});

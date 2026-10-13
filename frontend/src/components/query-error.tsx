@@ -6,13 +6,14 @@ import { Icon } from './ui/icons';
 /**
  * Thử lại có thể ra kết quả khác không: mất kết nối, lỗi máy chủ (5xx), hết thời gian chờ (408), quá tải (429).
  * Các lỗi 4xx còn lại (409 bài bị khoá/chưa sẵn sàng, 404, 403…) là trả lời dứt khoát của backend — bấm lại vẫn vậy.
- * Lỗi không phải ApiError (lỗi lạ trong code) thì vẫn cho thử lại.
+ * ApiError mang mã 1xx–3xx (backend trả thành công nhưng nội dung không đọc được) cũng không thử lại: gọi lại vẫn
+ * nhận đúng câu trả lời đó. Lỗi không phải ApiError (lỗi lạ trong code) thì vẫn cho thử lại.
  */
 export function isRetryable(error: unknown): boolean {
   if (!(error instanceof ApiError)) return true;
   if (error.code === 'NETWORK' || error.status === 0) return true;
   if (error.status >= 500 || error.status === 408 || error.status === 429) return true;
-  return error.status < 400;
+  return false;
 }
 
 export function QueryError({ error, onRetry, backTo }: {
