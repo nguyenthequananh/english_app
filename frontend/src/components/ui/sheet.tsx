@@ -14,8 +14,12 @@ const CONTENT_DRAG_SLOP = 8;
 /* Vài px cuối trước khi khuất hẳn thì bảng mờ đi, để bóng đổ phía trên không lơ lửng ở mép đáy. */
 const EDGE_FADE = 24;
 
-/** Điện thoại: bảng trượt từ đáy, kéo được · giảm chuyển động: chỉ mờ dần · ≥lg: hộp thoại giữa màn. */
-type Mode = 'drag' | 'fade' | 'dialog';
+/**
+ * Điện thoại: bảng trượt từ đáy, kéo được · ≥lg: hộp thoại giữa màn. Giảm chuyển động không phải một chế độ riêng:
+ * bảng vẫn bám ngón tay khi kéo (đó là phản hồi trực tiếp, không phải thứ reduced-motion bỏ đi), chỉ có vào/ra/trả
+ * về là thành mờ dần hoặc nhảy thẳng tới chỗ.
+ */
+type Mode = 'drag' | 'dialog';
 
 type DragState = { pointerId: number; startY: number; startOffset: number; height: number };
 type PendingContentDrag = { pointerId: number; startY: number };
@@ -31,6 +35,8 @@ type PendingContentDrag = { pointerId: number; startY: number };
  * Bắt lại được khi đang đóng: người dùng đóng (vuốt, Esc, nút Đóng, chạm nền) thì bảng tự chạy hết đường ra rồi
  * mới báo `onOpenChange(false)` — trong lúc đó base-ui vẫn coi là mở, chạm lại vào bảng là dừng việc đóng và bảng
  * đi theo ngón tay. Trang cha tự đóng (`open` → false, ví dụ sau khi lưu) thì không bắt lại được, chỉ chạy ra.
+ * Trang cha không chịu đóng (bỏ qua `onOpenChange(false)`, `open` vẫn true) thì bảng quay lại — không để một lớp
+ * phủ vô hình chặn cả trang.
  */
 export function Sheet({ open, onOpenChange, title, description, children }: {
   open: boolean;
@@ -41,7 +47,7 @@ export function Sheet({ open, onOpenChange, title, description, children }: {
 }) {
   const desktop = useMediaQuery(DESKTOP_QUERY);
   const reduce = useReducedMotion() ?? false;
-  const mode: Mode = desktop ? 'dialog' : reduce ? 'fade' : 'drag';
+  const mode: Mode = desktop ? 'dialog' : 'drag';
 
   /* Bảng còn trong DOM: từ lúc mở tới khi chuyển động rời đi chạy xong. */
   const [present, setPresent] = useState(open);
@@ -57,6 +63,10 @@ export function Sheet({ open, onOpenChange, title, description, children }: {
 
   const modeRef = useRef(mode);
   modeRef.current = mode;
+  const reduceRef = useRef(reduce);
+  reduceRef.current = reduce;
+  const openRef = useRef(open);
+  openRef.current = open;
   const onOpenChangeRef = useRef(onOpenChange);
   onOpenChangeRef.current = onOpenChange;
   /* Ai đang đóng bảng: người dùng (còn bắt lại được), trang cha, hay người dùng đã đóng xong và đang chờ cha. */
@@ -65,8 +75,15 @@ export function Sheet({ open, onOpenChange, title, description, children }: {
   const drag = useRef<DragState | null>(null);
   const pending = useRef<PendingContentDrag | null>(null);
   const tracker = useRef(new VelocityTracker());
+  /* Mỗi lần người dùng đóng xong và đã báo trang cha: tăng để effect kiểm tra cha có thật sự đóng không. */
+  const [reported, setReported] = useState(0);
 
-  const height = () => popupRef.current?.offsetHeight ?? 0;
+  /* Chiều cao bảng, đo khi gắn vào DOM và mỗi khi đổi cỡ (ResizeObserver) — không đọc layout ở mỗi khung hình kéo. */
+  const heightRef = useRef(0);
+  const measure = () => {
+    heightRef.current = popupRef.current?.offsetHeight ?? 0;
+  };
+  const height = () => heightRef.current;
   const currentY = () => {
     const v = y.get();
     return typeof v === 'number' ? v : height();
@@ -93,25 +110,31 @@ export function Sheet({ open, onOpenChange, title, description, children }: {
     opacity.set(Math.min(1, Math.max(0, (h - v) / EDGE_FADE)));
   });
 
-  /** Chạy vào. `fresh` = bảng vừa gắn vào DOM; ngược lại là mở lại khi đang chạy ra — quay đầu tại chỗ, giữ vận tốc. */
+  /**
+   * Chạy vào. `fresh` = bảng vừa gắn vào DOM; ngược lại là mở lại khi đang chạy ra (hoặc trang cha không chịu đóng)
+   * — quay đầu tại chỗ, giữ vận tốc.
+   */
   const enter = useCallback((fresh: boolean) => {
     stop();
     closing.current = null;
     const m = modeRef.current;
-    if (m === 'drag') {
+    const r = reduceRef.current;
+    if (m === 'drag' && !r) {
       scale.jump(1);
       if (fresh || typeof y.get() !== 'number') y.jump(height());
       run(animate(y, 0, SPRING));
-    } else {
-      y.jump(0);
-      if (fresh) {
-        opacity.jump(0);
-        scrim.jump(0);
-        scale.jump(m === 'dialog' ? 0.96 : 1);
-      }
-      run(animate(opacity, 1, FADE), animate(scrim, 1, FADE));
-      if (m === 'dialog') run(animate(scale, 1, SPRING));
+      return;
     }
+    // Hộp thoại, hoặc bảng khi giảm chuyển động: đứng tại chỗ, chỉ mờ dần vào (hộp thoại phóng nhẹ nếu không giảm).
+    // Đưa y về 0 làm effect theo vị trí đặt lại nền/độ mờ ⇒ giữ lại giá trị đang có để mờ dần từ đó.
+    const from = { opacity: fresh ? 0 : opacity.get(), scrim: fresh ? 0 : scrim.get() };
+    y.jump(0);
+    opacity.jump(from.opacity);
+    scrim.jump(from.scrim);
+    if (r) scale.jump(1);
+    else if (fresh) scale.jump(0.96);
+    run(animate(opacity, 1, FADE), animate(scrim, 1, FADE));
+    if (m === 'dialog' && !r) run(animate(scale, 1, SPRING));
   }, [opacity, scale, scrim, stop, y]);
 
   const exit = useCallback((by: 'user' | 'parent', velocity = 0) => {
@@ -124,21 +147,23 @@ export function Sheet({ open, onOpenChange, title, description, children }: {
       if (by === 'user') {
         closing.current = 'reported';
         onOpenChangeRef.current(false);
+        setReported((n) => n + 1);
       } else {
         closing.current = null;
         setPresent(false);
       }
     };
     const m = modeRef.current;
-    if (m === 'drag') {
-      const h = height();
-      const a = animate(y, h, { ...SPRING_EXIT, velocity });
+    const r = reduceRef.current;
+    if (m === 'drag' && !r) {
+      const a = animate(y, height(), { ...SPRING_EXIT, velocity });
       run(a);
       a.then(done);
     } else {
+      // Mờ đi tại chỗ (giảm chuyển động: ngay ở vị trí ngón tay vừa thả).
       const a = animate(opacity, 0, FADE_OUT);
       run(a, animate(scrim, 0, FADE_OUT));
-      if (m === 'dialog') run(animate(scale, 0.97, FADE_OUT));
+      if (m === 'dialog' && !r) run(animate(scale, 0.97, FADE_OUT));
       a.then(done);
     }
   }, [opacity, scale, scrim, stop, y]);
@@ -163,14 +188,42 @@ export function Sheet({ open, onOpenChange, title, description, children }: {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- chỉ phản ứng khi `open` đổi
   }, [open]);
 
+  /*
+   * Đã báo trang cha là người dùng đóng, nhưng cha không đóng (`open` vẫn true — ví dụ đang lưu dở nên từ chối):
+   * cho bảng quay lại. Nếu cha đóng thật thì effect `[open]` ở trên đã chạy trước (layout effect) và xoá 'reported'.
+   */
+  useEffect(() => {
+    if (reported && closing.current === 'reported' && openRef.current) enter(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- chỉ sau mỗi lần báo đóng
+  }, [reported]);
+
+  /* Đo chiều cao khi bảng gắn vào DOM (trước khi chạy vào), rồi theo dõi đổi cỡ (nội dung đổi, bàn phím ảo…). */
+  useLayoutEffect(() => {
+    if (!popupEl) return;
+    measure();
+    if (typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver(measure);
+    ro.observe(popupEl);
+    return () => ro.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- measure chỉ đọc ref
+  }, [popupEl]);
+
   /* Phần tử bảng vừa gắn vào DOM (portal của base-ui có thể dựng sau một nhịp): chạy vào. */
   useLayoutEffect(() => {
     if (popupEl && open) enter(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- chạy một lần cho mỗi lần gắn
   }, [popupEl]);
 
-  /* Đổi chế độ khi đang mở (xoay máy qua mốc lg, bật giảm chuyển động): về trạng thái nghỉ của chế độ mới. */
+  /*
+   * Đổi chế độ khi đang mở (xoay máy qua mốc lg): bỏ cử chỉ kéo dở (ngón tay đang giữ không còn điều khiển bảng),
+   * về trạng thái nghỉ của chế độ mới.
+   */
+  const prevMode = useRef(mode);
   useEffect(() => {
+    if (prevMode.current === mode) return;
+    prevMode.current = mode;
+    drag.current = null;
+    pending.current = null;
     if (!popupRef.current || closing.current) return;
     stop();
     y.jump(0);
@@ -246,17 +299,22 @@ export function Sheet({ open, onOpenChange, title, description, children }: {
     tracker.current.add(e.timeStamp, offset);
   }
 
+  /* Thả tay — hoặc cử chỉ bị huỷ / mất pointer capture giữa chừng (coi như thả tại chỗ, vận tốc 0). */
   function onPointerUp(e: ReactPointerEvent<HTMLElement>) {
     if (pending.current?.pointerId === e.pointerId) pending.current = null;
     const d = drag.current;
     if (!d || d.pointerId !== e.pointerId) return;
     drag.current = null;
-    const velocity = e.type === 'pointercancel' ? 0 : tracker.current.velocity(e.timeStamp);
-    if (shouldDismissSheet({ y: currentY(), velocity, height: d.height })) {
+    const velocity = e.type === 'pointerup' ? tracker.current.velocity(e.timeStamp) : 0;
+    const at = currentY();
+    if (shouldDismissSheet({ y: at, velocity, height: d.height })) {
       exit('user', velocity);
+    } else if (reduceRef.current) {
+      y.jump(0); // giảm chuyển động: về chỗ ngay, không trượt
     } else {
-      // Ở lại: lò xo ngăn kéo, nhận vận tốc lúc thả — chỉ ở đây mới nảy nhẹ.
-      run(animate(y, 0, { ...SPRING_SETTLE, velocity }));
+      // Ở lại: lò xo ngăn kéo, nhận vận tốc lúc thả — chỉ ở đây mới nảy nhẹ. Thả khi đang kéo nảy quá mép trên
+      // thì không mang vận tốc đi lên vào lò xo, nếu không bảng còn vọt thêm lên trước khi rơi về.
+      run(animate(y, 0, { ...SPRING_SETTLE, velocity: at < 0 ? Math.max(velocity, 0) : velocity }));
     }
   }
 
@@ -285,7 +343,7 @@ export function Sheet({ open, onOpenChange, title, description, children }: {
   }, [popupEl]);
 
   const dragHandlers = mode === 'drag'
-    ? { onPointerMove, onPointerUp, onPointerCancel: onPointerUp }
+    ? { onPointerMove, onPointerUp, onPointerCancel: onPointerUp, onLostPointerCapture: onPointerUp }
     : {};
 
   return (
@@ -319,7 +377,7 @@ export function Sheet({ open, onOpenChange, title, description, children }: {
                   onPointerDown={onHeaderPointerDown}
                   {...dragHandlers}
                 >
-                  <div aria-hidden="true" className="mx-auto mb-2 h-1.5 w-10 rounded-full bg-fill-strong lg:hidden" />
+                  <div aria-hidden="true" data-grabber="" className="mx-auto mb-2 h-1.5 w-10 rounded-full bg-fill-strong lg:hidden" />
                   <div className="flex items-start gap-3">
                     <div className="min-w-0 flex-1 pt-1.5">
                       <Dialog.Title className="text-2xl font-bold">{title}</Dialog.Title>
@@ -347,6 +405,20 @@ export function Sheet({ open, onOpenChange, title, description, children }: {
                   {children}
                 </div>
               </Dialog.Popup>
+              {mode === 'drag' && (
+                /*
+                 * Phần nền nối dài dưới đáy bảng, đi cùng `y`: kéo nảy lên quá mép hoặc hất lên (lò xo vượt qua 0)
+                 * thì dưới bảng vẫn là mặt bảng như iOS, không hở khe nhìn xuống trang. Không gộp vào bảng được vì
+                 * bảng `overflow-hidden` (bo góc cắt nội dung cuộn); bóng đổ cũng không làm được vì bóng lặp lại bo góc.
+                 * Chồng lên 1px đáy bảng để che viền đáy của bảng (nếu không thành một vạch kẻ ngang khi nảy lên).
+                 */
+                <motion.div
+                  aria-hidden="true"
+                  data-sheet-underlay=""
+                  style={{ y, opacity }}
+                  className="pointer-events-none absolute inset-x-0 top-[calc(100%-1px)] mx-auto h-dvh w-full max-w-[640px] bg-surface shadow-[inset_1px_0_0_var(--card-border),inset_-1px_0_0_var(--card-border)]"
+                />
+              )}
             </Dialog.Viewport>
           </Dialog.Portal>
         )}
