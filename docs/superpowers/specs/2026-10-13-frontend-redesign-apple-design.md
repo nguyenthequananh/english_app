@@ -16,7 +16,7 @@ Làm lại toàn bộ giao diện theo nguyên tắc thiết kế của Apple (s
 - Mọi màn hiện có đều được làm lại, chạy đúng ở 390px và 1280px, cả sáng lẫn tối.
 - Hành vi học giữ nguyên: buổi học, flashcard (phím `Space`, `1–4`), chấm bài, mở khoá unit, sao lưu, đổi hồ sơ.
 - `npm test`, `npm run build` và E2E đều xanh.
-- App vẫn chạy 100% offline: không tải font, icon, CSS từ mạng lúc chạy.
+- App vẫn chạy 100% offline: không tải font, icon, CSS từ mạng lúc chạy (font Inter đóng gói kèm, xem §2).
 
 **Ngoài phạm vi:** chế độ giao tiếp với AI (spec giai đoạn 1 quy định "không AI" — cần spec riêng), mọi thay đổi backend, đóng gói app mobile/desktop, kiến trúc backend cho mobile.
 
@@ -42,7 +42,15 @@ Mọi màu, bóng, bán kính, đường cong chuyển động khai báo một l
 
 ### Chữ
 
-- Font hệ thống: `-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif`. Không nhúng font ngoài. Kiểm tra dấu tiếng Việt và ký tự IPA hiển thị đúng.
+- **Font** (quyết định của người dùng 2026-10-13):
+  - **Máy Apple** (macOS/iOS/iPadOS): SF Pro của hệ điều hành qua `-apple-system, BlinkMacSystemFont` — trình duyệt tự chọn SF Pro Text/Display theo cỡ chữ. **Không nhúng** file font của Apple (giấy phép SF chỉ cho dùng làm mock-up UI trên nền tảng Apple, cấm nhúng vào sản phẩm).
+  - **Windows và máy khác**: **Inter** (giấy phép SIL OFL, có tiếng Việt), đóng gói kèm app qua npm (`@fontsource-variable/inter`, gói biến thiên) — Vite đưa file font vào `dist/assets`, chạy offline.
+  - Chuỗi font: `-apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter Variable", "Segoe UI", Roboto, sans-serif`.
+  - Kiểm tra dấu tiếng Việt và ký tự IPA (`ɪ ʊ ə ʃ ʒ θ ð ŋ ɑ ɒ ɔ ɜ æ ʌ ː ˈ ˌ`) hiển thị đúng trên cả hai; glyph thiếu thì tự rơi về font dự phòng.
+- **Cỡ chữ mặc định 14px** (quyết định của người dùng 2026-10-13): chữ thân bài, nhãn, mô tả dùng 14px; thang cỡ chữ khai bằng token (`--text-base` = 14px và các bậc trên/dưới) để mọi component dùng chung, không viết cỡ chữ cứng rải rác.
+  - Đặt ở `body`/token chữ, **không** đổi `font-size` của `html` — spacing của Tailwind 4 tính theo `rem`, đổi gốc sẽ co toàn bộ khoảng cách.
+  - Ngoại lệ: ô nhập (`input`, `textarea`, `select`) giữ 16px trên thiết bị cảm ứng (`@media (pointer: coarse)`) để iOS không tự phóng to; có thể 14px khi dùng chuột.
+  - Tiêu đề và số liệu lớn vẫn theo thang phân cấp bên dưới.
 - Tiêu đề lớn kiểu iOS (khoảng 34px, đậm, tracking âm nhẹ) ở đầu mỗi màn chính; thu nhỏ vào thanh trên khi cuộn là tuỳ chọn, không bắt buộc.
 - Số liệu lớn (chuỗi ngày, %, phút) dùng `font-variant-numeric: tabular-nums`.
 
@@ -80,7 +88,7 @@ Buổi học (`/session`), Ôn thẻ (`/review`), Bài học (`/lessons/:code`),
 
 - `viewport-fit=cover`, `env(safe-area-inset-*)` cho thanh trên và tab bar; `min-height: 100dvh` thay `100vh`.
 - `-webkit-tap-highlight-color: transparent`; hiệu ứng hover chỉ trong `@media (hover: hover)`.
-- Ô nhập có `font-size` ≥ 16px để iOS không tự zoom.
+- Ô nhập có `font-size` ≥ 16px trên thiết bị cảm ứng để iOS không tự zoom (xem §2 Chữ).
 - `<meta name="theme-color">` cho cả hai chế độ; `color-scheme: light dark`.
 - Không cho chọn chữ trên nút/thẻ điều hướng khi nhấn giữ.
 
