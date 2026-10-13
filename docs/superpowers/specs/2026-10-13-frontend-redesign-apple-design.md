@@ -1,7 +1,7 @@
 # Giao diện mới theo phong cách Apple – Thiết kế
 
 - Ngày: 2026-10-13
-- Trạng thái: đã duyệt hướng, chờ duyệt văn bản
+- Trạng thái: đã duyệt
 - Phạm vi: chỉ `frontend/`. Không đổi API backend, không đổi nội dung.
 
 ## 1. Mục tiêu
@@ -86,6 +86,23 @@ Buổi học (`/session`), Ôn thẻ (`/review`), Bài học (`/lessons/:code`),
 
 ## 4. Kiến trúc frontend
 
+### Đặt tên file và thư mục
+
+Mọi file và thư mục trong `frontend/src/` và `frontend/e2e/` dùng **kebab-case**. Tên component/hàm/kiểu xuất ra trong code giữ nguyên quy ước (PascalCase cho component, camelCase cho hàm) — chỉ đổi tên file.
+
+| Cũ | Mới |
+|---|---|
+| `App.tsx`, `App.test.tsx` | `app.tsx`, `app.test.tsx` |
+| `pages/SessionPage.tsx` | `pages/session-page.tsx` |
+| `pages/settings/BackupSettings.tsx` | `pages/settings/backup-settings.tsx` |
+| `components/Flashcard.test.tsx` | `components/flashcard.test.tsx` |
+| `api/queryClient.ts` | `api/query-client.ts` |
+| `ipa/ipaData.ts`, `test/mockApi.ts`, `test/speechStub.ts` | `ipa/ipa-data.ts`, `test/mock-api.ts`, `test/speech-stub.ts` |
+
+- File mới tạo (`src/ui/*`, `src/router.tsx`, `src/styles/tokens.css`…) cũng theo kebab-case: `src/ui/progress-bar.tsx`, `src/ui/list-row.tsx`.
+- Đổi tên bằng `git mv` để giữ lịch sử. macOS/Windows không phân biệt hoa thường nên file chỉ khác hoa/thường (`Flashcard.tsx` → `flashcard.tsx`) phải đổi qua tên trung gian: `git mv Flashcard.tsx flashcard.tmp.tsx && git mv flashcard.tmp.tsx flashcard.tsx`.
+- Làm thành **một commit riêng chỉ đổi tên + sửa import**, test xanh, trước mọi thay đổi giao diện — để diff design không lẫn với diff đổi tên.
+
 ### Định tuyến
 
 - `src/router.tsx` khai báo cây route bằng `createBrowserRouter`; `main.tsx` render `<RouterProvider>` bên trong `QueryClientProvider`.
@@ -165,7 +182,8 @@ Mọi màn có trạng thái đang tải (skeleton), lỗi (`QueryError`) và r�
 
 Làm trên nhánh `feat/redesign-apple`, chia cho subagent:
 
-1. **Nền** (một agent, làm trước): thư viện, token sáng/tối, `src/ui/*`, AppShell/FocusShell/NavBar/CenterAction, router, axios client, sonner, cập nhật helper test.
+0. **Đổi tên** (agent nền, commit riêng): mọi file/thư mục frontend sang kebab-case, sửa import, test + build xanh.
+1. **Nền** (cùng agent, làm tiếp): thư viện, token sáng/tối, `src/ui/*`, AppShell/FocusShell/NavBar/CenterAction, router, axios client, sonner, cập nhật helper test.
 2. **Các màn** (3 agent song song, mỗi agent sở hữu file riêng):
    - A: Hôm nay, Buổi học, Ôn thẻ, `Flashcard`, `StepBar`.
    - B: Bài học, Kiểm tra, `LessonView`, `ExerciseSet`, Lộ trình, IPA.
