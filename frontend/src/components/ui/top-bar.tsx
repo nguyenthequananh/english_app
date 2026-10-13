@@ -1,5 +1,5 @@
-import { useState, type ReactNode } from 'react';
-import { motion, useMotionValueEvent, useScroll, useTransform } from 'motion/react';
+import type { ReactNode } from 'react';
+import { motion, useScroll, useTransform } from 'motion/react';
 import { IconLink } from './icon-button';
 
 /* Quãng cuộn (px) để lớp kính hiện đủ: vật liệu "tới" dần theo nội dung trượt vào dưới thanh, không bật phụt. */
@@ -9,8 +9,7 @@ const MATERIALIZE_DISTANCE = 24;
  * Thanh trên của màn tập trung: nút quay lại tròn bên trái, tiêu đề + phụ đề ở giữa, slot phải.
  * Dính đỉnh, chừa safe-area. Ở đỉnh trang thì trong suốt; cuộn xuống thì lớp kính mờ hiện dần theo quãng cuộn
  * 0–24px (độ mờ của lớp gắn thẳng vào vị trí cuộn, không animate `backdrop-filter`), mép dưới là bóng mềm thay
- * cho đường kẻ cứng (hiệu ứng mép cuộn kiểu iOS). Đặt `data-top-bar` để FocusShell cho nó tràn hết chiều ngang;
- * `data-scrolled` có mặt khi đã rời đỉnh.
+ * cho đường kẻ cứng (hiệu ứng mép cuộn kiểu iOS). Đặt `data-top-bar` để FocusShell cho nó tràn hết chiều ngang.
  */
 export function TopBar({ title, subtitle, back, backLabel = 'Quay lại', trailing }: {
   title: string;
@@ -22,15 +21,9 @@ export function TopBar({ title, subtitle, back, backLabel = 'Quay lại', traili
   const { scrollY } = useScroll();
   // Motion value → style trực tiếp: cuộn không làm React render lại từng khung hình.
   const materialOpacity = useTransform(scrollY, [0, MATERIALIZE_DISTANCE], [0, 1], { clamp: true });
-  const [scrolled, setScrolled] = useState(false);
-  useMotionValueEvent(scrollY, 'change', (v) => setScrolled(v > 4));
 
   return (
-    <header
-      data-top-bar=""
-      data-scrolled={scrolled ? '' : undefined}
-      className="sticky top-0 z-30 isolate pt-safe"
-    >
+    <header data-top-bar="" className="sticky top-0 z-30 isolate pt-safe">
       <motion.div
         aria-hidden="true"
         style={{ opacity: materialOpacity }}
