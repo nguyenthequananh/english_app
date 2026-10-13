@@ -2,6 +2,7 @@ import { Link, NavLink } from 'react-router';
 import { motion, MotionConfig } from 'motion/react';
 import type { IconName } from '../types/icon';
 import { Icon } from '../components/ui/icons';
+import { SPRING } from '../components/ui/motion';
 import { CenterAction } from './center-action';
 import { useCurrentProfile } from './require-profile';
 
@@ -12,8 +13,7 @@ export const NAV_ITEMS = [
   { to: '/settings', label: 'Cá nhân', icon: 'person' },
 ] as const satisfies readonly { to: string; label: string; icon: IconName }[];
 
-/* Chỉ báo mục đang chọn trượt theo bằng lò xo — tới đích dứt khoát, không nảy (đổi tab là thao tác thường xuyên). */
-const INDICATOR_SPRING = { type: 'spring', bounce: 0.12, duration: 0.38 } as const;
+/* Chỉ báo mục đang chọn trượt theo bằng lò xo tới hạn (`SPRING`) — tới đích dứt khoát, không nảy: đổi tab là chạm. */
 
 function NavItem({ to, label, icon }: { to: string; label: string; icon: IconName }) {
   return (
@@ -33,7 +33,7 @@ function NavItem({ to, label, icon }: { to: string; label: string; icon: IconNam
             <motion.span
               layoutId="nav-active-indicator"
               aria-hidden="true"
-              transition={INDICATOR_SPRING}
+              transition={SPRING}
               className="absolute inset-x-1 inset-y-1.5 rounded-2xl bg-accent-soft lg:inset-0 lg:rounded-xl"
             />
           )}

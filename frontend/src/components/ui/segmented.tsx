@@ -3,6 +3,7 @@ import { RadioGroup } from '@base-ui/react/radio-group';
 import { Radio } from '@base-ui/react/radio';
 import { motion, MotionConfig } from 'motion/react';
 import { cn } from './cn';
+import { SPRING } from './motion';
 
 /**
  * Điều khiển phân đoạn kiểu iOS (7 ngày / 30 ngày…), điều khiển được.
@@ -11,7 +12,8 @@ import { cn } from './cn';
  * mỗi lựa chọn là `role="radio"` với tên = nhãn hiển thị, `aria-checked` cho lựa chọn đang chọn.
  * Test/E2E chọn bằng `getByRole('radio', { name: '…' })`. Phím mũi tên chuyển và chọn luôn (như radio gốc).
  *
- * Nền trắng của lựa chọn đang chọn trượt theo bằng lò xo `motion` (tắt chuyển động khi reduced-motion).
+ * Nền trắng của lựa chọn đang chọn trượt theo bằng lò xo tới hạn `SPRING` — chọn là chạm, không nảy
+ * (tắt chuyển động khi reduced-motion).
  */
 export function Segmented<T extends string>({ label, value, onChange, options, className }: {
   label: string;
@@ -46,7 +48,7 @@ export function Segmented<T extends string>({ label, value, onChange, options, c
                   layoutId={`${id}-thumb`}
                   aria-hidden="true"
                   className="absolute inset-0 rounded-full bg-[var(--thumb)] shadow-[var(--shadow-thumb)]"
-                  transition={{ type: 'spring', bounce: 0.15, duration: 0.4 }}
+                  transition={SPRING}
                 />
               )}
               <span className="relative truncate">{o.label}</span>
