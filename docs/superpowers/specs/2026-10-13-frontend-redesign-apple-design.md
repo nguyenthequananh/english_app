@@ -9,7 +9,7 @@
 Làm lại toàn bộ giao diện theo nguyên tắc thiết kế của Apple (skill `apple-design`, `emil-design-eng`, `mobile-native` trong `.claude/skills/`) và ảnh mẫu do người dùng cung cấp (app học tiếng Anh trên iPhone: nền dải màu mềm, thẻ trắng bo tròn, tab bar dưới có nút tròn nổi ở giữa, màu nhấn tím).
 
 - **Mobile-first**: màn điện thoại là thiết kế gốc, sau này sẽ đóng gói thành app. Trên màn rộng thì bố cục kiểu web.
-- **Sáng + tối** theo cài đặt hệ thống (`prefers-color-scheme`), không có nút chuyển.
+- **Sáng + tối**: mặc định theo cài đặt hệ thống (`prefers-color-scheme`); người dùng chuyển được bằng nút sáng/tối và chọn Tự động · Sáng · Tối trong Cá nhân (bổ sung 2026-10-13, xem §3 "Chế độ sáng/tối").
 - Đồng thời đổi nền tảng frontend: gọi API bằng **axios**, định tuyến bằng **`createBrowserRouter`**, dữ liệu vẫn qua **TanStack Query**.
 
 **Tiêu chí thành công**
@@ -83,6 +83,15 @@ Mọi màu, bóng, bán kính, đường cong chuyển động khai báo một l
 ### Màn tập trung
 
 Buổi học (`/session`), Ôn thẻ (`/review`), Bài học (`/lessons/:code`), Kiểm tra (`/units/:code/test`, `/stages/:code/test`): toàn màn hình, **ẩn tab bar/sidebar**. Thanh trên gồm nút quay lại tròn, tiêu đề + phụ đề ở giữa (như màn giữa của ảnh mẫu). Thanh tiến độ của buổi học nằm ngay dưới thanh trên.
+
+### Chế độ sáng/tối (bổ sung 2026-10-13)
+
+- Ba giá trị: `system` (mặc định) · `light` · `dark`, lưu trong `localStorage` của trình duyệt (`ielts-theme`) — theo máy, không theo hồ sơ.
+- Áp bằng thuộc tính `data-theme` trên `<html>`: token sáng là mặc định, token tối áp khi `data-theme="dark"` hoặc khi `system` + `prefers-color-scheme: dark`. `color-scheme`, `<meta name="theme-color">` và theme của toast đổi theo. Ở `system`, đổi giao diện hệ điều hành lúc đang mở app thì app đổi ngay.
+- Không nháy màu: script nội tuyến nhỏ trong `index.html` đặt `data-theme` trước khi React chạy (không tải gì từ mạng).
+- **Nút nhanh** (icon mặt trời/mặt trăng, `aria-label` "Chuyển sang giao diện tối/sáng"): bấm chuyển sang chế độ ngược với giao diện đang hiển thị và lưu lựa chọn. Vị trí: cuối sidebar (≥ lg) và hành động của tiêu đề trang Cá nhân (< lg).
+- **Cá nhân → nhóm "Giao diện"**: `Segmented` "Tự động · Sáng · Tối" để quay lại theo hệ thống.
+- Đổi chế độ dùng cross-fade ngắn (hoặc tức thì khi reduced-motion), không animate từng màu.
 
 ### Chi tiết "như app thật" (skill `mobile-native`)
 

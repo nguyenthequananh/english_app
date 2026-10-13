@@ -1562,5 +1562,15 @@ Nguồn: báo cáo review tổng (Task 9) và báo cáo đối chiếu skill `ap
 ### Task 12: Gom component dùng chung về `src/components/ui` (sau Task 11)
 - Chuyển `Eyebrow`/`SectionTitle`, `IconChip`, `DownloadRow`, `FileRow`, `GroupItem`, `FormGroup`, `Kbd` vào `src/components/ui` (kebab-case, có test); giữ cục bộ các mảnh chỉ dùng một chỗ (`OptionChoice`, `UnitRow`, `ResultCard`…).
 
+> **Quyết định (sau review Task 11+13):** không dùng `LazyMotion`. Code chuyển động dùng `motion.*` + `layoutId` (cần `domMax`) + `animate()`/`useScroll`; đổi sang `m.*` ở nhiều file chỉ ước giảm lần tải đầu từ ~622 kB xuống ~530 kB — vẫn trên 500 kB vì riêng react + router đã 312 kB, mà rủi ro làm vỡ chuyển động cao. Mục tiêu "< 500 kB" đổi thành "không còn cảnh báo kích thước chunk, trang nặng (Markdown, Buổi học, base-ui) tải lười" — đã đạt.
+
+### Task 11b: Sửa sheet + điểm nhỏ sau review Task 11/13
+- Sheet: nền kéo dài xuống dưới khi kéo nảy lên / hất lên (không hở khe), giới hạn vận tốc lên khi thả; cha từ chối đóng thì sheet quay lại thay vì thành lớp phủ vô hình; reduced-motion vẫn kéo được (chỉ thả/vào/ra thành mờ dần); cache chiều cao; dọn trạng thái kéo khi đổi chế độ / mất pointer capture; test hành vi đóng/mở của Sheet.
+- Flashcard: giữ focus giữa các thẻ sau khi chấm; lật nhanh hơn (response 0.3).
+- Gom spinner lặp lại thành một component; bỏ `scrolled`/`data-scrolled` không dùng ở TopBar; `query-error` 2xx/3xx không thử lại; đổi tên `ui/motion.ts` để chunk không trùng tên thư viện.
+
+### Task 15: Nút chuyển sáng/tối (sau Task 12)
+- Theo spec §3 "Chế độ sáng/tối": `system | light | dark` lưu `localStorage`, áp qua `data-theme` trên `<html>`, script chống nháy trong `index.html`, `theme-color`/`color-scheme`/toast theo theme, nút nhanh ở sidebar + tiêu đề Cá nhân, nhóm "Giao diện" với `Segmented` trong Cá nhân. Test: chuyển theme đổi `data-theme` + lưu; `system` theo `matchMedia`; nút có `aria-label` đúng.
+
 ### Task 14: E2E + review cuối đợt 2
 - Build jar `-Papp`, chạy E2E; đối chiếu lại skill `apple-design`; cập nhật `frontend/CLAUDE.md`.
