@@ -22,11 +22,11 @@ export function CenterAction({ target = CENTER_ACTION }: { target?: CenterAction
         'bg-accent text-on-accent shadow-float hover:bg-accent-pressed active:bg-accent-pressed',
         // tab bar: tròn, nhô lên khỏi mép trên của thanh
         'size-[58px] -translate-y-[18px]',
-        // sidebar: nút rộng có chữ
-        'lg:h-12 lg:w-full lg:translate-y-0 lg:justify-start lg:gap-2.5 lg:px-4 lg:shadow-[0_6px_18px_-6px_color-mix(in_srgb,var(--accent)_70%,transparent)]',
+        // sidebar: nút rộng có chữ, chuẩn thanh điều hướng macOS
+        'lg:h-10 lg:w-full lg:translate-y-0 lg:justify-start lg:gap-2.5 lg:px-3.5 lg:rounded-xl lg:shadow-[0_4px_14px_-4px_color-mix(in_srgb,var(--accent)_60%,transparent)]',
       ].join(' ')}
     >
-      <Icon name={target.icon ?? 'sparkle'} filled size={26} strokeWidth={1.6} className="lg:size-[22px]" />
+      <Icon name={target.icon ?? 'sparkle'} filled size={26} strokeWidth={1.6} className="lg:size-[20px]" />
       <span className="sr-only lg:not-sr-only lg:text-base lg:font-semibold">{target.label}</span>
     </Link>
   );

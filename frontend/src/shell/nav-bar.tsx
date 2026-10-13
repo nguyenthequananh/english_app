@@ -24,7 +24,7 @@ function NavItem({ to, label, icon }: { to: string; label: string; icon: IconNam
       className={[
         'pressable focus-ring group relative flex h-full flex-col items-center justify-center gap-[3px] rounded-2xl',
         'text-text-2 aria-[current=page]:text-accent-text',
-        'lg:h-11 lg:flex-row lg:justify-start lg:gap-3 lg:rounded-xl lg:px-3',
+        'lg:h-10 lg:flex-row lg:justify-start lg:gap-2.5 lg:rounded-xl lg:px-3',
         'lg:hover:bg-fill lg:aria-[current=page]:hover:bg-transparent',
       ].join(' ')}
     >
@@ -38,7 +38,7 @@ function NavItem({ to, label, icon }: { to: string; label: string; icon: IconNam
               className="absolute inset-x-1 inset-y-1.5 rounded-2xl bg-accent-soft lg:inset-0 lg:rounded-xl"
             />
           )}
-          <Icon name={icon} filled={isActive} size={24} strokeWidth={isActive ? 2.1 : 1.85} className="relative lg:size-[22px]" />
+          <Icon name={icon} filled={isActive} size={24} strokeWidth={isActive ? 2.1 : 1.85} className="relative lg:size-[20px]" />
           <span className="relative text-xs leading-none font-semibold tracking-[0.01em] group-aria-[current=page]:font-bold lg:text-base lg:font-medium lg:tracking-normal lg:group-aria-[current=page]:font-semibold">
             {label}
           </span>
@@ -53,8 +53,8 @@ function ProfileCard() {
   const name = profile?.name ?? '';
   return (
     <div className="mt-auto hidden pt-6 lg:block">
-      <div className="flex items-center gap-3 rounded-2xl bg-surface p-3 card-edge">
-        <span aria-hidden="true" className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-accent-soft text-xl font-semibold text-accent-text">
+      <div className="flex items-center gap-3 rounded-2xl bg-surface p-2.5 card-edge transition-colors duration-(--duration-fast) hover:bg-surface-2">
+        <span aria-hidden="true" className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-accent-soft text-lg font-semibold text-accent-text">
           {profile?.avatar || name.charAt(0).toUpperCase() || '?'}
         </span>
         <div className="min-w-0 flex-1">
@@ -65,7 +65,7 @@ function ProfileCard() {
       <div className="mt-2 flex items-center gap-1">
         <Link
           to="/profiles?manual=1"
-          className="pressable focus-ring flex h-10 flex-1 items-center rounded-xl px-3 text-base font-semibold text-accent-text hover:bg-fill"
+          className="pressable focus-ring flex h-9 flex-1 items-center rounded-xl px-3 text-base font-semibold text-accent-text hover:bg-fill"
         >
           Đổi hồ sơ
         </Link>

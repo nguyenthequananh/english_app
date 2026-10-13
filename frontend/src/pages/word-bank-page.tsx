@@ -1,4 +1,4 @@
-import { useDeferredValue, useState, type FormEvent } from 'react';
+import { useDeferredValue, useEffect, useRef, useState, type FormEvent } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { endpoints } from '../api/endpoints';
 import type { AddWord, WordBankItem, WordStatus } from '../types/api';
@@ -16,6 +16,7 @@ import { Badge } from '../components/ui/badge';
 import { EmptyState } from '../components/ui/empty-state';
 import { Skeleton } from '../components/ui/skeleton';
 import { Icon } from '../components/ui/icons';
+import { Kbd } from '../components/ui/kbd';
 
 type Filter = 'ALL' | WordStatus;
 
@@ -56,7 +57,7 @@ function WordRow({ item }: { item: WordBankItem }) {
     <div
       role="row"
       data-testid="word-row"
-      className={`${ROW_GRID} px-4 py-3 lg:py-2 [&:not(:first-child)]:border-t [&:not(:first-child)]:border-separator`}
+      className={`${ROW_GRID} px-4 py-3 lg:py-2.5 lg:hover:bg-fill/30 lg:transition-colors lg:duration-(--duration-fast) [&:not(:first-child)]:border-t [&:not(:first-child)]:border-separator`}
     >
       <div role="cell" className="min-w-0 [grid-area:word]">
         <span className="text-lg font-semibold break-words text-text lg:text-base">{word.headword}</span>
@@ -122,6 +123,7 @@ export default function WordBankPage() {
   const [q, setQ] = useState('');
   const [filter, setFilter] = useState<Filter>('ALL');
   const [adding, setAdding] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const deferredQ = useDeferredValue(q);
   const status: WordStatus | '' = filter === 'ALL' ? '' : filter;
   const wordsQuery = useQuery({ queryKey: ['words', deferredQ, status], queryFn: () => endpoints.words(deferredQ, status),
@@ -130,6 +132,19 @@ export default function WordBankPage() {
   });
   const { data } = wordsQuery;
   const searching = Boolean(deferredQ.trim()) || filter !== 'ALL';
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement | null)?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (e.key === '/' || (e.key === 'k' && (e.metaKey || e.ctrlKey))) {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
 
   return (
     <div data-testid="page-words">
@@ -149,6 +164,7 @@ export default function WordBankPage() {
         <div className="relative lg:flex-1">
           <Icon name="search" size={18} strokeWidth={2.1} className="pointer-events-none absolute top-1/2 left-3.5 z-[1] -translate-y-1/2 text-text-3" />
           <TextField
+            ref={searchInputRef}
             label="Tìm từ"
             type="search"
             enterKeyHint="search"
@@ -158,8 +174,13 @@ export default function WordBankPage() {
             placeholder="Tìm từ hoặc nghĩa…"
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            className="[&_input]:pl-10 [&>label]:sr-only"
+            className="[&_input]:pl-10 [&_input]:pr-10 [&>label]:sr-only"
           />
+          {!q && (
+            <span className="pointer-events-none absolute top-1/2 right-3.5 z-[1] -translate-y-1/2 hidden lg:inline-flex">
+              <Kbd>/</Kbd>
+            </span>
+          )}
         </div>
         <Segmented label="Trạng thái" value={filter} onChange={setFilter} options={FILTERS} className="lg:w-[26rem]" />
       </div>

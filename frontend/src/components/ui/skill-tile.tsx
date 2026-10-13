@@ -29,7 +29,7 @@ export function SkillTile({ to, label, ariaLabel, icon, tone, align = 'top', cla
       className={cn(
         'pressable focus-ring flex min-h-[6.75rem] flex-col items-center gap-2.5 rounded-card bg-surface px-1.5 pt-4 pb-3 text-center card-edge',
         align === 'center' && 'justify-center pb-4',
-        'hover:bg-[color-mix(in_srgb,var(--surface)_94%,var(--text))]',
+        'hover:bg-[color-mix(in_srgb,var(--surface)_94%,var(--text))] lg:hover:-translate-y-0.5 lg:hover:shadow-card',
         toneClass(tone),
         className,
       )}

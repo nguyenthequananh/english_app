@@ -15,6 +15,7 @@ import { Eyebrow, SectionTitle } from '../components/ui/section-heading';
 import { SkillTile } from '../components/ui/skill-tile';
 import { Skeleton } from '../components/ui/skeleton';
 import { StatTile } from '../components/ui/stat-tile';
+import { Kbd } from '../components/ui/kbd';
 
 /** Số lớn có dấu chấm ngăn cách hàng nghìn (12.345), như màn Tiến độ. */
 const num = new Intl.NumberFormat('vi-VN');
@@ -86,6 +87,7 @@ function SessionCard({ summary, dailyMinutes }: { summary: Summary; dailyMinutes
         <ButtonLink to="/session" className="mt-4">
           {inProgress ? 'Tiếp tục buổi học' : 'Bắt đầu buổi học'}
           <Icon name="chevron-right" size={16} strokeWidth={2.4} />
+          <Kbd>Space</Kbd>
         </ButtonLink>
       </div>
       <span className="tone-accent tone-chip inline-flex size-14 shrink-0 items-center justify-center rounded-full">

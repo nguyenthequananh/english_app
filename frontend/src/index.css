@@ -36,13 +36,16 @@
     backdrop-filter: none;
   }
 }
-/* Phản hồi nhấn: thu nhẹ ngay khi chạm, ease-out ngắn. */
+/* Phản hồi nhấn: thu nhẹ ngay khi chạm, ease-out ngắn. Chuột desktop (pointer: fine) thu 0.985 tinh tế. */
 @utility pressable {
   transition-property: transform, background-color, color, opacity, box-shadow;
   transition-duration: var(--duration-press);
   transition-timing-function: var(--ease-out);
   &:active:not(:disabled, [aria-disabled="true"]) {
     transform: scale(0.97);
+    @media (pointer: fine) {
+      transform: scale(0.985);
+    }
   }
 }
 /* Vòng focus chỉ khi điều hướng bằng bàn phím. */
@@ -120,9 +123,34 @@
   html:has([data-top-bar]) {
     scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 4.25rem);
   }
+  @media (width >= 64rem) {
+    html:has([data-app-header]) {
+      scroll-padding-top: 4.5rem;
+    }
+  }
 
   ::selection {
     background-color: color-mix(in srgb, var(--accent) 24%, transparent);
+  }
+
+  /* Thanh cuộn tinh tế kiểu macOS khi dùng chuột desktop */
+  @media (pointer: fine) {
+    *::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    *::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    *::-webkit-scrollbar-thumb {
+      background-color: var(--fill-strong);
+      border-radius: 9999px;
+      border: 2px solid transparent;
+      background-clip: content-box;
+    }
+    *::-webkit-scrollbar-thumb:hover {
+      background-color: var(--text-3);
+    }
   }
 
   /* Ô nhập theo cỡ chữ thân khi dùng chuột; trên màn cảm ứng giữ ≥16px để iOS không tự phóng to khi focus. */

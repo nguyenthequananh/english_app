@@ -52,7 +52,7 @@ export default function RoadmapPage() {
       ) : data.stages.length === 0 ? (
         <EmptyState icon="map" title="Chưa có nội dung lộ trình" description="Nạp nội dung học ở Cá nhân → Nội dung rồi quay lại đây." />
       ) : (
-        <div className="space-y-8 lg:max-w-3xl">
+        <div className="space-y-8 lg:space-y-10">
           {data.stages.map((stage) => <StageSection key={stage.code} stage={stage} />)}
         </div>
       )}
@@ -222,7 +222,7 @@ function UnitLessons({ code }: { code: string }) {
     <div className="pt-0.5 pr-3 pb-3 pl-[3.75rem]">
       <ProgressBar value={data.length ? completed / data.length : 0} label={`Tiến độ ${code}`} className="mr-1 mb-1.5 ml-2" />
       <p className="mb-1 ml-2 text-sm tabular-nums text-text-3">{completed}/{data.length} bài đã học</p>
-      <ul>
+      <ul className="space-y-1 lg:grid lg:grid-cols-2 lg:gap-2 lg:space-y-0">
         {data.map((l) => {
           const skill = lessonSkill(l.type);
           return (
