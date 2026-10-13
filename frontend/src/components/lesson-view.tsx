@@ -30,7 +30,8 @@ export function LessonView({ code, onDone, doneLabel = 'Xong', showTitle = true 
   showTitle?: boolean;
 }) {
   const queryClient = useQueryClient();
-  const lessonQuery = useQuery({ queryKey: ['lesson', code], queryFn: () => endpoints.lesson(code) });
+  // Lỗi tải bài hiện ngay trong khung (QueryError) nên không bắn thêm toast — tránh báo một lỗi hai lần.
+  const lessonQuery = useQuery({ queryKey: ['lesson', code], queryFn: () => endpoints.lesson(code), meta: { silent: true } });
   const { data: lesson, isLoading } = lessonQuery;
   const submit = useMutation({
     mutationFn: (answers: Record<string, string>) => endpoints.submitLesson(code, answers),

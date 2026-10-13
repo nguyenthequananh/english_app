@@ -1,8 +1,9 @@
-import { screen } from '@testing-library/react';
+import { act, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Route, Routes } from 'react-router';
 import LessonPage from '@/pages/lesson-page';
 import TestPage from '@/pages/test-page';
+import { Toaster, toast } from '@/components/toaster';
 import { renderAt } from '@test/render';
 import { mockApi, problem } from '@test/mock-api';
 import { stubSpeech } from '@test/speech-stub';
@@ -93,16 +94,38 @@ test('trượt bài chuyển chặng thì hiện unit nên ôn và cho làm lạ
   expect(screen.getByRole('button', { name: 'Nộp bài' })).toBeInTheDocument();
 });
 
-test('bài học bị khoá: hiện lỗi từ backend, thử lại thì tải được bài', async () => {
-  const user = userEvent.setup();
-  let locked = true;
+test('bài học bị khoá (403): hiện lỗi từ backend MỘT lần (không kèm toast), không mời thử lại', async () => {
   const calls = mockApi({
-    'GET /lessons/S0-U01-G1': () => (locked ? problem(403, 'UNIT_LOCKED', 'Unit này chưa được mở khoá') : { body: lesson }),
+    'GET /lessons/S0-U01-G1': () => problem(403, 'UNIT_LOCKED', 'Unit này chưa được mở khoá'),
+  });
+  renderAt(
+    <>
+      <Routes><Route path="/lessons/:code" element={<LessonPage />} /></Routes>
+      <Toaster />
+    </>,
+    '/lessons/S0-U01-G1',
+  );
+  expect(await screen.findByRole('alert')).toHaveTextContent('Unit này chưa được mở khoá');
+  // Mốc: sonner hiện thông báo theo đúng thứ tự gọi — mốc đã lên thì toast lỗi (nếu có bắn) cũng đã ở trong DOM.
+  act(() => toast('mốc'));
+  expect(await screen.findByText('mốc')).toBeInTheDocument();
+  expect(screen.getAllByText('Unit này chưa được mở khoá')).toHaveLength(1);
+  // Khoá là câu trả lời dứt khoát của backend: bấm lại vẫn vậy, chỉ chừa đường về lộ trình.
+  expect(screen.queryByRole('button', { name: 'Thử lại' })).not.toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Về lộ trình' })).toHaveAttribute('href', '/roadmap');
+  // Trang và LessonView dùng chung khoá query: chỉ một request.
+  expect(calls.filter((c) => c.path === '/lessons/S0-U01-G1')).toHaveLength(1);
+});
+
+test('bài học lỗi máy chủ: thử lại thì tải được bài', async () => {
+  const user = userEvent.setup();
+  let fail = true;
+  const calls = mockApi({
+    'GET /lessons/S0-U01-G1': () => (fail ? problem(500, 'INTERNAL', 'Có lỗi xảy ra, hãy thử lại') : { body: lesson }),
   });
   renderRoutes('/lessons/S0-U01-G1');
-  expect(await screen.findByText('Unit này chưa được mở khoá')).toBeInTheDocument();
-  expect(screen.getByRole('link', { name: 'Về lộ trình' })).toHaveAttribute('href', '/roadmap');
-  locked = false;
+  expect(await screen.findByText('Có lỗi xảy ra, hãy thử lại')).toBeInTheDocument();
+  fail = false;
   await user.click(screen.getByRole('button', { name: 'Thử lại' }));
   expect(await screen.findByRole('heading', { name: 'Thì hiện tại đơn' })).toBeInTheDocument();
   expect(calls.filter((c) => c.path === '/lessons/S0-U01-G1')).toHaveLength(2);
