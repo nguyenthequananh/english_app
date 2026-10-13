@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Route, Routes } from 'react-router';
 import SettingsPage from '@/pages/settings-page';
@@ -93,6 +93,8 @@ test('khôi phục bản sao lưu rồi tắt app', async () => {
   await user.click(await screen.findByRole('button', { name: 'Khôi phục ielts-20261006-090000-auto.db' }));
   expect(await screen.findByText(/Đã lên lịch khôi phục/)).toBeInTheDocument();
   await user.click(screen.getAllByRole('button', { name: 'Tắt app' })[0]);
+  const confirm = await screen.findByRole('alertdialog', { name: 'Tắt app?' });
+  await user.click(within(confirm).getByRole('button', { name: 'Tắt app' }));
   expect(await screen.findByTestId('app-stopped')).toHaveTextContent('App đã tắt');
 });
 

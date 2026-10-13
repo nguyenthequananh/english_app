@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { endpoints } from '../api/endpoints';
+import { Button } from '../ui/button';
+import { Icon } from '../ui/icons';
 
 export function HealthBanner() {
   const [hidden, setHidden] = useState(false);
@@ -16,9 +18,12 @@ export function HealthBanner() {
   }
   if (!message) return null;
   return (
-    <div role="alert" className="mx-auto mt-3 flex max-w-5xl items-start gap-3 rounded-lg bg-sky-100 px-4 py-3 text-sm text-sky-900">
-      <span className="flex-1">{message}</span>
-      <button type="button" className="btn btn-ghost" onClick={() => setHidden(true)}>Đóng</button>
+    <div role="alert" className="tone-grammar mt-4 flex items-start gap-3 rounded-card bg-surface p-4 card-edge">
+      <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--tone-soft)] text-[var(--tone-text)]">
+        <Icon name="download" size={18} strokeWidth={2.1} />
+      </span>
+      <p className="min-w-0 flex-1 pt-1.5 text-[0.9375rem] leading-snug break-words text-text">{message}</p>
+      <Button variant="ghost" size="sm" onClick={() => setHidden(true)}>Đóng</Button>
     </div>
   );
 }

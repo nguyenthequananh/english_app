@@ -1,26 +1,16 @@
-import { useEffect, useState } from 'react';
+import { toast as sonner, Toaster as SonnerToaster } from 'sonner';
+import type { CSSProperties } from 'react';
 import { ApiError } from '../api/api-error';
+import { Icon } from '../ui/icons';
+import { DESKTOP_QUERY, useMediaQuery } from '../ui/use-media-query';
 
-interface ToastItem { id: number; message: string; kind: 'info' | 'error' }
-
-let items: ToastItem[] = [];
-let listeners: ((t: ToastItem[]) => void)[] = [];
-let nextId = 1;
-
-function emit() {
-  listeners.forEach((l) => l(items));
+/** Hiện một thông báo ngắn. Giữ chữ ký cũ để nơi gọi không phải đổi. */
+export function toast(message: string, kind: 'info' | 'error' = 'info') {
+  if (kind === 'error') sonner.error(message);
+  else sonner(message);
 }
 
-export function toast(message: string, kind: ToastItem['kind'] = 'info') {
-  const item = { id: nextId++, message, kind };
-  items = [...items, item];
-  emit();
-  setTimeout(() => {
-    items = items.filter((t) => t.id !== item.id);
-    emit();
-  }, 6000);
-}
-
+/** Thông báo lỗi chuẩn cho mọi query/mutation. Bỏ qua PROFILE_REQUIRED (đã có điều hướng về /profiles). */
 export function notifyError(e: unknown) {
   if (e instanceof ApiError) {
     if (e.code !== 'PROFILE_REQUIRED') toast(e.message, 'error');
@@ -29,22 +19,35 @@ export function notifyError(e: unknown) {
   }
 }
 
+/* Sonner tự đọc các biến này; trỏ chúng về token để thông báo theo đúng sáng/tối của app. */
+const TOAST_VARS = {
+  '--normal-bg': 'var(--material-strong)',
+  '--normal-border': 'var(--material-edge)',
+  '--normal-text': 'var(--text)',
+  '--border-radius': '18px',
+} as CSSProperties;
+
+/** Một Toaster duy nhất ở gốc app. Điện thoại: trên-giữa (không đè tab bar); màn rộng: dưới-phải. */
 export function Toaster() {
-  const [current, setCurrent] = useState<ToastItem[]>(items);
-  useEffect(() => {
-    listeners.push(setCurrent);
-    return () => {
-      listeners = listeners.filter((l) => l !== setCurrent);
-    };
-  }, []);
+  const desktop = useMediaQuery(DESKTOP_QUERY);
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex max-w-sm flex-col gap-2" role="status">
-      {current.map((t) => (
-        <div key={t.id}
-          className={`rounded-lg px-4 py-3 text-sm shadow-lg ${t.kind === 'error' ? 'bg-rose-600 text-white' : 'bg-slate-800 text-white'}`}>
-          {t.message}
-        </div>
-      ))}
-    </div>
+    <SonnerToaster
+      theme="system"
+      position={desktop ? 'bottom-right' : 'top-center'}
+      duration={6000}
+      gap={10}
+      mobileOffset={{ top: 'calc(env(safe-area-inset-top, 0px) + 12px)', left: 16, right: 16 }}
+      style={TOAST_VARS}
+      icons={{
+        error: <span className="tone-danger inline-flex text-[var(--tone-text)]"><Icon name="cross" size={18} strokeWidth={2.4} /></span>,
+        success: <span className="tone-success inline-flex text-[var(--tone-text)]"><Icon name="check" size={18} strokeWidth={2.4} /></span>,
+      }}
+      toastOptions={{
+        classNames: {
+          toast: 'app-toast',
+          title: 'app-toast-title',
+        },
+      }}
+    />
   );
 }
