@@ -118,7 +118,8 @@ Mọi file và thư mục trong `frontend/src/` và `frontend/e2e/` dùng **keba
 
 ### Gọi API bằng axios
 
-- `src/api/client.ts` dùng một instance axios: `baseURL: '/api'`, `withCredentials: true`, **`adapter: 'fetch'`** (để helper `mockApi` trong test — vốn giả `fetch` — tiếp tục dùng được, không phải viết lại test).
+- `src/api/client.ts` xuất một instance axios `http` (`baseURL: '/api'`, adapter mặc định — XHR trên trình duyệt, cookie cùng origin tự gửi).
+- Test giả backend bằng cách thay `http.defaults.adapter` (helper `mockApi` giữ nguyên chữ ký và khoá `"METHOD /path"`). **Không** dùng `adapter: 'fetch'`: adapter đó tự dựng `new Request('/api/…')` với URL tương đối, môi trường test (Node) từ chối nên mọi request thành lỗi mạng.
 - Interceptor phản hồi giữ **nguyên hợp đồng** hiện tại:
   - lỗi có ProblemDetail → `ApiError(status, code, detail, errors)`;
   - không phải JSON → `code: HTTP_<status>`;
