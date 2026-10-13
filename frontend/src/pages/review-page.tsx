@@ -1,9 +1,14 @@
 import { useState } from 'react';
-import { Link } from 'react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { endpoints } from '../api/endpoints';
 import { Flashcard } from '../components/flashcard';
 import { QueryError } from '../components/query-error';
+import { ButtonLink } from '../ui/button';
+import { Card } from '../ui/card';
+import { EmptyState } from '../ui/empty-state';
+import { ProgressBar } from '../ui/progress-bar';
+import { Skeleton } from '../ui/skeleton';
+import { TopBar } from '../ui/top-bar';
 import type { Grade } from '../types/api';
 
 export default function ReviewPage() {
@@ -19,24 +24,58 @@ export default function ReviewPage() {
     },
   });
 
+  const card = cards?.[index];
+  const left = cards ? Math.max(0, cards.length - index) : 0;
+  const topBar = <TopBar title="Ôn thẻ" subtitle={card ? `Còn ${left} thẻ` : undefined} back="/" />;
+
   if (cardsQuery.error) {
-    return <QueryError error={cardsQuery.error} onRetry={() => cardsQuery.refetch()} backTo={{ to: '/', label: 'Về trang chủ' }} />;
+    return (
+      <>
+        {topBar}
+        <div className="pt-2">
+          <QueryError error={cardsQuery.error} onRetry={() => cardsQuery.refetch()} backTo={{ to: '/', label: 'Về trang chủ' }} />
+        </div>
+      </>
+    );
   }
-  if (!cards) return <p className="text-slate-500">Đang tải thẻ…</p>;
-  const card = cards[index];
+  if (!cards) {
+    return (
+      <>
+        {topBar}
+        <div className="space-y-5 pt-1">
+          <span role="status" className="sr-only">Đang tải thẻ…</span>
+          <Skeleton className="h-1.5 rounded-full" />
+          <Skeleton className="h-[clamp(18rem,calc(100dvh_-_16rem),34rem)] rounded-card" />
+          <Skeleton className="h-14 rounded-full" />
+        </div>
+      </>
+    );
+  }
   if (!card) {
     return (
-      <div className="card space-y-3 text-center">
-        <p className="text-lg">Không còn thẻ nào đến hạn. Tuyệt!</p>
-        <Link to="/" className="btn btn-primary">Về trang chủ</Link>
-      </div>
+      <>
+        {topBar}
+        <div data-testid="page-review" className="pt-2">
+          <Card>
+            <EmptyState
+              icon="check"
+              title="Không còn thẻ nào đến hạn. Tuyệt!"
+              description={index > 0 ? `Bạn vừa ôn ${index} thẻ. Thẻ sẽ quay lại đúng ngày cần ôn.` : 'Thẻ sẽ quay lại đúng ngày cần ôn — chưa cần làm gì thêm.'}
+              action={<ButtonLink to="/" size="lg">Về trang chủ</ButtonLink>}
+            />
+          </Card>
+        </div>
+      </>
     );
   }
   return (
-    <div data-testid="page-review" className="space-y-3">
-      <p className="text-sm text-slate-500">Ôn thêm: thẻ {index + 1}/{cards.length}</p>
-      <Flashcard key={card.id} word={card} busy={review.isPending}
-        onGrade={(grade) => review.mutate({ wordId: card.id, grade })} />
-    </div>
+    <>
+      {topBar}
+      <div data-testid="page-review" className="space-y-5 pt-1">
+        <ProgressBar value={index / cards.length} label="Tiến độ ôn thẻ" />
+        <Flashcard key={card.id} word={card} busy={review.isPending}
+          onGrade={(grade) => review.mutate({ wordId: card.id, grade })} />
+      </div>
+    </>
   );
 }
