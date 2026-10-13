@@ -71,8 +71,9 @@ test('qua bài kiểm tra unit thì báo đạt và mở unit tiếp theo', asyn
   renderRoutes('/units/S0-U01/test');
   await user.click(await screen.findByLabelText('goes'));
   await user.click(screen.getByRole('button', { name: 'Nộp bài' }));
-  expect(await screen.findByText(/Đạt 100%/)).toBeInTheDocument();
-  expect(screen.getByText(/Unit tiếp theo đã mở/)).toBeInTheDocument();
+  expect(await screen.findByText(/Unit tiếp theo đã mở/)).toBeInTheDocument();
+  expect(screen.getByRole('progressbar', { name: 'Điểm bài kiểm tra' })).toHaveAttribute('aria-valuenow', '100');
+  expect(screen.getByText('Đạt')).toBeInTheDocument();
 });
 
 test('trượt bài chuyển chặng thì hiện unit nên ôn và cho làm lại', async () => {
@@ -83,7 +84,9 @@ test('trượt bài chuyển chặng thì hiện unit nên ôn và cho làm lạ
   });
   renderRoutes('/stages/S0/test');
   await user.click(await screen.findByRole('button', { name: 'Nộp bài' }));
-  expect(await screen.findByText('Chưa đạt: 50% (cần 70%)')).toBeInTheDocument();
+  expect(await screen.findByText('Cần 70% để qua.')).toBeInTheDocument();
+  expect(screen.getByRole('progressbar', { name: 'Điểm bài kiểm tra' })).toHaveAttribute('aria-valuenow', '50');
+  expect(screen.getByText('Chưa đạt')).toBeInTheDocument();
   expect(screen.getByText(/S0-U01/)).toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: 'Làm lại' }));
   expect(screen.getByRole('button', { name: 'Nộp bài' })).toBeInTheDocument();

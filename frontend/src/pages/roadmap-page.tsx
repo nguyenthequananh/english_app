@@ -1,56 +1,178 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { Link } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { endpoints } from '../api/endpoints';
-import type { UnitView } from '../types/api';
+import type { StageView, Status, UnitView } from '../types/api';
 import { QueryError } from '../components/query-error';
-import { DAY_LABEL, LESSON_TYPE_LABEL, STATUS_LABEL } from '../components/labels';
+import { dayLabel, lessonSkill, lessonTypeLabel, STATUS_LABEL } from '../components/labels';
+import { Badge } from '../ui/badge';
+import { EmptyState } from '../ui/empty-state';
+import { Icon } from '../ui/icons';
+import { ListGroup, ListRow } from '../ui/list-row';
+import { PageHeader } from '../ui/page-header';
+import { ProgressBar } from '../ui/progress-bar';
+import { Skeleton } from '../ui/skeleton';
+import { SKILL_META, toneClass } from '../ui/skill';
+import { cn } from '../ui/cn';
 
-const STATUS_CLS: Record<string, string> = {
-  LOCKED: 'bg-slate-200 text-slate-600', ACTIVE: 'bg-indigo-100 text-indigo-800', DONE: 'bg-emerald-100 text-emerald-800',
-};
+const STATUS_TONE: Record<Status, 'neutral' | 'accent' | 'success'> = { LOCKED: 'neutral', ACTIVE: 'accent', DONE: 'success' };
+
+/** Đường kẻ giữa các dòng, thụt sau phần leading — cùng cách ListRow vẽ để hàng tự làm và ListRow nằm chung một nhóm. */
+const ROW_DIVIDER = 'group-[:not(:first-child)]/row:border-t group-[:not(:first-child)]/row:border-separator';
 
 export default function RoadmapPage() {
   const roadmapQuery = useQuery({ queryKey: ['roadmap'], queryFn: endpoints.roadmap });
   const { data } = roadmapQuery;
-  if (roadmapQuery.error) return <QueryError error={roadmapQuery.error} onRetry={() => roadmapQuery.refetch()} />;
-  if (!data) return <p className="text-slate-500">Đang tải lộ trình…</p>;
+  const units = data?.stages.flatMap((s) => s.units) ?? [];
+  const doneUnits = units.filter((u) => u.status === 'DONE').length;
+
   return (
-    <div data-testid="page-roadmap" className="space-y-4">
-      <h1 className="text-2xl font-bold">Lộ trình</h1>
-      {data.stages.map((stage) => (
-        <section key={stage.code} className="card space-y-3">
-          <div className="flex flex-wrap items-center gap-3">
-            <h2 className="text-lg font-semibold">{stage.code} · {stage.title}</h2>
-            <span className="text-sm text-slate-500">Mục tiêu band {stage.targetBand}</span>
-            <span className={`badge ${STATUS_CLS[stage.status]}`}>{STATUS_LABEL[stage.status]}</span>
-            {stage.testAvailable && stage.status !== 'DONE' && (
-              <Link to={`/stages/${stage.code}/test`} className="btn ml-auto bg-amber-100 hover:bg-amber-200">Làm bài kiểm tra chuyển chặng</Link>
-            )}
-          </div>
-          <ul className="space-y-2">
-            {stage.units.map((u) => <UnitRow key={u.code} unit={u} />)}
-          </ul>
-        </section>
-      ))}
+    <div data-testid="page-roadmap">
+      <PageHeader
+        title="Lộ trình"
+        subtitle={data && units.length > 0
+          ? <span className="tabular-nums">Đã xong {doneUnits}/{units.length} unit</span>
+          : 'Chặng → unit → bài học theo từng ngày trong tuần'}
+      />
+      {roadmapQuery.error ? (
+        <QueryError error={roadmapQuery.error} onRetry={() => roadmapQuery.refetch()} />
+      ) : !data ? (
+        <RoadmapSkeleton />
+      ) : data.stages.length === 0 ? (
+        <EmptyState icon="map" title="Chưa có nội dung lộ trình" description="Nạp nội dung học ở Cá nhân → Nội dung rồi quay lại đây." />
+      ) : (
+        <div className="space-y-8 lg:max-w-3xl">
+          {data.stages.map((stage) => <StageSection key={stage.code} stage={stage} />)}
+        </div>
+      )}
     </div>
   );
 }
 
-function UnitRow({ unit }: { unit: UnitView }) {
-  const [open, setOpen] = useState(false);
-  if (unit.status === 'LOCKED') {
-    return <li className="rounded-lg bg-slate-100 px-3 py-2 text-slate-400">🔒 {unit.code} · {unit.title}</li>;
-  }
+function StageSection({ stage }: { stage: StageView }) {
+  const headingId = useId();
+  const done = stage.units.filter((u) => u.status === 'DONE').length;
   return (
-    <li className="rounded-lg border border-slate-200">
-      <button type="button" className="flex w-full items-center gap-2 px-3 py-2 text-left" aria-expanded={open}
-        onClick={() => setOpen((o) => !o)}>
-        <span>{unit.status === 'DONE' ? '✅' : '📘'}</span>
-        <span className="font-medium">{unit.code} · {unit.title}</span>
-        <span className={`badge ml-auto ${STATUS_CLS[unit.status]}`}>{STATUS_LABEL[unit.status]}</span>
+    <section aria-labelledby={headingId} className="space-y-2.5">
+      <div className="flex items-end gap-3 px-1">
+        <div className="min-w-0 flex-1">
+          <p className="text-[0.8125rem] font-semibold uppercase tracking-[0.04em] text-text-3">Chặng {stage.code}</p>
+          <h2 id={headingId} className="mt-0.5 text-[1.375rem] leading-tight font-bold tracking-[-0.015em] text-balance text-text">
+            {stage.title}
+          </h2>
+          <p className="mt-1 flex flex-wrap items-center gap-x-1.5 text-[0.875rem] text-text-2">
+            <span>Mục tiêu band {stage.targetBand}</span>
+            <span aria-hidden="true" className="text-text-3">·</span>
+            <span className="tabular-nums">{done}/{stage.units.length} unit</span>
+          </p>
+        </div>
+        <Badge tone={STATUS_TONE[stage.status]} className="mb-1">{STATUS_LABEL[stage.status]}</Badge>
+      </div>
+      <ListGroup>
+        {stage.units.map((u, i) => <UnitRow key={u.code} unit={u} order={i + 1} />)}
+        {stage.testAvailable && stage.status !== 'DONE' && (
+          <ListRow
+            to={`/stages/${stage.code}/test`}
+            title={<span className="font-semibold text-accent-text">Làm bài kiểm tra chuyển chặng</span>}
+            leading={(
+              <span className="tone-chip tone-accent inline-flex size-9 items-center justify-center rounded-full">
+                <Icon name="star" size={18} filled />
+              </span>
+            )}
+          />
+        )}
+      </ListGroup>
+    </section>
+  );
+}
+
+function UnitNumber({ order, status }: { order: number; status: Status }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={cn(
+        'inline-flex size-9 items-center justify-center rounded-full text-[0.9375rem] font-bold tabular-nums',
+        status === 'ACTIVE' && 'bg-accent text-on-accent shadow-[0_4px_12px_-4px_var(--accent)]',
+        status === 'DONE' && 'bg-fill text-text-2',
+        status === 'LOCKED' && 'bg-fill text-text-3',
+      )}
+    >
+      {order}
+    </span>
+  );
+}
+
+function UnitRow({ unit, order }: { unit: UnitView; order: number }) {
+  // Unit đang học mở sẵn để thấy ngay bài hôm nay; unit khác bấm mới mở.
+  const [open, setOpen] = useState(unit.status === 'ACTIVE');
+  const panelId = useId();
+  // Giảm chuyển động: bỏ co giãn chiều cao, chỉ còn mờ dần ngắn.
+  const reduceMotion = useReducedMotion();
+  const collapsed = reduceMotion ? { opacity: 0 } : { height: 0, opacity: 0 };
+
+  if (unit.status === 'LOCKED') {
+    return (
+      <li className="group/row">
+        <div className="flex w-full items-center gap-3 pl-4">
+          <UnitNumber order={order} status="LOCKED" />
+          <span className={cn('flex min-h-[3.75rem] min-w-0 flex-1 items-center gap-3 py-2.5 pr-4', ROW_DIVIDER)}>
+            <span className="min-w-0 flex-1">
+              <span className="line-clamp-2 block text-[1rem] leading-snug text-pretty text-text-3">{unit.title}</span>
+              <span className="mt-0.5 block text-[0.8125rem] leading-snug text-text-3">{unit.code}</span>
+            </span>
+            <Icon name="lock" size={18} className="text-text-3" />
+            <span className="sr-only">{STATUS_LABEL.LOCKED}</span>
+          </span>
+        </div>
+      </li>
+    );
+  }
+
+  const active = unit.status === 'ACTIVE';
+  return (
+    <li className={cn('group/row', active && 'bg-[color-mix(in_srgb,var(--accent)_6%,transparent)]')}>
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-controls={panelId}
+        onClick={() => setOpen((o) => !o)}
+        className="focus-ring flex w-full items-center gap-3 pl-4 text-left transition-colors duration-150 [outline-offset:-2px] hover:bg-fill active:bg-fill-strong"
+      >
+        <UnitNumber order={order} status={unit.status} />
+        <span className={cn('flex min-h-[3.75rem] min-w-0 flex-1 items-center gap-3 py-2.5 pr-4', ROW_DIVIDER)}>
+          <span className="min-w-0 flex-1">
+            <span className={cn('line-clamp-2 block text-[1rem] leading-snug text-pretty text-text', active && 'font-semibold')}>{unit.title}</span>
+            <span className="mt-0.5 block text-[0.8125rem] leading-snug text-text-3">
+              {active && <><span className="font-semibold text-accent-text">{STATUS_LABEL.ACTIVE}</span> · </>}
+              {unit.code}
+            </span>
+          </span>
+          {active ? null : (
+            <span className="tone-success inline-flex size-6 items-center justify-center rounded-full bg-[var(--tone-soft)] text-[var(--tone-text)]">
+              <Icon name="check" size={14} strokeWidth={3} />
+              <span className="sr-only">{STATUS_LABEL.DONE}</span>
+            </span>
+          )}
+          <Icon name="chevron-right" size={16} strokeWidth={2.4}
+            className={cn('text-text-3 opacity-70 transition-transform duration-200 ease-out', open && 'rotate-90')} />
+        </span>
       </button>
-      {open && <UnitLessons code={unit.code} />}
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            id={panelId}
+            key="panel"
+            initial={collapsed}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={collapsed}
+            transition={{ duration: reduceMotion ? 0.12 : 0.24, ease: [0.23, 1, 0.32, 1] }}
+            className="overflow-hidden"
+          >
+            <UnitLessons code={unit.code} />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </li>
   );
 }
@@ -60,23 +182,91 @@ function UnitLessons({ code }: { code: string }) {
   const { data } = lessonsQuery;
   if (lessonsQuery.error) {
     return (
-      <p role="alert" className="flex items-center gap-2 px-3 pb-2 text-sm text-rose-700">
+      <p role="alert" className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 pt-1 pb-4 pl-16 text-[0.875rem] text-danger-text">
         Không tải được danh sách bài.
-        <button type="button" className="text-indigo-600 hover:underline" onClick={() => lessonsQuery.refetch()}>Thử lại</button>
+        <button type="button" className="focus-ring font-semibold text-accent-text" onClick={() => lessonsQuery.refetch()}>Thử lại</button>
       </p>
     );
   }
-  if (!data) return <p className="px-3 pb-2 text-sm text-slate-500">Đang tải…</p>;
+  if (!data) {
+    return (
+      <div className="space-y-2 pt-1 pr-4 pb-4 pl-16">
+        <span className="sr-only" role="status">Đang tải danh sách bài…</span>
+        <Skeleton className="h-11 w-full" />
+        <Skeleton className="h-11 w-full" />
+        <Skeleton className="h-11 w-4/5" />
+      </div>
+    );
+  }
+  const completed = data.filter((l) => l.completed).length;
+  const testReady = data.length > 0 && completed === data.length;
   return (
-    <div className="space-y-1 px-3 pb-3">
-      {data.map((l) => (
-        <Link key={l.code} to={`/lessons/${l.code}`} className="flex items-center gap-2 rounded px-2 py-1 hover:bg-slate-50">
-          <span>{l.completed ? '✓' : '○'}</span>
-          <span>{l.title}</span>
-          <span className="ml-auto text-xs text-slate-500">{DAY_LABEL[l.day] ?? l.day} · {LESSON_TYPE_LABEL[l.type] ?? l.type}</span>
+    <div className="pt-0.5 pr-3 pb-3 pl-[3.75rem]">
+      <ProgressBar value={data.length ? completed / data.length : 0} label={`Tiến độ ${code}`} className="mr-1 mb-1.5 ml-2" />
+      <p className="mb-1 ml-2 text-[0.8125rem] tabular-nums text-text-3">{completed}/{data.length} bài đã học</p>
+      <ul>
+        {data.map((l) => {
+          const skill = lessonSkill(l.type);
+          return (
+            <li key={l.code}>
+              <Link to={`/lessons/${l.code}`}
+                className="pressable focus-ring flex min-h-14 items-center gap-3 rounded-[14px] px-2 py-2 hover:bg-fill active:bg-fill-strong">
+                <span className={cn('tone-chip inline-flex size-9 shrink-0 items-center justify-center rounded-full', toneClass(skill ?? 'neutral'))}>
+                  <Icon name={skill ? SKILL_META[skill].icon : 'book'} size={17} strokeWidth={2} />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="line-clamp-2 block text-[0.9375rem] leading-snug font-medium text-pretty text-text">{l.title}</span>
+                  <span className="mt-0.5 block text-[0.8125rem] leading-snug text-text-3">
+                    {dayLabel(l.day)} · {lessonTypeLabel(l.type)}
+                  </span>
+                </span>
+                {l.completed ? (
+                  <span className="tone-success inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-[var(--tone)] text-surface">
+                    <Icon name="check" size={13} strokeWidth={3.2} />
+                    <span className="sr-only">Đã học</span>
+                  </span>
+                ) : (
+                  <span aria-hidden="true" className="size-6 shrink-0 rounded-full border-2 border-text-3/40" />
+                )}
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+      {testReady ? (
+        <Link to={`/units/${code}/test`}
+          className="pressable focus-ring mt-1.5 flex min-h-12 items-center gap-3 rounded-[14px] bg-accent-soft px-3 font-semibold text-accent-text hover:bg-[color-mix(in_srgb,var(--accent)_20%,transparent)]">
+          <Icon name="star" size={18} filled />
+          <span className="flex-1">Bài kiểm tra unit</span>
+          <Icon name="chevron-right" size={16} strokeWidth={2.4} />
         </Link>
-      ))}
-      <Link to={`/units/${code}/test`} className="mt-2 inline-block text-sm text-indigo-600 hover:underline">Bài kiểm tra unit</Link>
+      ) : (
+        <p className="mt-1.5 flex items-center gap-2 px-2 text-[0.8125rem] leading-snug text-text-3">
+          <Icon name="lock" size={14} />
+          Học xong {data.length - completed} bài còn lại để mở bài kiểm tra unit.
+        </p>
+      )}
+    </div>
+  );
+}
+
+function RoadmapSkeleton() {
+  return (
+    <div className="space-y-3">
+      <span className="sr-only" role="status">Đang tải lộ trình…</span>
+      <Skeleton className="h-4 w-20" />
+      <Skeleton className="h-7 w-48" />
+      <div className="space-y-3 rounded-card bg-surface p-4 card-edge">
+        {[0, 1, 2, 3].map((i) => (
+          <div key={i} className="flex items-center gap-3">
+            <Skeleton className="size-9 shrink-0 rounded-full" />
+            <div className="flex-1 space-y-1.5">
+              <Skeleton className="h-4 w-2/3" />
+              <Skeleton className="h-3 w-1/4" />
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

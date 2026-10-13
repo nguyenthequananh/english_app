@@ -1,10 +1,40 @@
-import Markdown from 'react-markdown';
+import Markdown, { type Components } from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { endpoints } from '../api/endpoints';
+import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
+import { Card } from '../ui/card';
+import { Icon } from '../ui/icons';
+import { ProgressRing } from '../ui/progress-ring';
+import { Skeleton } from '../ui/skeleton';
+import { SKILL_META } from '../ui/skill';
 import { ExerciseSet } from './exercise-set';
 import { QueryError } from './query-error';
+import { dayLabel, lessonSkill, lessonTypeLabel } from './labels';
 
-export function LessonView({ code, onDone, doneLabel = 'Xong' }: { code: string; onDone: () => void; doneLabel?: string }) {
+/**
+ * Bảng Markdown bọc trong khung cuộn ngang: mỗi cột rộng tối thiểu ~120px nên trên điện thoại bảng nhiều cột
+ * cuộn ngang thay vì đẩy tràn trang; màn rộng đủ chỗ thì chữ trong ô tự xuống dòng, không cần cuộn.
+ */
+const MARKDOWN_COMPONENTS: Components = {
+  table: ({ node: _node, ...props }) => (
+    <div className="markdown-table -mx-1 my-4 overflow-x-auto overscroll-x-contain px-1 [scrollbar-width:thin]" tabIndex={0} role="region" aria-label="Bảng">
+      <table {...props} className="w-full border-collapse text-[0.9375rem] leading-snug [&_td]:min-w-[7.5rem] [&_th]:min-w-[7.5rem]" />
+    </div>
+  ),
+};
+
+/**
+ * Lý thuyết (Markdown) + bài tập của một bài. Dùng ở trang Bài học và bước LESSON của buổi học.
+ * `showTitle={false}` khi trang bọc ngoài đã có tiêu đề bài (TopBar) để không lặp heading.
+ */
+export function LessonView({ code, onDone, doneLabel = 'Xong', showTitle = true }: {
+  code: string;
+  onDone: () => void;
+  doneLabel?: string;
+  showTitle?: boolean;
+}) {
   const queryClient = useQueryClient();
   const lessonQuery = useQuery({ queryKey: ['lesson', code], queryFn: () => endpoints.lesson(code) });
   const { data: lesson, isLoading } = lessonQuery;
@@ -20,31 +50,97 @@ export function LessonView({ code, onDone, doneLabel = 'Xong' }: { code: string;
   if (lessonQuery.error) {
     return <QueryError error={lessonQuery.error} onRetry={() => lessonQuery.refetch()} backTo={{ to: '/roadmap', label: 'Về lộ trình' }} />;
   }
-  if (isLoading || !lesson) return <p className="text-slate-500">Đang tải bài học…</p>;
+  if (isLoading || !lesson) return <LessonSkeleton />;
   const noExercises = lesson.exercises.length === 0;
+  const skill = lessonSkill(lesson.type);
+  const result = submit.data;
 
   return (
-    <article className="space-y-4">
-      <h1 className="text-2xl font-bold">{lesson.title}</h1>
-      <div className="card markdown"><Markdown>{lesson.bodyMd}</Markdown></div>
-      {!noExercises && (
-        <>
-          <h2 className="text-lg font-semibold">Bài tập</h2>
-          <ExerciseSet exercises={lesson.exercises} results={submit.data?.results} submitting={submit.isPending}
-            onSubmit={(answers) => submit.mutate(answers)} />
-        </>
-      )}
-      {noExercises && !submit.data && (
-        <button type="button" className="btn btn-primary" disabled={submit.isPending} onClick={() => submit.mutate({})}>
-          Đã học xong bài này
-        </button>
-      )}
-      {submit.data && (
-        <div className="card flex items-center justify-between">
-          {!noExercises && <span className="text-lg font-semibold">Điểm: {Math.round(submit.data.score * 100)}%</span>}
-          <button type="button" className="btn btn-primary ml-auto" onClick={onDone}>{doneLabel}</button>
+    <article className="space-y-5">
+      <header className="space-y-2.5 pt-1">
+        <div className="flex flex-wrap items-center gap-2">
+          <Badge tone={skill ?? 'neutral'}>
+            {skill && <Icon name={SKILL_META[skill].icon} size={13} strokeWidth={2.2} />}
+            {lessonTypeLabel(lesson.type)}
+          </Badge>
+          {showTitle && <span className="text-[0.8125rem] text-text-3">{dayLabel(lesson.day)}</span>}
+          {lesson.bestScore !== null && !noExercises && (
+            <span className="ml-auto text-[0.8125rem] text-text-3">
+              Điểm cao nhất <span className="font-semibold tabular-nums text-text-2">{Math.round(lesson.bestScore * 100)}%</span>
+            </span>
+          )}
         </div>
+        {showTitle && <h2 className="text-[1.75rem] leading-tight font-bold tracking-[-0.02em] text-balance text-text">{lesson.title}</h2>}
+      </header>
+
+      <Card as="section" className="markdown px-5 py-5 text-[1.0625rem] leading-[1.6] sm:px-6 [&_h2:first-child]:mt-0 [&_h3]:mt-6 [&_h2]:mt-7 [&_h2]:mb-3 [&_li]:my-1 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_table_td]:border-t [&_table_td]:border-separator [&_table_td]:px-3 [&_table_td]:py-2 [&_table_td]:align-top [&_table_th]:bg-fill [&_table_th]:px-3 [&_table_th]:py-2 [&_table_th]:text-left [&_table_th]:font-semibold [&_table_th:first-child]:rounded-l-lg [&_table_th:last-child]:rounded-r-lg [&_del]:text-text-3 [&_hr]:my-6 [&_hr]:border-separator">
+        <Markdown remarkPlugins={[remarkGfm]} components={MARKDOWN_COMPONENTS}>{lesson.bodyMd}</Markdown>
+      </Card>
+
+      {!noExercises && (
+        <section className="space-y-3" aria-labelledby={`${code}-exercises`}>
+          <div className="flex items-baseline justify-between px-1 pt-2">
+            <h2 id={`${code}-exercises`} className="text-[1.375rem] font-bold tracking-[-0.015em] text-text">Bài tập</h2>
+            <span className="text-[0.875rem] text-text-3 tabular-nums">{lesson.exercises.length} câu</span>
+          </div>
+          <ExerciseSet exercises={lesson.exercises} results={result?.results} submitting={submit.isPending}
+            onSubmit={(answers) => submit.mutate(answers)} />
+        </section>
       )}
+
+      {noExercises && !result && (
+        <Button size="lg" block loading={submit.isPending} onClick={() => submit.mutate({})}>
+          Đã học xong bài này
+        </Button>
+      )}
+
+      {result && (
+        <Card className="flex items-center gap-4" aria-live="polite">
+          {!noExercises ? (
+            <>
+              <ProgressRing value={result.score} label="Điểm bài tập" size={60}>
+                <span className="text-[0.8125rem] font-bold tabular-nums text-text">
+                  {result.results.filter((r) => r.correct).length}/{result.results.length}
+                </span>
+              </ProgressRing>
+              <div className="min-w-0 flex-1">
+                <p className="text-[1.0625rem] font-semibold tabular-nums text-text">Điểm: {Math.round(result.score * 100)}%</p>
+                <p className="text-[0.875rem] leading-snug text-text-2">{scoreNote(result.score)}</p>
+              </div>
+            </>
+          ) : (
+            <div className="flex min-w-0 flex-1 items-center gap-3">
+              <span className="tone-success inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-[var(--tone-soft)] text-[var(--tone-text)]">
+                <Icon name="check" size={20} strokeWidth={2.6} />
+              </span>
+              <p className="text-[1.0625rem] font-semibold text-text">Đã học xong bài này</p>
+            </div>
+          )}
+        </Card>
+      )}
+      {result && <Button size="lg" block onClick={onDone}>{doneLabel}</Button>}
     </article>
+  );
+}
+
+function scoreNote(score: number) {
+  if (score >= 0.8) return 'Làm tốt lắm!';
+  if (score >= 0.5) return 'Khá ổn — xem lại các câu sai ở trên.';
+  return 'Đọc lại phần lý thuyết rồi làm lại lần sau.';
+}
+
+function LessonSkeleton() {
+  return (
+    <div className="space-y-5 pt-1">
+      <span className="sr-only" role="status">Đang tải bài học…</span>
+      <Skeleton className="h-6 w-24 rounded-full" />
+      <div className="space-y-3 rounded-card bg-surface p-5 card-edge">
+        <Skeleton className="h-7 w-2/3" />
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-11/12" />
+        <Skeleton className="h-4 w-4/5" />
+        <Skeleton className="mt-4 h-28 w-full" />
+      </div>
+    </div>
   );
 }

@@ -17,11 +17,13 @@ test('gom đáp án ba dạng câu rồi nộp', async () => {
   const onSubmit = vi.fn();
   render(<ExerciseSet exercises={exercises} onSubmit={onSubmit} />);
   expect(screen.queryByText('ship', { selector: 'p' })).not.toBeInTheDocument();
-  await user.click(screen.getByRole('button', { name: 'Nghe từ: ship' }));
+  // Tên nút nghe không chứa từ đáp án (trình đọc màn hình không được lộ đáp án).
+  await user.click(screen.getByRole('button', { name: 'Nghe từ' }));
   expect(spoken[0].text).toBe('ship');
   await user.click(screen.getByLabelText('goes'));
   await user.type(screen.getByLabelText('Câu 2'), 'play');
   await user.click(screen.getByLabelText('sheep'));
+  expect(screen.getByText('3/3')).toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: 'Nộp bài' }));
   expect(onSubmit).toHaveBeenCalledWith({ E1: 'goes', E2: 'play', E3: 'sheep' });
 });
@@ -36,8 +38,8 @@ test('có kết quả thì hiện đúng/sai, đáp án, giải thích và khoá
         { code: 'E3', given: null, correct: false, answer: 'ship', explanationVi: null },
       ]} />,
   );
-  expect(screen.getByText('✓ Đúng')).toBeInTheDocument();
-  expect(screen.getByText('✗ Sai — đáp án: play')).toBeInTheDocument();
+  expect(screen.getByText('Đúng')).toBeInTheDocument();
+  expect(screen.getByText('Sai — đáp án: play')).toBeInTheDocument();
   expect(screen.getByText('Chủ ngữ số nhiều.')).toBeInTheDocument();
   expect(screen.getByLabelText('Câu 2')).toBeDisabled();
   expect(screen.queryByRole('button', { name: 'Nộp bài' })).not.toBeInTheDocument();
@@ -63,7 +65,7 @@ test('DICTATION: sau khi chấm thì hiện câu đáp án', () => {
   render(<ExerciseSet exercises={[{ code: 'D1', type: 'DICTATION', prompt: 'I live in Hanoi.', options: null }]}
     onSubmit={() => undefined}
     results={[{ code: 'D1', given: 'i live in hanoy', correct: false, answer: 'I live in Hanoi.', explanationVi: null }]} />);
-  expect(screen.getByText('✗ Sai — đáp án: I live in Hanoi.')).toBeInTheDocument();
+  expect(screen.getByText('Sai — đáp án: I live in Hanoi.')).toBeInTheDocument();
   expect(screen.getByLabelText('Câu 1')).toBeDisabled();
 });
 
