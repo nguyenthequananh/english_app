@@ -6,15 +6,15 @@ import { endpoints } from '../api/endpoints';
 import type { StageView, Status, UnitView } from '../types/api';
 import { QueryError } from '../components/query-error';
 import { dayLabel, lessonSkill, lessonTypeLabel, STATUS_LABEL } from '../components/labels';
-import { Badge } from '../ui/badge';
-import { EmptyState } from '../ui/empty-state';
-import { Icon } from '../ui/icons';
-import { ListGroup, ListRow } from '../ui/list-row';
-import { PageHeader } from '../ui/page-header';
-import { ProgressBar } from '../ui/progress-bar';
-import { Skeleton } from '../ui/skeleton';
-import { SKILL_META, toneClass } from '../ui/skill';
-import { cn } from '../ui/cn';
+import { Badge } from '../components/ui/badge';
+import { EmptyState } from '../components/ui/empty-state';
+import { Icon } from '../components/ui/icons';
+import { ListGroup, ListRow } from '../components/ui/list-row';
+import { PageHeader } from '../components/ui/page-header';
+import { ProgressBar } from '../components/ui/progress-bar';
+import { Skeleton } from '../components/ui/skeleton';
+import { SKILL_META, toneClass } from '../components/ui/skill';
+import { cn } from '../components/ui/cn';
 
 const STATUS_TONE: Record<Status, 'neutral' | 'accent' | 'success'> = { LOCKED: 'neutral', ACTIVE: 'accent', DONE: 'success' };
 

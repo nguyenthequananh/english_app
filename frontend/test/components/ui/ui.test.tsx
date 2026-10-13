@@ -1,13 +1,13 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
-import { Button } from '@/ui/button';
-import { ProgressBar } from '@/ui/progress-bar';
-import { Segmented } from '@/ui/segmented';
-import { StatTile } from '@/ui/stat-tile';
-import { SkillTile } from '@/ui/skill-tile';
-import { PageHeader } from '@/ui/page-header';
-import { TextField } from '@/ui/text-field';
+import { Button } from '@/components/ui/button';
+import { ProgressBar } from '@/components/ui/progress-bar';
+import { Segmented } from '@/components/ui/segmented';
+import { StatTile } from '@/components/ui/stat-tile';
+import { SkillTile } from '@/components/ui/skill-tile';
+import { PageHeader } from '@/components/ui/page-header';
+import { TextField } from '@/components/ui/text-field';
 import { renderAt } from '@test/render';
 
 test('Button loading thì bị khoá và báo bận, tên không đổi', async () => {

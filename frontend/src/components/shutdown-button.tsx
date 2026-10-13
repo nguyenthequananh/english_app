@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useMutation } from '@tanstack/react-query';
 import { endpoints } from '../api/endpoints';
-import { Button } from '../ui/button';
-import { ConfirmDialog } from '../ui/dialog';
-import { Icon } from '../ui/icons';
+import { Button } from './ui/button';
+import { ConfirmDialog } from './ui/dialog';
+import { Icon } from './ui/icons';
 
 export function ShutdownButton() {
   const [confirming, setConfirming] = useState(false);

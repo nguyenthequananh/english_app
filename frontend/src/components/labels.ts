@@ -1,5 +1,5 @@
 import type { Skill } from '../types/skill';
-import { SKILL_META } from '../ui/skill';
+import { SKILL_META } from './ui/skill';
 
 export const DAY_LABEL: Record<string, string> = {
   MON: 'Thứ 2', TUE: 'Thứ 3', WED: 'Thứ 4', THU: 'Thứ 5', FRI: 'Thứ 6', SAT: 'Thứ 7', SUN: 'Chủ nhật',

@@ -4,13 +4,13 @@ import { downloads, endpoints } from '../../api/endpoints';
 import type { BackupInfo, Settings } from '../../types/api';
 import { toast } from '../../components/toaster';
 import { ShutdownButton } from '../../components/shutdown-button';
-import { ListGroup, ListRow } from '../../ui/list-row';
-import { Button } from '../../ui/button';
-import { Sheet } from '../../ui/sheet';
-import { ConfirmDialog } from '../../ui/dialog';
-import { TextField } from '../../ui/text-field';
-import { Skeleton } from '../../ui/skeleton';
-import { Icon } from '../../ui/icons';
+import { ListGroup, ListRow } from '../../components/ui/list-row';
+import { Button } from '../../components/ui/button';
+import { Sheet } from '../../components/ui/sheet';
+import { ConfirmDialog } from '../../components/ui/dialog';
+import { TextField } from '../../components/ui/text-field';
+import { Skeleton } from '../../components/ui/skeleton';
+import { Icon } from '../../components/ui/icons';
 import { DownloadRow, GroupItem, IconChip } from './settings-rows';
 
 function formatSize(bytes: number) {

@@ -1,7 +1,7 @@
 import { useRouteError } from 'react-router';
-import { ButtonLink } from '../ui/button';
-import { Card } from '../ui/card';
-import { EmptyState } from '../ui/empty-state';
+import { ButtonLink } from '../components/ui/button';
+import { Card } from '../components/ui/card';
+import { EmptyState } from '../components/ui/empty-state';
 
 export default function RouteError() {
   const error = useRouteError();

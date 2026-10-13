@@ -1,5 +1,5 @@
 import { useEnglishVoices } from '../speech/speech';
-import { Icon } from '../ui/icons';
+import { Icon } from './ui/icons';
 
 export function VoiceBanner() {
   const { voices, ready } = useEnglishVoices();

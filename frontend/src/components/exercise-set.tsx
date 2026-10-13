@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import type { ExerciseResult, ExerciseType, ExerciseView } from '../types/api';
 import { currentSpeechRate, speak } from '../speech/speech';
-import { Button } from '../ui/button';
-import { Card } from '../ui/card';
-import { Icon } from '../ui/icons';
-import { TextField } from '../ui/text-field';
-import { toneClass } from '../ui/skill';
-import { cn } from '../ui/cn';
+import { Button } from './ui/button';
+import { Card } from './ui/card';
+import { Icon } from './ui/icons';
+import { TextField } from './ui/text-field';
+import { toneClass } from './ui/skill';
+import { cn } from './ui/cn';
 
 /** Nghe chậm = 70% tốc độ đang cấu hình trong hồ sơ. */
 const SLOW_FACTOR = 0.7;

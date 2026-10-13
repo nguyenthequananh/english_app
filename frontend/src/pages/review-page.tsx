@@ -3,12 +3,12 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { endpoints } from '../api/endpoints';
 import { Flashcard } from '../components/flashcard';
 import { QueryError } from '../components/query-error';
-import { ButtonLink } from '../ui/button';
-import { Card } from '../ui/card';
-import { EmptyState } from '../ui/empty-state';
-import { ProgressBar } from '../ui/progress-bar';
-import { Skeleton } from '../ui/skeleton';
-import { TopBar } from '../ui/top-bar';
+import { ButtonLink } from '../components/ui/button';
+import { Card } from '../components/ui/card';
+import { EmptyState } from '../components/ui/empty-state';
+import { ProgressBar } from '../components/ui/progress-bar';
+import { Skeleton } from '../components/ui/skeleton';
+import { TopBar } from '../components/ui/top-bar';
 import type { Grade } from '../types/api';
 
 export default function ReviewPage() {

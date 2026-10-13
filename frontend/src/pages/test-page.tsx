@@ -5,13 +5,13 @@ import { endpoints } from '../api/endpoints';
 import type { TestDto, TestResult } from '../types/api';
 import { ExerciseSet } from '../components/exercise-set';
 import { QueryError } from '../components/query-error';
-import { Badge } from '../ui/badge';
-import { Button, ButtonLink } from '../ui/button';
-import { Card } from '../ui/card';
-import { Icon } from '../ui/icons';
-import { ProgressRing } from '../ui/progress-ring';
-import { Skeleton } from '../ui/skeleton';
-import { TopBar } from '../ui/top-bar';
+import { Badge } from '../components/ui/badge';
+import { Button, ButtonLink } from '../components/ui/button';
+import { Card } from '../components/ui/card';
+import { Icon } from '../components/ui/icons';
+import { ProgressRing } from '../components/ui/progress-ring';
+import { Skeleton } from '../components/ui/skeleton';
+import { TopBar } from '../components/ui/top-bar';
 
 const percent = (x: number) => `${Math.round(x * 100)}%`;
 

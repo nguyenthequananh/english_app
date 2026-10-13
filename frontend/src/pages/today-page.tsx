@@ -5,14 +5,14 @@ import { QueryError } from '../components/query-error';
 import { toIsoDate } from '../dates';
 import { useCurrentProfile } from '../shell/require-profile';
 import type { Roadmap, SessionView, Summary } from '../types/api';
-import { ButtonLink } from '../ui/button';
-import { Card } from '../ui/card';
-import { Icon, type IconName } from '../ui/icons';
-import { PageHeader } from '../ui/page-header';
-import { ProgressBar } from '../ui/progress-bar';
-import { SkillTile } from '../ui/skill-tile';
-import { Skeleton } from '../ui/skeleton';
-import { StatTile } from '../ui/stat-tile';
+import { ButtonLink } from '../components/ui/button';
+import { Card } from '../components/ui/card';
+import { Icon, type IconName } from '../components/ui/icons';
+import { PageHeader } from '../components/ui/page-header';
+import { ProgressBar } from '../components/ui/progress-bar';
+import { SkillTile } from '../components/ui/skill-tile';
+import { Skeleton } from '../components/ui/skeleton';
+import { StatTile } from '../components/ui/stat-tile';
 import { SESSION_KEY } from './session-page';
 
 /** Số lớn có dấu chấm ngăn cách hàng nghìn (12.345), như màn Tiến độ. */

@@ -5,13 +5,13 @@ import { endpoints } from '../api/endpoints';
 import { ApiError } from '../api/api-error';
 import type { Profile } from '../types/api';
 import { QueryError } from '../components/query-error';
-import { Button } from '../ui/button';
-import { IconLink } from '../ui/icon-button';
-import { Sheet } from '../ui/sheet';
-import { TextField } from '../ui/text-field';
-import { Skeleton } from '../ui/skeleton';
-import { Icon } from '../ui/icons';
-import { cn } from '../ui/cn';
+import { Button } from '../components/ui/button';
+import { IconLink } from '../components/ui/icon-button';
+import { Sheet } from '../components/ui/sheet';
+import { TextField } from '../components/ui/text-field';
+import { Skeleton } from '../components/ui/skeleton';
+import { Icon } from '../components/ui/icons';
+import { cn } from '../components/ui/cn';
 
 const avatarCircle = 'relative flex size-24 items-center justify-center rounded-full text-6xl leading-none sm:size-28 sm:text-7xl';
 

@@ -1,5 +1,5 @@
 import { Link } from 'react-router';
-import type { Skill } from '../types/skill';
+import type { Skill } from '../../types/skill';
 import { Icon, type IconName } from './icons';
 import { toneClass } from './skill';
 import { cn } from './cn';

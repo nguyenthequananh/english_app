@@ -1,6 +1,6 @@
 import { Link } from 'react-router';
 import type { IconName } from '../types/icon';
-import { Icon } from '../ui/icons';
+import { Icon } from '../components/ui/icons';
 
 export interface CenterActionTarget { to: string; label: string; icon?: IconName }
 

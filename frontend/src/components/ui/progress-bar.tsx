@@ -1,4 +1,4 @@
-import type { Skill } from '../types/skill';
+import type { Skill } from '../../types/skill';
 import { toneClass } from './skill';
 import { cn } from './cn';
 

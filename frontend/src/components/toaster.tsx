@@ -1,8 +1,8 @@
 import { toast as sonner, Toaster as SonnerToaster } from 'sonner';
 import type { CSSProperties } from 'react';
 import { ApiError } from '../api/api-error';
-import { Icon } from '../ui/icons';
-import { DESKTOP_QUERY, useMediaQuery } from '../ui/use-media-query';
+import { Icon } from './ui/icons';
+import { DESKTOP_QUERY, useMediaQuery } from './ui/use-media-query';
 
 /** Hiện một thông báo ngắn. Giữ chữ ký cũ để nơi gọi không phải đổi. */
 export function toast(message: string, kind: 'info' | 'error' = 'info') {

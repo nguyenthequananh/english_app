@@ -1,5 +1,5 @@
 import { speak } from '../speech/speech';
-import { Icon } from '../ui/icons';
+import { Icon } from './ui/icons';
 
 /** Nút loa tròn 44px. Tên accessible gồm cả chữ được đọc để trình đọc màn hình phân biệt các nút. */
 export function SpeakButton({ text, label = 'Nghe' }: { text: string; label?: string }) {

@@ -5,10 +5,10 @@ import { endpoints } from '../api/endpoints';
 import { AvatarPicker, AVATARS } from '../components/avatar-picker';
 import type { Profile } from '../types/api';
 import { useEnglishVoices } from '../speech/speech';
-import { Button } from '../ui/button';
-import { IconLink } from '../ui/icon-button';
-import { TextField } from '../ui/text-field';
-import { Select } from '../ui/select';
+import { Button } from '../components/ui/button';
+import { IconLink } from '../components/ui/icon-button';
+import { TextField } from '../components/ui/text-field';
+import { Select } from '../components/ui/select';
 
 /** Nhóm form kiểu iOS grouped: tiêu đề nhỏ phía trên, thẻ trắng chứa các ô. */
 function FormGroup({ title, footer, children }: { title?: string; footer?: string; children: ReactNode }) {

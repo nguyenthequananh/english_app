@@ -6,15 +6,15 @@ import { QueryError } from '../components/query-error';
 import { SpeakButton } from '../components/speak-button';
 import { toast } from '../components/toaster';
 import { WORD_STATUS_LABEL } from '../components/labels';
-import { PageHeader } from '../ui/page-header';
-import { Button } from '../ui/button';
-import { TextField } from '../ui/text-field';
-import { Segmented } from '../ui/segmented';
-import { Sheet } from '../ui/sheet';
-import { Badge } from '../ui/badge';
-import { EmptyState } from '../ui/empty-state';
-import { Skeleton } from '../ui/skeleton';
-import { Icon } from '../ui/icons';
+import { PageHeader } from '../components/ui/page-header';
+import { Button } from '../components/ui/button';
+import { TextField } from '../components/ui/text-field';
+import { Segmented } from '../components/ui/segmented';
+import { Sheet } from '../components/ui/sheet';
+import { Badge } from '../components/ui/badge';
+import { EmptyState } from '../components/ui/empty-state';
+import { Skeleton } from '../components/ui/skeleton';
+import { Icon } from '../components/ui/icons';
 
 type Filter = 'ALL' | WordStatus;
 

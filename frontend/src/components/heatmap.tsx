@@ -1,7 +1,7 @@
 import type { CSSProperties } from 'react';
 import type { DayMinutes } from '../types/api';
 import { toIsoDate } from '../dates';
-import { cn } from '../ui/cn';
+import { cn } from './ui/cn';
 
 const WEEKS = 26;
 const WEEKDAY_LABELS = ['T2', '', 'T4', '', 'T6', '', ''];

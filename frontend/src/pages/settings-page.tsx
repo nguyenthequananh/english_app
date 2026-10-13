@@ -1,7 +1,7 @@
 import { useCurrentProfile } from '../shell/require-profile';
 import { QueryError } from '../components/query-error';
-import { PageHeader } from '../ui/page-header';
-import { Skeleton } from '../ui/skeleton';
+import { PageHeader } from '../components/ui/page-header';
+import { Skeleton } from '../components/ui/skeleton';
 import { ProfileCard, ProfileSettings } from './settings/profile-settings';
 import { VoiceSettings } from './settings/voice-settings';
 import { ContentSettings } from './settings/content-settings';

@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
-import type { IconName } from '../types/icon';
+import type { IconName } from '../../types/icon';
 import { cn } from './cn';
 
-export type { IconName } from '../types/icon';
+export type { IconName } from '../../types/icon';
 
 /*
  * Icon SVG nội tuyến trên lưới 24×24, nét tròn, theo tinh thần SF Symbols.

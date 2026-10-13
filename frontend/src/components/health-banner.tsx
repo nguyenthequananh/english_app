@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { endpoints } from '../api/endpoints';
-import { Button } from '../ui/button';
-import { Icon } from '../ui/icons';
+import { Button } from './ui/button';
+import { Icon } from './ui/icons';
 
 export function HealthBanner() {
   const [hidden, setHidden] = useState(false);

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { SessionStep } from '../types/api';
-import { Icon } from '../ui/icons';
-import { cn } from '../ui/cn';
+import { Icon } from './ui/icons';
+import { cn } from './ui/cn';
 
 const STEPS: { step: SessionStep; label: string }[] = [
   { step: 'REVIEW', label: 'Ôn tập' },

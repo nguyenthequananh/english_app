@@ -1,7 +1,7 @@
-import type { IconName } from '../types/icon';
-import type { Skill } from '../types/skill';
+import type { IconName } from '../../types/icon';
+import type { Skill } from '../../types/skill';
 
-export type { Skill } from '../types/skill';
+export type { Skill } from '../../types/skill';
 
 /**
  * Một nguồn sự thật cho nhãn, màu, icon của từng kỹ năng.

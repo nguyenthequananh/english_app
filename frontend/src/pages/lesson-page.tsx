@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { endpoints } from '../api/endpoints';
 import { LessonView } from '../components/lesson-view';
 import { dayLabel, lessonTypeLabel } from '../components/labels';
-import { TopBar } from '../ui/top-bar';
+import { TopBar } from '../components/ui/top-bar';
 
 export default function LessonPage() {
   const { code } = useParams();

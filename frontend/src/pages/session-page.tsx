@@ -7,11 +7,11 @@ import { Flashcard } from '../components/flashcard';
 import { LessonView } from '../components/lesson-view';
 import { QueryError } from '../components/query-error';
 import { SessionTimer, StepBar } from '../components/step-bar';
-import { ButtonLink } from '../ui/button';
-import { Card } from '../ui/card';
-import { Icon } from '../ui/icons';
-import { Skeleton } from '../ui/skeleton';
-import { TopBar } from '../ui/top-bar';
+import { ButtonLink } from '../components/ui/button';
+import { Card } from '../components/ui/card';
+import { Icon } from '../components/ui/icons';
+import { Skeleton } from '../components/ui/skeleton';
+import { TopBar } from '../components/ui/top-bar';
 import type { Grade, SessionView } from '../types/api';
 
 const RELOAD_CODES = ['CARD_MISMATCH', 'NO_SESSION', 'WRONG_STEP'];

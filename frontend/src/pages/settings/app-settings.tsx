@@ -2,7 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { endpoints } from '../../api/endpoints';
 import { toast } from '../../components/toaster';
 import { ShutdownButton } from '../../components/shutdown-button';
-import { ListGroup, ListRow } from '../../ui/list-row';
+import { ListGroup, ListRow } from '../../components/ui/list-row';
 import { IconChip } from './settings-rows';
 
 /** Nhóm "Ứng dụng": mở thư mục log, tắt hẳn app. */

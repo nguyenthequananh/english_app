@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { endpoints } from '../../api/endpoints';
-import { ListGroup } from '../../ui/list-row';
-import { Badge } from '../../ui/badge';
-import { Icon } from '../../ui/icons';
+import { ListGroup } from '../../components/ui/list-row';
+import { Badge } from '../../components/ui/badge';
+import { Icon } from '../../components/ui/icons';
 import { FileRow, GroupItem, IconChip } from './settings-rows';
 
 /** Nhóm "Nội dung": nhập thêm file bài học (.json), hiện kết quả từng file. */

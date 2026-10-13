@@ -1,7 +1,7 @@
 import type { ChangeEvent, ReactNode } from 'react';
 import type { IconName } from '../../types/icon';
-import { Icon } from '../../ui/icons';
-import { cn } from '../../ui/cn';
+import { Icon } from '../../components/ui/icons';
+import { cn } from '../../components/ui/cn';
 
 /*
  * Biến thể dòng cho ListGroup mà `ListRow` (src/ui) chưa có: dòng là <a download>, dòng chọn file,

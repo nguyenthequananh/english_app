@@ -4,9 +4,9 @@ import { useQuery } from '@tanstack/react-query';
 import { endpoints } from '../api/endpoints';
 import { ApiError } from '../api/api-error';
 import { configureSpeech } from '../speech/speech';
-import { Button } from '../ui/button';
-import { Card } from '../ui/card';
-import { Icon } from '../ui/icons';
+import { Button } from '../components/ui/button';
+import { Card } from '../components/ui/card';
+import { Icon } from '../components/ui/icons';
 
 export const CURRENT_PROFILE_KEY = ['profile', 'current'] as const;
 

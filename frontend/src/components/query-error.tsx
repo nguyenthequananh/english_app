@@ -1,7 +1,7 @@
 import { ApiError } from '../api/api-error';
-import { Button, ButtonLink } from '../ui/button';
-import { Card } from '../ui/card';
-import { Icon } from '../ui/icons';
+import { Button, ButtonLink } from './ui/button';
+import { Card } from './ui/card';
+import { Icon } from './ui/icons';
 
 export function QueryError({ error, onRetry, backTo }: {
   error: unknown;

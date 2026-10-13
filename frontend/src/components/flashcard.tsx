@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { motion, useReducedMotion, type Transition } from 'motion/react';
 import type { Grade, Word } from '../types/api';
-import { Button } from '../ui/button';
-import { cn } from '../ui/cn';
+import { Button } from './ui/button';
+import { cn } from './ui/cn';
 import { SpeakButton } from './speak-button';
 
 const GRADES: { grade: Grade; label: string; tone: string; key: string }[] = [

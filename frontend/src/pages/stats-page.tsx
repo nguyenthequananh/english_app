@@ -5,16 +5,16 @@ import type { Roadmap, Stats, Summary } from '../types/api';
 import { Heatmap } from '../components/heatmap';
 import { KnownChart } from '../components/known-chart';
 import { QueryError } from '../components/query-error';
-import { PageHeader } from '../ui/page-header';
-import { Card } from '../ui/card';
-import { StatTile } from '../ui/stat-tile';
-import { ProgressRing } from '../ui/progress-ring';
-import { ProgressBar } from '../ui/progress-bar';
-import { ListGroup, ListRow } from '../ui/list-row';
-import { Badge } from '../ui/badge';
-import { EmptyState } from '../ui/empty-state';
-import { Skeleton } from '../ui/skeleton';
-import { Icon } from '../ui/icons';
+import { PageHeader } from '../components/ui/page-header';
+import { Card } from '../components/ui/card';
+import { StatTile } from '../components/ui/stat-tile';
+import { ProgressRing } from '../components/ui/progress-ring';
+import { ProgressBar } from '../components/ui/progress-bar';
+import { ListGroup, ListRow } from '../components/ui/list-row';
+import { Badge } from '../components/ui/badge';
+import { EmptyState } from '../components/ui/empty-state';
+import { Skeleton } from '../components/ui/skeleton';
+import { Icon } from '../components/ui/icons';
 
 const num = new Intl.NumberFormat('vi-VN');
 

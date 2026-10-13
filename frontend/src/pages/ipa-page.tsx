@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { IPA_GROUPS } from '../ipa/ipa-data';
 import { speak } from '../speech/speech';
-import { Icon } from '../ui/icons';
-import { PageHeader } from '../ui/page-header';
-import { cn } from '../ui/cn';
+import { Icon } from '../components/ui/icons';
+import { PageHeader } from '../components/ui/page-header';
+import { cn } from '../components/ui/cn';
 
 /** Ô vừa bấm sáng lên trong khoảng này — đủ để thấy máy đã nghe, không chờ giọng đọc xong. */
 const PLAYING_MS = 900;

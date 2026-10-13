@@ -1,7 +1,7 @@
 import { Link, NavLink } from 'react-router';
 import { motion, MotionConfig } from 'motion/react';
 import type { IconName } from '../types/icon';
-import { Icon } from '../ui/icons';
+import { Icon } from '../components/ui/icons';
 import { CenterAction } from './center-action';
 import { useCurrentProfile } from './require-profile';
 
