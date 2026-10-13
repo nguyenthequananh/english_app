@@ -2,6 +2,7 @@ import type { ButtonHTMLAttributes, Ref } from 'react';
 import { Link, type LinkProps } from 'react-router';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from './cn';
+import { Spinner } from './spinner';
 
 export const buttonStyles = cva(
   [
@@ -41,17 +42,6 @@ export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   block?: boolean;
 };
 
-function Spinner() {
-  return (
-    <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center">
-      <svg viewBox="0 0 24 24" width="18" height="18" className="animate-spin">
-        <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="2.5" opacity="0.25" />
-        <path d="M21 12a9 9 0 0 0-9-9" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
-      </svg>
-    </span>
-  );
-}
-
 export function Button({ variant, size, loading = false, block = false, className, disabled, children, type = 'button', ...rest }: ButtonProps) {
   return (
     <button
@@ -65,7 +55,9 @@ export function Button({ variant, size, loading = false, block = false, classNam
         <>
           {/* Chữ vẫn trong cây accessibility (opacity, không dùng visibility) để tên nút không đổi; chỉ ẩn bằng mắt để nhường chỗ vòng quay. */}
           <span className="inline-flex items-center gap-2 opacity-0">{children}</span>
-          <Spinner />
+          <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center">
+            <Spinner size={18} />
+          </span>
         </>
       ) : children}
     </button>

@@ -1,4 +1,5 @@
 import { Skeleton } from '../components/ui/skeleton';
+import { Spinner } from '../components/ui/spinner';
 
 /*
  * Màn chờ khi mở app thẳng vào một route mà chunk trang chưa tải (`hydrateFallbackElement`).
@@ -24,10 +25,7 @@ export function PagePending() {
 export function CenteredPending() {
   return (
     <div role="status" className={`flex min-h-dvh flex-col items-center justify-center gap-3 text-text-3 ${APPEAR}`}>
-      <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true" className="animate-spin text-accent">
-        <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="2.5" opacity="0.2" />
-        <path d="M21 12a9 9 0 0 0-9-9" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
-      </svg>
+      <Spinner className="text-accent" />
       <p className="text-base">Đang tải…</p>
     </div>
   );

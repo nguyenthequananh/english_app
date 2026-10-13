@@ -11,19 +11,11 @@ import { IconLink } from '../components/ui/icon-button';
 import { Sheet } from '../components/ui/sheet';
 import { TextField } from '../components/ui/text-field';
 import { Skeleton } from '../components/ui/skeleton';
+import { Spinner } from '../components/ui/spinner';
 import { Icon } from '../components/ui/icons';
 import { cn } from '../components/ui/cn';
 
 const avatarCircle = 'relative flex size-24 items-center justify-center rounded-full text-6xl leading-none sm:size-28 sm:text-7xl';
-
-function Spinner() {
-  return (
-    <svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true" className="animate-spin text-accent">
-      <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="2.5" opacity="0.2" />
-      <path d="M21 12a9 9 0 0 0-9-9" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
-    </svg>
-  );
-}
 
 function ProfileTile({ profile, busy, disabled, onPick }: { profile: Profile; busy: boolean; disabled: boolean; onPick: () => void }) {
   return (
@@ -42,7 +34,7 @@ function ProfileTile({ profile, busy, disabled, onPick }: { profile: Profile; bu
           'group-hover:shadow-[var(--shadow-card),0_0_0_3px_var(--accent)] group-focus-visible:shadow-[var(--shadow-card),0_0_0_3px_var(--accent)]',
         )}
       >
-        {busy ? <Spinner /> : profile.avatar || <span className="font-semibold text-accent-text">{profile.name.charAt(0).toUpperCase() || '?'}</span>}
+        {busy ? <Spinner size={30} className="text-accent" /> : profile.avatar || <span className="font-semibold text-accent-text">{profile.name.charAt(0).toUpperCase() || '?'}</span>}
         {profile.hasPin && (
           <span className="absolute right-0.5 bottom-0.5 inline-flex size-8 items-center justify-center rounded-full bg-surface text-text-2 shadow-[var(--shadow-thumb)] sm:right-1 sm:bottom-1">
             <Icon name="lock" size={16} strokeWidth={2.2} />
