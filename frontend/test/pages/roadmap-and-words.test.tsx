@@ -25,7 +25,7 @@ test('lộ trình: unit khoá không mở được, unit đã mở xem được 
   expect(await screen.findByText('Mục tiêu band 4')).toBeInTheDocument();
   expect(screen.getByRole('link', { name: 'Làm bài kiểm tra chuyển chặng' })).toHaveAttribute('href', '/stages/S0/test');
   expect(screen.queryByRole('button', { name: /S0-U02/ })).not.toBeInTheDocument();
-  expect(screen.getByText(/🔒/)).toBeInTheDocument();
+  expect(screen.getByText('Chưa mở')).toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: /S0-U01/ }));
   expect(await screen.findByRole('link', { name: /Thì hiện tại đơn/ })).toHaveAttribute('href', '/lessons/S0-U01-G1');
   expect(screen.getByText(/Thứ 2 · Ngữ pháp/)).toBeInTheDocument();
