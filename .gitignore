@@ -15,3 +15,8 @@ frontend/playwright-report/
 *.tsbuildinfo
 .playwright-mcp/
 frontend/.vitest/
+
+# Công cụ AI / chỉ mục cục bộ — không đưa lên git
+.claude/
+.codegraph/
+CLAUDE.md
