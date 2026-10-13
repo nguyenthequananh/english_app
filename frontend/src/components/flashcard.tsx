@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useState, type ReactNode } from 'react';
-import { motion, useReducedMotion, type Transition } from 'motion/react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { motion, useReducedMotion } from 'motion/react';
 import type { Grade, Word } from '../types/api';
 import { Button } from './ui/button';
 import { cn } from './ui/cn';
+import { FADE, FADE_NEXT_CARD, SPRING } from './ui/motion';
 import { SpeakButton } from './speak-button';
 
 const GRADES: { grade: Grade; label: string; tone: string; key: string }[] = [
@@ -12,11 +13,6 @@ const GRADES: { grade: Grade; label: string; tone: string; key: string }[] = [
   { grade: 'EASY', label: 'Dễ', tone: 'tone-success', key: '4' },
 ];
 
-/** Lật thẻ: lò xo gần tới hạn, nảy rất nhẹ — đủ thấy là "xoay" mà không làm chậm nhịp ôn. Ngắt giữa chừng được. */
-const FLIP_SPRING: Transition = { type: 'spring', visualDuration: 0.34, bounce: 0.14 };
-/** Thẻ kế tiếp chỉ hiện dần thật nhanh, không trượt — chấm thẻ là thao tác lặp liên tục. */
-const ENTER: Transition = { duration: 0.12, ease: [0.23, 1, 0.32, 1] };
-const CROSSFADE: Transition = { duration: 0.18, ease: [0.23, 1, 0.32, 1] };
 
 function Kbd({ children }: { children: ReactNode }) {
   return (
@@ -71,7 +67,7 @@ function Face({ hidden, back = false, reduce, onClick, children }: {
       // Giảm chuyển động: mặt sau dựng lần đầu thì mờ dần vào (crossfade), không bật ra đột ngột.
       initial={reduce && back ? { opacity: 0 } : false}
       animate={reduce ? { opacity: hidden ? 0 : 1 } : undefined}
-      transition={CROSSFADE}
+      transition={FADE}
       style={!reduce && back ? { transform: 'rotateY(180deg)' } : undefined}
       className={cn(
         '[grid-area:1/1] flex flex-col rounded-card bg-surface card-edge [backface-visibility:hidden] [-webkit-backface-visibility:hidden]',
@@ -88,11 +84,26 @@ export function Flashcard({ word, onGrade, busy = false }: { word: Word; onGrade
   // Mặt sau chỉ dựng từ lần lật đầu (trước đó nghĩa không có trong DOM), rồi giữ lại để lật ngược vẫn thấy nó quay đi.
   const [revealed, setRevealed] = useState(false);
   const reduce = useReducedMotion() ?? false;
+  const gradesRef = useRef<HTMLDivElement>(null);
+  const flipRef = useRef<HTMLButtonElement>(null);
+  // Chỉ chuyển focus khi người dùng vừa lật (không phải lúc thẻ mới hiện ra).
+  const userFlipped = useRef(false);
 
   const toggle = useCallback(() => {
+    userFlipped.current = true;
     setRevealed(true);
     setFlipped((f) => !f);
   }, []);
+
+  /*
+   * Lật xong thì focus về nhóm nút chấm (lật lại thì về nút Lật thẻ) — nút đang focus vừa biến mất, không để focus
+   * rơi về <body>. Focus vào chính NHÓM, không vào nút "Quên": nếu không, bấm Space định lật lại sẽ thành chấm
+   * "Quên" vào lịch ôn. Tab từ nhóm đi tiếp vào nút đầu tiên; phím 1–4 vẫn chấm như cũ.
+   */
+  useEffect(() => {
+    if (!userFlipped.current) return;
+    (flipped ? gradesRef.current : flipRef.current)?.focus({ preventScroll: true });
+  }, [flipped]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -116,12 +127,14 @@ export function Flashcard({ word, onGrade, busy = false }: { word: Word; onGrade
   }, [flipped, busy, onGrade, toggle]);
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={ENTER} className="flex flex-col gap-4">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={FADE_NEXT_CARD} className="flex flex-col gap-4">
       <div className="[perspective:1600px]">
         <motion.div
           initial={false}
-          animate={reduce ? undefined : { transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)' }}
-          transition={FLIP_SPRING}
+          // rotateY dạng SỐ (motion value có theo dõi vận tốc) + lò xo vật lý: chạm lần nữa giữa lúc đang lật thì
+          // thẻ quay đầu mượt, giữ đà, không khựng lại. Lật là thao tác chạm ⇒ tới hạn, không nảy.
+          animate={reduce ? undefined : { rotateY: flipped ? 180 : 0 }}
+          transition={SPRING}
           className="grid min-h-[clamp(18rem,calc(100dvh_-_16rem),34rem)] [transform-style:preserve-3d]"
         >
           <Face hidden={flipped} reduce={reduce} onClick={flipped ? undefined : toggle}>
@@ -177,11 +190,17 @@ export function Flashcard({ word, onGrade, busy = false }: { word: Word; onGrade
       {/* Cùng chiều cao cho nút lật và hàng nút chấm để thẻ không nhảy khi lật. */}
       <div className="min-h-14">
         {!flipped ? (
-          <Button data-flip size="lg" block aria-keyshortcuts="Space" className="min-h-14" onClick={toggle}>
+          <Button ref={flipRef} data-flip size="lg" block aria-keyshortcuts="Space" className="min-h-14" onClick={toggle}>
             Lật thẻ <Kbd>Space</Kbd>
           </Button>
         ) : (
-          <div role="group" aria-label="Bạn nhớ từ này thế nào?" className="grid grid-cols-4 gap-2">
+          <div
+            ref={gradesRef}
+            role="group"
+            aria-label="Bạn nhớ từ này thế nào?"
+            tabIndex={-1}
+            className="grid grid-cols-4 gap-2 rounded-[22px] outline-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--focus-ring)]"
+          >
             {GRADES.map((g) => (
               <button
                 key={g.grade}

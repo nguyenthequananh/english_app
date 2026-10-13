@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes } from 'react';
+import type { ButtonHTMLAttributes, Ref } from 'react';
 import { Link, type LinkProps } from 'react-router';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from './cn';
@@ -33,6 +33,7 @@ export const buttonStyles = cva(
 type ButtonVariants = Omit<VariantProps<typeof buttonStyles>, 'block'>;
 
 export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+  ref?: Ref<HTMLButtonElement>;
   variant?: NonNullable<ButtonVariants['variant']>;
   size?: NonNullable<ButtonVariants['size']>;
   /** Đang xử lý: khoá nút + aria-busy, giữ nguyên chữ để tên accessible không đổi. */

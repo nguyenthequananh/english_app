@@ -101,3 +101,26 @@ test('Space khi focus ở nút lật thẻ vẫn lật thẻ', () => {
   fireEvent.keyDown(flipBtn, { key: ' ', code: 'Space' });
   expect(screen.getByTestId('card-back')).toBeInTheDocument();
 });
+
+test('lật xong focus về nhóm nút chấm (bàn phím đi tiếp vào nút chấm), Space ở đó lật lại chứ không chấm', async () => {
+  stubSpeech();
+  const user = userEvent.setup();
+  const onGrade = vi.fn();
+  render(<Flashcard word={word} onGrade={onGrade} />);
+  // Lúc thẻ mới hiện, không giành focus
+  expect(document.body).toHaveFocus();
+  await user.click(screen.getByRole('button', { name: /Lật thẻ/ }));
+  const grades = screen.getByRole('group', { name: 'Bạn nhớ từ này thế nào?' });
+  expect(grades).toHaveFocus();
+  await user.tab();
+  expect(screen.getByRole('button', { name: 'Quên' })).toHaveFocus();
+  // Phím tắt vẫn chạy khi focus ở trong nhóm
+  await user.keyboard('3');
+  expect(onGrade).toHaveBeenCalledWith('GOOD');
+
+  grades.focus();
+  fireEvent.keyDown(grades, { key: ' ', code: 'Space' });
+  expect(onGrade).toHaveBeenCalledTimes(1);
+  // Lật lại: focus về nút Lật thẻ (nút đang focus vừa biến mất)
+  expect(screen.getByRole('button', { name: /Lật thẻ/ })).toHaveFocus();
+});
