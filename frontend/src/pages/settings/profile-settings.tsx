@@ -14,14 +14,17 @@ import { Switch } from '../../components/ui/switch';
 import { IconChip } from '../../components/ui/icon-chip';
 import { useSaveProfile } from './use-save-profile';
 
-/** Thẻ đầu trang Cá nhân: avatar lớn, tên, số phút/ngày + "Đổi hồ sơ". */
+/**
+ * Thẻ đầu trang Cá nhân: avatar lớn, tên, số phút/ngày + "Đổi hồ sơ".
+ * Cột chữ giữ tối thiểu 7.5rem: màn hẹp (320px) không đủ chỗ thì nút xuống dòng thay vì ép tên còn một chữ/dòng.
+ */
 export function ProfileCard({ profile }: { profile: Profile }) {
   return (
-    <Card className="flex items-center gap-4">
+    <Card className="flex flex-wrap items-center gap-x-4 gap-y-3">
       <span aria-hidden="true" className="inline-flex size-16 shrink-0 items-center justify-center rounded-full bg-accent-soft text-5xl leading-none font-semibold text-accent-text">
         {profile.avatar || profile.name.charAt(0).toUpperCase() || '?'}
       </span>
-      <div className="min-w-0 flex-1">
+      <div className="min-w-[7.5rem] flex-1">
         <p className="line-clamp-2 text-xl font-bold break-words text-text" title={profile.name}>{profile.name}</p>
         <p className="mt-0.5 text-md tabular-nums text-text-2">
           {profile.dailyMinutes} phút mỗi ngày{profile.hasPin ? ' · Có mã PIN' : ''}
