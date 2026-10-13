@@ -14,6 +14,13 @@ Chỉ `./mvnw -Papp clean package` mới cho jar có giao diện mới nhất (b
 ## Bản portable cho Windows
 `bash packaging/build-portable.sh` → `dist/IELTS-App-0.1.0-portable.zip`. Giải nén, chạy `IELTS App.exe`.
 
+## Bộ cài Windows (.exe)
+Cần thêm Inno Setup 6: `winget install JRSoftware.InnoSetup`.
+`bash packaging/build-installer.sh` → `dist/IELTS-App-Setup-0.1.0.exe` (tạo luôn bản portable).
+Bộ cài không cần quyền Admin, cài vào `%LOCALAPPDATA%\Programs\IELTS App`, có lối tắt Start Menu/Desktop;
+gỡ cài đặt giữ nguyên dữ liệu học ở `%USERPROFILE%\.ielts-app`. Máy cài không cần Java hay cơ sở dữ liệu.
+Bộ cài chưa ký số: lần đầu Windows SmartScreen cảnh báo → More info → Run anyway.
+
 ## E2E
 `cd backend && ./mvnw -Papp package -DskipTests && cd ../frontend && npx playwright test`
 (dùng trình duyệt Edge có sẵn, dữ liệu tạm riêng, cổng 8775).
