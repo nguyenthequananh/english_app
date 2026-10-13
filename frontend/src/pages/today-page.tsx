@@ -103,25 +103,26 @@ function SessionCard({ summary, dailyMinutes }: { summary: Summary; dailyMinutes
  * chặng, hoặc đã học hết thật. Summary không phân biệt được nên đọc thêm lộ trình — và không chắc thì không kết luận
  * "đã học hết" (lỗi/thiếu dữ liệu chỉ mời xem lộ trình).
  */
-export type NoUnitState =
+type NoUnitState =
   | { kind: 'empty' }
   | { kind: 'stage-test'; stageCode: string; stageTitle: string }
   | { kind: 'all-done' }
   | { kind: 'unknown' };
 
-export function noUnitState(roadmap: Roadmap | undefined): NoUnitState {
+function noUnitState(roadmap: Roadmap | undefined): NoUnitState {
   if (!roadmap) return { kind: 'unknown' };
   if (roadmap.stages.every((st) => st.units.length === 0)) return { kind: 'empty' };
   const waiting = roadmap.stages.find((st) => st.status !== 'DONE' && st.testAvailable);
   if (waiting) return { kind: 'stage-test', stageCode: waiting.code, stageTitle: waiting.title };
-  if (roadmap.stages.every((st) => st.status === 'DONE')) return { kind: 'all-done' };
+  // Chặng chưa có unit (nội dung nạp từng chặng một) không tính: chưa có gì để học thì không chặn "đã học hết".
+  if (roadmap.stages.filter((st) => st.units.length > 0).every((st) => st.status === 'DONE')) return { kind: 'all-done' };
   return { kind: 'unknown' };
 }
 
 const NO_UNIT_COPY: Record<NoUnitState['kind'], { icon: IconName; title: string; link: string }> = {
   empty: { icon: 'book', title: 'Chưa có nội dung để học', link: 'Nạp nội dung trong Cá nhân' },
   'stage-test': { icon: 'star', title: 'Đã học xong các unit của chặng', link: 'Làm bài kiểm tra chặng' },
-  'all-done': { icon: 'star', title: 'Bạn đã học hết nội dung hiện có.', link: 'Xem lộ trình' },
+  'all-done': { icon: 'star', title: 'Bạn đã học hết nội dung hiện có', link: 'Xem lộ trình' },
   unknown: { icon: 'map', title: 'Chưa có unit đang học', link: 'Xem lộ trình' },
 };
 
@@ -180,7 +181,7 @@ function UnitCard({ unit }: { unit: Summary['currentUnit'] }) {
 function Practice() {
   return (
     <section aria-labelledby="today-practice" className="space-y-3">
-      <h2 id="today-practice" className="text-xl font-bold text-text">Luyện tập</h2>
+      <h2 id="today-practice" className="text-2xl font-bold text-text">Luyện tập</h2>
       <div className="grid grid-cols-4 gap-2.5 sm:gap-3 lg:grid-cols-2">
         {/* Màu kỹ năng chỉ cho đích thuộc loại bài (ôn thẻ → từ vựng, IPA → phát âm); Kho từ, Lộ trình là tiện ích → trung tính. */}
         <SkillTile to="/review" label="Ôn thẻ" icon="cards" tone="VOCAB" />
