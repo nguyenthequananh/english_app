@@ -147,6 +147,23 @@
     outline-color: var(--focus-ring);
   }
 
+  /*
+   * Đổi sáng/tối (setThemePreference trong src/config/theme.ts): cả trang mờ chéo MỘT lần bằng View Transitions,
+   * ngắn. Trong khung hình đổi, `.theme-switching` tắt mọi transition để nút/thanh không tự chuyển màu lệch nhịp.
+   * Giảm chuyển động thì theme.ts không gọi View Transitions — đổi tức thì.
+   */
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: var(--duration-fast);
+    animation-timing-function: ease;
+  }
+  .theme-switching,
+  .theme-switching *,
+  .theme-switching *::before,
+  .theme-switching *::after {
+    transition: none !important;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
@@ -197,17 +214,9 @@
   .tone-danger {
     --tone-text: color-mix(in oklab, var(--tone) 74%, black);
     --tone-soft: color-mix(in srgb, var(--tone) 13%, transparent);
-  }
 
-  @media (prefers-color-scheme: dark) {
-    .tone-grammar,
-    .tone-pronunciation,
-    .tone-listening,
-    .tone-reading,
-    .tone-vocab,
-    .tone-success,
-    .tone-warning,
-    .tone-danger {
+    /* Chế độ tối (data-theme hoặc hệ thống — xem `@custom-variant dark` trong tokens.css). */
+    @variant dark {
       --tone-text: var(--tone);
       --tone-soft: color-mix(in srgb, var(--tone) 18%, transparent);
     }
@@ -228,9 +237,8 @@
   .tone-chip {
     background: linear-gradient(160deg, color-mix(in oklab, var(--tone), white 16%), var(--tone));
     color: var(--on-accent);
-  }
-  @media (prefers-color-scheme: dark) {
-    .tone-chip {
+
+    @variant dark {
       background: var(--tone-soft);
       color: var(--tone-text);
     }
