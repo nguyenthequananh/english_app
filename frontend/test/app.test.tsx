@@ -1,8 +1,8 @@
 import { screen } from '@testing-library/react';
-import App from './app';
-import { renderAt } from './test/render';
-import { mockApi } from './test/mock-api';
-import { stubSpeech } from './test/speech-stub';
+import App from '@/app';
+import { renderAt } from '@test/render';
+import { mockApi } from '@test/mock-api';
+import { stubSpeech } from '@test/speech-stub';
 
 test('route /profiles hiển thị trang chọn hồ sơ', () => {
   renderAt(<App />, '/profiles');

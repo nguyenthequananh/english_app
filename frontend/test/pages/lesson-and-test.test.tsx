@@ -1,11 +1,11 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Route, Routes } from 'react-router';
-import LessonPage from './lesson-page';
-import TestPage from './test-page';
-import { renderAt } from '../test/render';
-import { mockApi, problem } from '../test/mock-api';
-import { stubSpeech } from '../test/speech-stub';
+import LessonPage from '@/pages/lesson-page';
+import TestPage from '@/pages/test-page';
+import { renderAt } from '@test/render';
+import { mockApi, problem } from '@test/mock-api';
+import { stubSpeech } from '@test/speech-stub';
 
 const lesson = {
   code: 'S0-U01-G1', unitCode: 'S0-U01', type: 'GRAMMAR', day: 'MON', title: 'Thì hiện tại đơn',

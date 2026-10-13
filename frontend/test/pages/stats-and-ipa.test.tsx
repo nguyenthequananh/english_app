@@ -1,12 +1,12 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import StatsPage from './stats-page';
-import IpaPage from './ipa-page';
-import { renderAt } from '../test/render';
-import { mockApi } from '../test/mock-api';
-import { stubSpeech } from '../test/speech-stub';
-import { toIsoDate } from '../dates';
-import { IPA_GROUPS } from '../ipa/ipa-data';
+import StatsPage from '@/pages/stats-page';
+import IpaPage from '@/pages/ipa-page';
+import { renderAt } from '@test/render';
+import { mockApi } from '@test/mock-api';
+import { stubSpeech } from '@test/speech-stub';
+import { toIsoDate } from '@/dates';
+import { IPA_GROUPS } from '@/ipa/ipa-data';
 
 test('thống kê: các ô số, heatmap hôm nay và bảng kết quả', async () => {
   const today = toIsoDate(new Date());

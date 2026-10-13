@@ -1,9 +1,9 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ExerciseSet } from './exercise-set';
-import { stubSpeech } from '../test/speech-stub';
-import { configureSpeech } from '../speech/speech';
-import type { ExerciseView } from '../api/types';
+import { ExerciseSet } from '@/components/exercise-set';
+import { stubSpeech } from '@test/speech-stub';
+import { configureSpeech } from '@/speech/speech';
+import type { ExerciseView } from '@/api/types';
 
 const exercises: ExerciseView[] = [
   { code: 'E1', type: 'MCQ', prompt: 'She ___ to school.', options: ['go', 'goes'] },

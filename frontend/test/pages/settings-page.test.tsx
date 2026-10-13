@@ -1,11 +1,11 @@
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Route, Routes } from 'react-router';
-import SettingsPage from './settings-page';
-import { Toaster } from '../components/toaster';
-import { renderAt } from '../test/render';
-import { mockApi } from '../test/mock-api';
-import { stubSpeech } from '../test/speech-stub';
+import SettingsPage from '@/pages/settings-page';
+import { Toaster } from '@/components/toaster';
+import { renderAt } from '@test/render';
+import { mockApi } from '@test/mock-api';
+import { stubSpeech } from '@test/speech-stub';
 
 const profile = { id: 1, name: 'Lan', avatar: '🦊', hasPin: true, dailyMinutes: 30, voice: null, speechRate: 1 };
 const base = {

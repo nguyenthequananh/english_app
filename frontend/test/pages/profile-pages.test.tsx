@@ -1,11 +1,11 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Route, Routes } from 'react-router';
-import ProfileSelectPage from './profile-select-page';
-import CreateProfilePage from './create-profile-page';
-import { renderAt } from '../test/render';
-import { mockApi, problem } from '../test/mock-api';
-import { stubSpeech } from '../test/speech-stub';
+import ProfileSelectPage from '@/pages/profile-select-page';
+import CreateProfilePage from '@/pages/create-profile-page';
+import { renderAt } from '@test/render';
+import { mockApi, problem } from '@test/mock-api';
+import { stubSpeech } from '@test/speech-stub';
 
 const lan = { id: 1, name: 'Lan', avatar: '🦊', hasPin: false, dailyMinutes: 30, voice: null, speechRate: 1 };
 const minh = { id: 2, name: 'Minh', avatar: '🐼', hasPin: true, dailyMinutes: 30, voice: null, speechRate: 1 };

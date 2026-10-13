@@ -1,10 +1,10 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import RoadmapPage from './roadmap-page';
-import WordBankPage from './word-bank-page';
-import { renderAt } from '../test/render';
-import { mockApi } from '../test/mock-api';
-import { stubSpeech } from '../test/speech-stub';
+import RoadmapPage from '@/pages/roadmap-page';
+import WordBankPage from '@/pages/word-bank-page';
+import { renderAt } from '@test/render';
+import { mockApi } from '@test/mock-api';
+import { stubSpeech } from '@test/speech-stub';
 
 const roadmap = { stages: [
   { code: 'S0', title: 'Xây nền', targetBand: 4, status: 'ACTIVE', testAvailable: true, units: [

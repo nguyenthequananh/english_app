@@ -1,9 +1,9 @@
 import { screen } from '@testing-library/react';
 import { Route, Routes } from 'react-router';
-import Layout from './layout';
-import { renderAt } from '../test/render';
-import { mockApi, problem } from '../test/mock-api';
-import { stubSpeech } from '../test/speech-stub';
+import Layout from '@/components/layout';
+import { renderAt } from '@test/render';
+import { mockApi, problem } from '@test/mock-api';
+import { stubSpeech } from '@test/speech-stub';
 
 const profile = { id: 1, name: 'Lan', avatar: '🦊', hasPin: false, dailyMinutes: 30, voice: null, speechRate: 1 };
 const health = { app: 'ielts-app', status: 'UP', recoveredFrom: null, restoredFrom: null };

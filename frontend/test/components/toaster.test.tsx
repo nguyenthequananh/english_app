@@ -1,6 +1,6 @@
 import { act, render, screen } from '@testing-library/react';
-import { Toaster, toast, notifyError } from './toaster';
-import { ApiError } from '../api/client';
+import { Toaster, toast, notifyError } from '@/components/toaster';
+import { ApiError } from '@/api/client';
 
 test('toast hiện thông báo, lỗi PROFILE_REQUIRED thì không', () => {
   render(<Toaster />);

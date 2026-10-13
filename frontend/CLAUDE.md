@@ -10,12 +10,12 @@ Frontend của IELTS App — xem `../CLAUDE.md` cho bức tranh chung. Mọi l�
 npm run dev                                   # http://localhost:5173, proxy /api → 127.0.0.1:8765 (cần backend chạy)
 npm run build                                 # tsc --noEmit rồi vite build → dist/
 npm test                                      # vitest run (jsdom)
-npx vitest run src/components/flashcard.test.tsx        # một file
+npx vitest run test/components/flashcard.test.tsx       # một file
 npx vitest run -t "lật thẻ"                             # lọc theo tên test
 npx playwright test                           # E2E: cần jar đã build bằng -Papp và JAVA_HOME = JDK 21
 ```
 
-Node ≥ 22.22 — `src/engines.test.ts` kiểm tra cả trường `engines` lẫn phiên bản Node đang chạy, nên `npm test` đỏ trên Node cũ.
+Node ≥ 22.22 — `test/engines.test.ts` kiểm tra cả trường `engines` lẫn phiên bản Node đang chạy, nên `npm test` đỏ trên Node cũ.
 
 Phiên bản thư viện mới hơn tên thường gặp (React Router **8**, Vite 8, Vitest 5, TypeScript 7, Tailwind 4): import router từ `react-router` (không có `react-router-dom`). Tra tài liệu đúng phiên bản trước khi dùng API lạ.
 
@@ -39,9 +39,10 @@ Phiên bản thư viện mới hơn tên thường gặp (React Router **8**, Vi
 
 ## Test
 
-- Vitest + Testing Library, `globals: true`, setup ở `src/test/setup.ts` (tự `unstubAllGlobals`/`restoreAllMocks` sau mỗi test).
-- Render bằng `renderAt(ui, route)` (`src/test/render.tsx`) — tạo QueryClient thật + `MemoryRouter`.
-- Giả lập backend bằng `mockApi({ 'GET /session/today': () => ({ body: … }) })` (`src/test/mock-api.ts`): khoá là `"METHOD /path?query"` **không** có tiền tố `/api`; thiếu handler → 404 JSON. Trả về mảng `calls` để kiểm tra request đã gửi. Lỗi dạng ProblemDetail dùng `problem(status, code, detail)`.
-- `speech-stub.ts` để giả `speechSynthesis` trong jsdom.
+- Test nằm ở `test/` ngang hàng `src/`, cùng cấu trúc thư mục (`src/pages/today-page.tsx` ↔ `test/pages/…test.tsx`). Helper ở `test/support/`. Import code bằng `@/…`, helper bằng `@test/…`.
+- Vitest + Testing Library, `globals: true`, setup ở `test/support/setup.ts` (tự `unstubAllGlobals`/`restoreAllMocks` sau mỗi test).
+- Render bằng `renderAt(ui, route)` (`test/support/render.tsx`) — tạo QueryClient thật + `MemoryRouter`.
+- Giả lập backend bằng `mockApi({ 'GET /session/today': () => ({ body: … }) })` (`test/support/mock-api.ts`): khoá là `"METHOD /path?query"` **không** có tiền tố `/api`; thiếu handler → 404 JSON. Trả về mảng `calls` để kiểm tra request đã gửi. Lỗi dạng ProblemDetail dùng `problem(status, code, detail)`.
+- `speech-stub.ts` (`test/support/speech-stub.ts`) để giả `speechSynthesis` trong jsdom.
 - Mỗi trang có `data-testid="page-…"`, các chỉ số quan trọng có testid riêng (`session-step`, `stat-streak`…) — test và E2E (`e2e/study.spec.ts`) bám vào đó, đổi testid thì sửa test theo.
 - E2E: `e2e/start-app.mjs` chạy jar thật ở `backend/target/` với thư mục dữ liệu tạm `%TEMP%/ielts-e2e` (xoá sạch mỗi lần), cổng 8775, trình duyệt Edge (`channel: 'msedge'`).

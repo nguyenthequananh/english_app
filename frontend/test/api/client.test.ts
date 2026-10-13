@@ -1,5 +1,5 @@
 import { vi } from 'vitest';
-import { api, ApiError, setProfileRequiredHandler } from './client';
+import { api, ApiError, setProfileRequiredHandler } from '@/api/client';
 
 function reply(status: number, body?: unknown) {
   vi.stubGlobal('fetch', vi.fn(async () => new Response(body === undefined ? null : JSON.stringify(body), { status })));
