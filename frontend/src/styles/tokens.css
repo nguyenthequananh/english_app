@@ -1,0 +1,295 @@
+/*
+ * Token thiết kế — nguồn sự thật duy nhất cho màu, bóng, bán kính, chuyển động.
+ * Component không dùng mã màu cứng: dùng biến ở đây hoặc lớp Tailwind sinh từ @theme / @theme inline bên dưới.
+ *
+ * Tương phản (WCAG 2.x) đã đo:
+ *   sáng: --text 17.7 · --text-2 7.6 · --text-3 5.0 trên --bg-base (≥4.8 trên --surface/--surface-2)
+ *         --on-accent trên --accent 4.7 · --accent-text trên --surface 6.6
+ *   tối:  --text 15.8 · --text-2 8.8 · --text-3 5.6 trên --surface (6.3 trên --bg-base)
+ *         --accent-text trên --surface 8.0
+ * --accent giữ một giá trị ở cả hai chế độ để chữ trắng trên nút luôn đạt AA; bản "sáng hơn một bậc" cho
+ * chữ/icon trên nền tối là --accent-text.
+ *
+ * Sáng/tối: `data-theme` trên <html> là lựa chọn của người dùng (src/config/theme.ts, script đầu index.html).
+ * Không có thuộc tính = Tự động theo hệ thống. Token sáng là mặc định; token tối nằm trong `@variant dark`
+ * bên dưới — Tailwind trải nó thành hai quy tắc (data-theme="dark", hoặc hệ thống tối mà không ép sáng), nên
+ * bản tối chỉ viết MỘT lần. Lớp `dark:` của Tailwind dùng đúng điều kiện đó.
+ */
+@custom-variant dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(:root:not([data-theme="light"]), :root:not([data-theme="light"]) *) {
+      @slot;
+    }
+  }
+}
+
+/* Thanh cuộn, ô nhập gốc, nền canvas của trình duyệt theo đúng chế độ đang hiển thị. */
+:root {
+  color-scheme: light dark;
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+:root {
+
+  --bg-base: #F4F6FB;
+  --bg-gradient:
+    radial-gradient(at 0% 0%, #CFE6FF 0, transparent 55%),
+    radial-gradient(at 100% 8%, #FFE7D6 0, transparent 50%),
+    radial-gradient(at 15% 100%, #D9F5E6 0, transparent 55%);
+  --surface: #FFFFFF;
+  --surface-2: #F2F3F7;
+  /*
+   * Kính của tab bar/thanh trên: 0.8 (không phải 0.72) để nhãn --text-2 cỡ 11px vẫn ≥4.5:1 dù thứ tương phản
+   * nhất cuộn qua bên dưới. Đo trên nền đã trộn — sáng: đen 4.7, nút tím 5.8; tối: trắng 4.7, nút tím 7.2.
+   */
+  --material: rgb(255 255 255 / 0.8);
+  --material-strong: rgb(255 255 255 / 0.82);
+  --material-edge: rgb(255 255 255 / 0.6);
+  --separator: rgb(60 60 67 / 0.12);
+  --fill: rgb(118 118 128 / 0.12);
+  --fill-strong: rgb(118 118 128 / 0.2);
+  --scrim: rgb(15 18 30 / 0.32);
+
+  --text: #111827;
+  --text-2: #4B5563;
+  --text-3: #636A77;
+
+  --accent: #7656F8;
+  --accent-pressed: #6545EA;
+  --accent-soft: #EEE9FF;
+  --accent-text: #5B3CE0;
+  --on-accent: #FFFFFF;
+
+  --skill-grammar: #2F6BFF;
+  --skill-pronunciation: #8B5CF6;
+  --skill-listening: #0D9488;
+  --skill-reading: #D97706;
+  --skill-vocab: #E11D48;
+
+  --success: #15803D;
+  --warning: #B45309;
+  --danger: #DC2626;
+  --danger-text: #B91C1C;
+  --danger-solid: #D92D20;
+
+  --shadow-card: 0 1px 2px rgb(16 24 40 / 0.04), 0 4px 16px rgb(16 24 40 / 0.06);
+  --shadow-float: 0 8px 24px rgb(118 86 248 / 0.38);
+  --shadow-bar: 0 -1px 0 rgb(60 60 67 / 0.08), 0 -8px 32px rgb(16 24 40 / 0.06);
+  --shadow-sheet: 0 -8px 40px rgb(16 24 40 / 0.16);
+  /* Mép cuộn mềm dưới thanh trên (thay đường kẻ 1px cứng). */
+  --shadow-scroll-edge: 0 8px 16px -12px rgb(16 24 40 / 0.18);
+  --shadow-toast: 0 10px 30px -10px rgb(16 24 40 / 0.25);
+  --card-border: transparent;
+  --focus-ring: #7656F8;
+  --thumb: #FFFFFF;
+  --knob: #FFFFFF;
+  --shadow-knob: 0 3px 8px rgb(0 0 0 / 0.15), 0 1px 1px rgb(0 0 0 / 0.16);
+  --shadow-thumb: 0 1px 3px rgb(16 24 40 / 0.14), 0 1px 1px rgb(16 24 40 / 0.06);
+
+  --duration-press: 140ms;
+  --duration-fast: 200ms;
+  --duration-base: 300ms;
+  /* Thanh/vòng tiến độ đổi giá trị: chậm hơn UI thường để mắt kịp theo con số mới. */
+  --duration-progress: 600ms;
+
+  --tabbar-height: 64px;
+  --sidebar-width: 264px;
+}
+
+/* Bản tối — áp khi data-theme="dark", hoặc Tự động + hệ thống tối (xem `@custom-variant dark` ở trên). */
+:root {
+  @variant dark {
+    --bg-base: #0B0E17;
+    --bg-gradient:
+      radial-gradient(at 0% 0%, rgb(56 88 160 / 0.35) 0, transparent 55%),
+      radial-gradient(at 100% 8%, rgb(120 70 110 / 0.28) 0, transparent 50%),
+      radial-gradient(at 15% 100%, rgb(30 110 90 / 0.25) 0, transparent 55%);
+    --surface: #161A24;
+    --surface-2: #1F2430;
+    --material: rgb(22 26 36 / 0.8);
+    --material-strong: rgb(22 26 36 / 0.84);
+    --material-edge: rgb(255 255 255 / 0.08);
+    --separator: rgb(255 255 255 / 0.08);
+    --fill: rgb(120 120 128 / 0.24);
+    --fill-strong: rgb(120 120 128 / 0.34);
+    --scrim: rgb(0 0 0 / 0.55);
+
+    --text: #F3F4F6;
+    --text-2: #B4B9C4;
+    --text-3: #8D93A0;
+
+    --accent: #7656F8;
+    --accent-pressed: #6545EA;
+    --accent-soft: rgb(155 133 255 / 0.16);
+    --accent-text: #B3A3FF;
+    --on-accent: #FFFFFF;
+
+    --skill-grammar: #6B9BFF;
+    --skill-pronunciation: #A78BFA;
+    --skill-listening: #2DD4BF;
+    --skill-reading: #FBBF24;
+    --skill-vocab: #FB7185;
+
+    --success: #4ADE80;
+    --warning: #FBBF24;
+    --danger: #F87171;
+    --danger-text: #FCA5A5;
+    --danger-solid: #D92D20;
+
+    --shadow-card: none;
+    --shadow-float: 0 8px 24px rgb(0 0 0 / 0.5);
+    --shadow-bar: 0 -1px 0 rgb(255 255 255 / 0.06);
+    --shadow-sheet: 0 -8px 40px rgb(0 0 0 / 0.5);
+    --shadow-scroll-edge: 0 8px 16px -12px rgb(0 0 0 / 0.6);
+    --shadow-toast: 0 10px 30px -10px rgb(0 0 0 / 0.6);
+    --card-border: rgb(255 255 255 / 0.06);
+    --focus-ring: #B3A3FF;
+    --thumb: #3A3F4C;
+    --shadow-thumb: 0 1px 3px rgb(0 0 0 / 0.4);
+  }
+}
+
+/* Người dùng xin giảm trong suốt: vật liệu kính thành gần đặc. */
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --material: var(--surface);
+    --material-strong: var(--surface);
+  }
+}
+
+/* Người dùng xin tăng tương phản: viền rõ thay cho bóng mờ. */
+@media (prefers-contrast: more) {
+  :root {
+    --card-border: var(--text-3);
+    --separator: var(--text-3);
+    --text-3: var(--text-2);
+  }
+}
+
+/*
+ * Hằng số không đổi giữa sáng/tối: khai một lần ở đây bằng giá trị thật (không qua :root) để vừa sinh lớp
+ * Tailwind (rounded-card, rounded-control, rounded-pill, font-sans, ease-out, ease-in-out) vừa có biến
+ * var(--radius-card)… dùng trực tiếp. `static`: luôn xuất biến kể cả khi chưa lớp nào dùng tới, vì
+ * style inline/JS cũng đọc chúng.
+ */
+@theme static {
+  --radius-card: 22px;
+  --radius-control: 14px;
+  --radius-pill: 9999px;
+  /*
+   * Máy Apple: SF Pro của hệ điều hành (-apple-system/BlinkMacSystemFont, không nhúng file font Apple).
+   * Máy khác: "Inter Variable" đóng gói kèm (@fontsource-variable/inter, import ở main.tsx).
+   * Không thêm system-ui: trên Windows nó khớp Segoe UI trước Inter.
+   */
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter Variable", "Segoe UI", Roboto, sans-serif;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+/*
+ * Thang cỡ chữ — chữ thân bài 14px (`text-base`). Thay hẳn thang mặc định của Tailwind (`--text-*: initial`)
+ * nên `text-sm`, `text-xl`… đều là bậc của thang này; không viết `text-[0.9rem]` trần.
+ * Mỗi bậc mang luôn line-height + tracking (ghi đè được bằng `leading-*` / `tracking-*`):
+ *   - tracking lấy từ công thức "dynamic metrics" của Inter: −0.0223 + 0.185·e^(−0.1745·cỡ px) em (dương nhẹ ở
+ *     chữ nhỏ, âm dần khi chữ lớn) — gần bảng tracking của SF;
+ *   - leading 1.4–1.45 cho chữ thân/nhãn: tiếng Việt chồng dấu (ễ, ặ) cần thêm khoảng dòng; chữ lớn khít dần.
+ * Không đổi `font-size` của `html` — spacing Tailwind tính theo rem.
+ */
+@theme static {
+  --text-*: initial;
+  /* caption 2 — nhãn trục heatmap */
+  --text-2xs: 0.625rem;
+  --text-2xs--line-height: 1.2;
+  --text-2xs--letter-spacing: 0.01em;
+  /* caption — nhãn tab bar, badge, kbd */
+  --text-xs: 0.6875rem;
+  --text-xs--line-height: 1.3;
+  --text-xs--letter-spacing: 0.005em;
+  /* footnote — dòng phụ, chú thích, eyebrow viết hoa */
+  --text-sm: 0.75rem;
+  --text-sm--line-height: 1.4;
+  --text-sm--letter-spacing: 0em;
+  /* subhead — nhãn ô nhập, nút nhỏ, số đếm */
+  --text-md: 0.8125rem;
+  --text-md--line-height: 1.4;
+  --text-md--letter-spacing: -0.003em;
+  /* body — chữ thân, nhãn, mô tả (mặc định của body) */
+  --text-base: 0.875rem;
+  --text-base--line-height: 1.45;
+  --text-base--letter-spacing: -0.006em;
+  /* headline / callout — tiêu đề thẻ nhỏ, câu hỏi, nút lớn */
+  --text-lg: 0.9375rem;
+  --text-lg--line-height: 1.4;
+  --text-lg--letter-spacing: -0.009em;
+  /* văn bản dài (Markdown bài học): đọc liên tục nên lớn hơn chữ thân UI. Không đặt tên `reading` — trùng màu kỹ năng `text-reading` */
+  --text-prose: 1rem;
+  --text-prose--line-height: 1.6;
+  --text-prose--letter-spacing: -0.011em;
+  /* title 3 — tiêu đề thanh trên (17px, cỡ tiêu đề thanh điều hướng của Apple), tiêu đề hộp thoại, trạng thái trống */
+  --text-xl: 1.0625rem;
+  --text-xl--line-height: 1.3;
+  --text-xl--letter-spacing: -0.013em;
+  /* title 2 — tiêu đề mục trong màn (Luyện tập, Lịch học…), tiêu đề bảng trượt, tiêu đề chặng */
+  --text-2xl: 1.25rem;
+  --text-2xl--line-height: 1.25;
+  --text-2xl--letter-spacing: -0.017em;
+  /* title 1 — số trong ô thống kê, chữ mặt trước flashcard */
+  --text-3xl: 1.5rem;
+  --text-3xl--line-height: 1.2;
+  --text-3xl--letter-spacing: -0.019em;
+  /* số lớn, từ chính flashcard, tiêu đề bài học */
+  --text-4xl: 1.75rem;
+  --text-4xl--line-height: 1.15;
+  --text-4xl--letter-spacing: -0.021em;
+  /* large title kiểu iOS — đầu mỗi màn chính */
+  --text-large-title: 2.125rem;
+  --text-large-title--line-height: 1.2;
+  --text-large-title--letter-spacing: -0.022em;
+  --text-large-title--font-weight: 700;
+  /* số hero (% kết quả, % unit) */
+  --text-5xl: 2.25rem;
+  --text-5xl--line-height: 1.05;
+  --text-5xl--letter-spacing: -0.022em;
+  /* avatar emoji */
+  --text-6xl: 3rem;
+  --text-6xl--line-height: 1;
+  --text-7xl: 3.5rem;
+  --text-7xl--line-height: 1;
+}
+
+/* Màu đổi theo sáng/tối nên trỏ về biến :root (inline: lớp Tailwind dùng thẳng var(--surface)…). */
+@theme inline {
+  --color-bg: var(--bg-base);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-separator: var(--separator);
+  --color-fill: var(--fill);
+  --color-fill-strong: var(--fill-strong);
+  --color-material: var(--material);
+  --color-text: var(--text);
+  --color-text-2: var(--text-2);
+  --color-text-3: var(--text-3);
+  --color-accent: var(--accent);
+  --color-accent-pressed: var(--accent-pressed);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-text: var(--accent-text);
+  --color-on-accent: var(--on-accent);
+  --color-grammar: var(--skill-grammar);
+  --color-pronunciation: var(--skill-pronunciation);
+  --color-listening: var(--skill-listening);
+  --color-reading: var(--skill-reading);
+  --color-vocab: var(--skill-vocab);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-danger-text: var(--danger-text);
+  --color-danger-solid: var(--danger-solid);
+}

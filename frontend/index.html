@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F4F6FB" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0B0E17" />
+    <!--
+      Chống nháy sáng/tối: áp lựa chọn đã lưu TRƯỚC khi trang vẽ. Bản JS thuần của applyTheme trong
+      src/config/theme.ts (cùng khoá lưu, thuộc tính, màu) — sửa một bên thì sửa cả bên kia; test/config/theme.test.tsx
+      chạy chính đoạn này. Tự động thì không làm gì: CSS và hai thẻ meta theo prefers-color-scheme.
+    -->
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('ielts-theme');
+          if (t !== 'light' && t !== 'dark') return;
+          document.documentElement.setAttribute('data-theme', t);
+          var scheme = document.querySelector('meta[name="color-scheme"]');
+          if (scheme) scheme.setAttribute('content', t);
+          var color = t === 'dark' ? '#0B0E17' : '#F4F6FB';
+          var metas = document.querySelectorAll('meta[name="theme-color"]');
+          for (var i = 0; i < metas.length; i++) metas[i].setAttribute('content', color);
+        } catch (e) {
+          /* Bộ nhớ bị chặn (chế độ riêng tư): giữ Tự động. */
+        }
+      })();
+    </script>
+    <title>IELTS App</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
