@@ -107,7 +107,7 @@ Mọi file và thư mục trong `frontend/src/` và `frontend/e2e/` dùng **keba
 | `api/queryClient.ts` | `api/query-client.ts` |
 | `ipa/ipaData.ts`, `test/mockApi.ts`, `test/speechStub.ts` | `ipa/ipa-data.ts`, `test/mock-api.ts`, `test/speech-stub.ts` |
 
-- File mới tạo (`src/ui/*`, `src/router.tsx`, `src/styles/tokens.css`…) cũng theo kebab-case: `src/ui/progress-bar.tsx`, `src/ui/list-row.tsx`.
+- File mới tạo (`src/components/ui/*`, `src/router.tsx`, `src/styles/tokens.css`…) cũng theo kebab-case: `src/components/ui/progress-bar.tsx`, `src/components/ui/list-row.tsx`.
 - Đổi tên bằng `git mv` để giữ lịch sử. macOS/Windows không phân biệt hoa thường nên file chỉ khác hoa/thường (`Flashcard.tsx` → `flashcard.tsx`) phải đổi qua tên trung gian: `git mv Flashcard.tsx flashcard.tmp.tsx && git mv flashcard.tmp.tsx flashcard.tsx`.
 - Test tách khỏi `src/`: mọi `*.test.ts(x)` nằm trong `frontend/test/` ngang hàng `src/`, cùng cấu trúc thư mục; helper test ở `frontend/test/support/`. Test import code bằng alias `@/` (→ `src/`), helper bằng `@test/` (→ `test/support/`). Commit riêng, ngay sau commit đổi tên.
 - Làm thành **một commit riêng chỉ đổi tên + sửa import**, test xanh, trước mọi thay đổi giao diện — để diff design không lẫn với diff đổi tên.
@@ -153,9 +153,9 @@ Mọi file và thư mục trong `frontend/src/` và `frontend/e2e/` dùng **keba
 | base-ui (tên gói npm hiện hành, tra trước khi cài) | Dialog, Sheet, Tabs/Segmented, Switch, Select có sẵn a11y |
 | `clsx`, `class-variance-authority` | lớp CSS có điều kiện và biến thể component |
 
-Icon: SVG nội tuyến trong `src/ui/icons.tsx` (nét 1.75–2px, góc bo, theo tinh thần SF Symbols). Không dùng emoji làm icon điều hướng.
+Icon: SVG nội tuyến trong `src/components/ui/icons.tsx` (nét 1.75–2px, góc bo, theo tinh thần SF Symbols). Không dùng emoji làm icon điều hướng.
 
-### Thành phần dùng chung — `src/ui/`
+### Thành phần dùng chung — `src/components/ui/`
 
 `Button` (primary / secondary / ghost / danger, size sm/md/lg, trạng thái loading), `IconButton` (tròn, như nút quay lại), `Card`, `ListRow` / `ListGroup` (kiểu bảng cài đặt iOS), `ProgressBar`, `ProgressRing`, `StatTile` (icon + số lớn + nhãn), `SkillTile` (ô màu kỹ năng như "Practice Now"), `Segmented`, `Sheet`, `Dialog`, `TextField`, `Select`, `Switch`, `Badge`, `EmptyState`, `Skeleton`, `PageHeader` (tiêu đề lớn + phụ đề + hành động), `TopBar` (màn tập trung), `NavBar` (một `<nav>` responsive), `CenterAction` (nút tròn giữa).
 
@@ -200,7 +200,7 @@ Mọi màn có trạng thái đang tải (skeleton), lỗi (`QueryError`) và r�
 Làm trên nhánh `feat/redesign-apple`, chia cho subagent:
 
 0. **Đổi tên** (agent nền, commit riêng): mọi file/thư mục frontend sang kebab-case, sửa import, test + build xanh.
-1. **Nền** (cùng agent, làm tiếp): thư viện, token sáng/tối, `src/ui/*`, AppShell/FocusShell/NavBar/CenterAction, router, axios client, sonner, cập nhật helper test.
+1. **Nền** (cùng agent, làm tiếp): thư viện, token sáng/tối, `src/components/ui/*`, AppShell/FocusShell/NavBar/CenterAction, router, axios client, sonner, cập nhật helper test.
 2. **Các màn** (3 agent song song, mỗi agent sở hữu file riêng):
    - A: Hôm nay, Buổi học, Ôn thẻ, `Flashcard`, `StepBar`.
    - B: Bài học, Kiểm tra, `LessonView`, `ExerciseSet`, Lộ trình, IPA.

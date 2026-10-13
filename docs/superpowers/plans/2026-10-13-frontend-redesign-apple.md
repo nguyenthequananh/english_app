@@ -1528,3 +1528,39 @@ Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>"
 - [ ] **Step 7:** Gom component cục bộ các task 5–7 báo cáo có thể đưa về `src/ui` (đề xuất, không tự làm nếu lớn).
 - [ ] **Step 8:** Cập nhật `frontend/CLAUDE.md`: mục Kiến trúc (axios `http` + adapter giả trong test, `router.tsx`, `shell/`, `src/ui`, token), mục Test (`renderRoute`, `mockNetworkDown`), bỏ mô tả cũ về `.btn/.card` trong `index.css`. Commit `docs(frontend): cập nhật CLAUDE.md theo giao diện mới`.
 - [ ] **Step 9:** Báo cáo: đã đạt / chưa đạt / đề xuất, kèm đường dẫn ảnh chụp.
+
+---
+
+## Đợt 2 — sau review tổng (bổ sung 2026-10-13)
+
+Nguồn: báo cáo review tổng (Task 9) và báo cáo đối chiếu skill `apple-design` (56% quy tắc đạt hẳn, 4 vi phạm — chủ yếu ở cử chỉ kéo sheet và lò xo).
+
+### Task 10: Chữ & font
+- Font: SF Pro hệ thống trên máy Apple (`-apple-system`), **Inter** đóng gói qua `@fontsource-variable/inter` cho máy khác; không nhúng font của Apple. Kiểm tra tiếng Việt + IPA.
+- Cỡ chữ mặc định 14px qua thang token (không đổi `font-size` của `html`); ô nhập 16px trên `pointer: coarse`; quét bỏ cỡ chữ viết cứng.
+- Tracking theo cỡ, line-height ≈1.45 cho tiếng Việt nhiều dòng, chữ trên vật liệu kính đủ tương phản.
+- Lỗi nhỏ: thanh trượt sáng trong chế độ tối, "Band 4" mồ côi, tiêu đề tên dài, màu "Chưa đạt" thống nhất, trạng thái rỗng cho hồ sơ mới, gộp `PracticeTile` vào `SkillTile`, ô không phải kỹ năng không mượn màu kỹ năng.
+
+### Task 10b: Chuyển `src/ui` → `src/components/ui` (sau Task 10, trước Task 11/13)
+- `git mv frontend/src/ui frontend/src/components/ui`; test tương ứng `frontend/test/ui` → `frontend/test/components/ui` (giữ cấu trúc gương với `src/`).
+- Sửa mọi import: trong `src/` dùng đường dẫn tương đối mới; trong `test/` dùng `@/components/ui/…`. Kiểm tra `grep -rnE "(/|@/)ui/" src test` chỉ còn `components/ui`.
+- Cập nhật `frontend/CLAUDE.md`, ghi chú trong code (`src/ui` → `src/components/ui`). Commit riêng chỉ đổi đường dẫn; test + build xanh, cùng số test.
+
+### Task 11: Chuyển động theo `apple-design` (chạy song song Task 13)
+- `src/components/ui/motion.ts`: một nguồn lò xo — chạm/nhấn không nảy; nảy nhẹ (bounce ≈0.2) chỉ sau cử chỉ kéo; `visualDuration`.
+- Sheet: đi theo ngón tay 1:1, thả quyết định bằng **phép chiếu quán tính** (deceleration 0.998) + **hướng vận tốc lúc thả**, lò xo ngăn kéo của Apple (damping 0.8, ~0.31s), rubber-band tăng dần ở mép trên (hằng số 0.55), bắt lại được khi đang đóng, kéo được từ nội dung khi đã cuộn tới đầu; reduced-motion → mờ dần.
+- Flashcard: lật bằng `rotateY` dạng số (ngắt giữa chừng giữ vận tốc); đưa focus về nút chấm sau khi lật.
+- TopBar: lớp kính hiện dần theo cuộn, viền mềm. Lộ trình: mở unit + chevron chung một lò xo. Reduced-transparency tắt blur.
+- Thay "✓"/"🎉" bằng icon (cập nhật E2E theo).
+
+### Task 13: Tải trang lười + lỗi theo shell (worktree riêng, song song Task 11)
+- Route `lazy` cho từng trang (React Router 8), tách `react-markdown`/`remark-gfm` vào chunk của bài học; `motion` chỉ phần cần (`LazyMotion` nếu hợp lý, giữ `layoutId`).
+- `errorElement` cho từng shell (AppShell/FocusShell) để lỗi một trang không làm mất khung điều hướng.
+- Ẩn "Thử lại" với lỗi 4xx không thử lại được; trang bài học không báo lỗi hai lần.
+- Mục tiêu: chunk khởi đầu < 500 kB, không còn cảnh báo kích thước của Vite.
+
+### Task 12: Gom component dùng chung về `src/components/ui` (sau Task 11)
+- Chuyển `Eyebrow`/`SectionTitle`, `IconChip`, `DownloadRow`, `FileRow`, `GroupItem`, `FormGroup`, `Kbd` vào `src/components/ui` (kebab-case, có test); giữ cục bộ các mảnh chỉ dùng một chỗ (`OptionChoice`, `UnitRow`, `ResultCard`…).
+
+### Task 14: E2E + review cuối đợt 2
+- Build jar `-Papp`, chạy E2E; đối chiếu lại skill `apple-design`; cập nhật `frontend/CLAUDE.md`.
