@@ -1,6 +1,7 @@
 import { vi } from 'vitest';
 import { api } from '@/api/client';
 import { ApiError } from '@/api/api-error';
+import { http } from '@/config/axios';
 import { setProfileRequiredHandler } from '@/config/interceptors';
 import { mockApi, mockNetworkDown, problem } from '@test/mock-api';
 
@@ -30,6 +31,16 @@ test('mất kết nối thành ApiError NETWORK', async () => {
   await expect(api.get('/health')).rejects.toMatchObject({ code: 'NETWORK', status: 0 });
 });
 
+test('lỗi lập trình (không phải AxiosError) không bị gắn nhãn mất kết nối, giữ nguyên lỗi gốc', async () => {
+  const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+  const bug = new Error('lỗi lập trình');
+  http.defaults.adapter = async () => {
+    throw bug;
+  };
+  await expect(api.get('/x')).rejects.toBe(bug);
+  expect(consoleError).toHaveBeenCalled();
+});
+
 test('PROFILE_REQUIRED gọi handler chuyển về chọn hồ sơ', async () => {
   const handler = vi.fn();
   setProfileRequiredHandler(handler);
@@ -43,7 +54,14 @@ test('gửi JSON thành object, gửi FormData giữ nguyên FormData', async ()
   await api.post('/words', { headword: 'x' });
   await api.post('/content/import', new FormData());
   expect(calls[0]).toMatchObject({ method: 'POST', path: '/words', body: { headword: 'x' } });
+  expect(calls[0].headers['content-type']).toBe('application/json');
   expect(calls[1].body).toBeInstanceOf(FormData);
+  // Axios không tự gắn "multipart/form-data" (có hay không có boundary) cho body FormData ở đây:
+  // header content-type chính xác cho multipart chỉ được adapter thật (xhr/fetch, qua resolveConfig
+  // của axios) tính tại thời điểm gửi, để trình duyệt tự thêm boundary — bước đó không chạy qua
+  // adapter giả này. Điều cần đảm bảo là không có ai gắn cứng "multipart/form-data" thiếu boundary,
+  // vì header đó sẽ làm backend không parse được phần multipart.
+  expect(calls[1].headers['content-type']).not.toMatch(/^multipart\/form-data(;|$)/);
 });
 
 test('PUT và DELETE đi đúng phương thức', async () => {

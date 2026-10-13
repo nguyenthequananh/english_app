@@ -1,4 +1,4 @@
-import axios, { type AxiosInstance } from 'axios';
+import axios, { type AxiosError, type AxiosInstance } from 'axios';
 import { ApiError } from '../api/api-error';
 
 let profileRequiredHandler: () => void = () => undefined;
@@ -8,8 +8,9 @@ export function setProfileRequiredHandler(fn: () => void) {
   profileRequiredHandler = fn;
 }
 
-export function toApiError(error: unknown): ApiError {
-  if (!axios.isAxiosError(error) || !error.response) {
+/** Chuẩn hoá lỗi axios (có response → ProblemDetail, không response → mất kết nối) thành ApiError. */
+export function toApiError(error: AxiosError): ApiError {
+  if (!error.response) {
     return new ApiError(0, 'NETWORK', 'Không kết nối được tới app. App có thể đã tắt, hãy mở lại.');
   }
   const { status, data } = error.response;
@@ -20,5 +21,14 @@ export function toApiError(error: unknown): ApiError {
 }
 
 export function setupInterceptors(instance: AxiosInstance) {
-  instance.interceptors.response.use((res) => res, (error: unknown) => Promise.reject(toApiError(error)));
+  instance.interceptors.response.use((res) => res, (error: unknown) => {
+    // Chỉ lỗi axios (HTTP hoặc mất kết nối) mới được gắn nhãn NETWORK/ProblemDetail.
+    // Lỗi khác (ví dụ lỗi lập trình ném trong transform) không phải "app mất kết nối" —
+    // giữ nguyên lỗi gốc để không che giấu bug thật.
+    if (!axios.isAxiosError(error)) {
+      console.error('Lỗi không phải từ axios trong response interceptor:', error);
+      return Promise.reject(error);
+    }
+    return Promise.reject(toApiError(error));
+  });
 }
