@@ -59,7 +59,7 @@ function WordRow({ item }: { item: WordBankItem }) {
     >
       <div role="cell" className="min-w-0 [grid-area:word]">
         <span className="text-[1.0625rem] font-semibold tracking-[-0.01em] break-words text-text lg:text-[1rem]">{word.headword}</span>
-        {' '}<span className="ml-1 text-[0.8125rem] whitespace-nowrap italic text-text-3">{word.pos}</span>
+        {' '}<span className="text-[0.8125rem] whitespace-nowrap italic text-text-3">{word.pos}</span>
       </div>
       <div role="cell" className={`min-w-0 text-[0.9375rem] break-words text-text-2 [grid-area:ipa] ${ipa ? '' : 'max-lg:hidden'}`}>
         {ipa ?? <span aria-label="Chưa có IPA" className="text-text-3">—</span>}
