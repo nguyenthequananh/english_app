@@ -1,5 +1,5 @@
 import { api } from './client';
-import type * as T from './types';
+import type * as T from '../types/api';
 
 const enc = encodeURIComponent;
 
