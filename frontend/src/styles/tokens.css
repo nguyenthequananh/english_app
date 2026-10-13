@@ -171,7 +171,8 @@
  * Thang cỡ chữ — chữ thân bài 14px (`text-base`). Thay hẳn thang mặc định của Tailwind (`--text-*: initial`)
  * nên `text-sm`, `text-xl`… đều là bậc của thang này; không viết `text-[0.9rem]` trần.
  * Mỗi bậc mang luôn line-height + tracking (ghi đè được bằng `leading-*` / `tracking-*`):
- *   - tracking theo "dynamic metrics" của Inter (dương nhẹ ở chữ nhỏ, âm dần khi chữ lớn) — gần bảng của SF;
+ *   - tracking lấy từ công thức "dynamic metrics" của Inter: −0.0223 + 0.185·e^(−0.1745·cỡ px) em (dương nhẹ ở
+ *     chữ nhỏ, âm dần khi chữ lớn) — gần bảng tracking của SF;
  *   - leading 1.4–1.45 cho chữ thân/nhãn: tiếng Việt chồng dấu (ễ, ặ) cần thêm khoảng dòng; chữ lớn khít dần.
  * Không đổi `font-size` của `html` — spacing Tailwind tính theo rem.
  */
@@ -197,7 +198,7 @@
   --text-base: 0.875rem;
   --text-base--line-height: 1.45;
   --text-base--letter-spacing: -0.006em;
-  /* headline / callout — tiêu đề thẻ, câu hỏi, nút lớn */
+  /* headline / callout — tiêu đề thẻ nhỏ, câu hỏi, nút lớn */
   --text-lg: 0.9375rem;
   --text-lg--line-height: 1.4;
   --text-lg--letter-spacing: -0.009em;
@@ -205,11 +206,11 @@
   --text-prose: 1rem;
   --text-prose--line-height: 1.6;
   --text-prose--letter-spacing: -0.011em;
-  /* title 3 — tiêu đề nhóm, tiêu đề thanh trên */
+  /* title 3 — tiêu đề thanh trên (17px, cỡ tiêu đề thanh điều hướng của Apple), tiêu đề hộp thoại, trạng thái trống */
   --text-xl: 1.0625rem;
   --text-xl--line-height: 1.3;
   --text-xl--letter-spacing: -0.013em;
-  /* title 2 — tiêu đề thẻ lớn, tiêu đề chặng */
+  /* title 2 — tiêu đề mục trong màn (Luyện tập, Lịch học…), tiêu đề bảng trượt, tiêu đề chặng */
   --text-2xl: 1.25rem;
   --text-2xl--line-height: 1.25;
   --text-2xl--letter-spacing: -0.017em;

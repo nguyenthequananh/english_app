@@ -26,7 +26,7 @@ export function ConfirmDialog({ open, onOpenChange, title, description, confirmL
           <AlertDialog.Popup
             className="w-full max-w-[340px] rounded-[26px] bg-surface p-5 text-center text-text shadow-[var(--shadow-sheet),inset_0_0_0_1px_var(--card-border)] outline-none transition-[opacity,scale] duration-(--duration-fast) ease-[var(--ease-out)] data-[ending-style]:scale-[0.97] data-[ending-style]:opacity-0 data-[ending-style]:duration-(--duration-press) data-[starting-style]:scale-[0.96] data-[starting-style]:opacity-0"
           >
-            <AlertDialog.Title className="text-lg font-bold">{title}</AlertDialog.Title>
+            <AlertDialog.Title className="text-xl font-bold">{title}</AlertDialog.Title>
             {description && (
               <AlertDialog.Description className="mt-1.5 text-base text-pretty text-text-2">{description}</AlertDialog.Description>
             )}

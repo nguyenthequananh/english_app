@@ -31,7 +31,7 @@ export default function IpaPage() {
         {IPA_GROUPS.map((group) => (
           <section key={group.title} aria-label={group.title} className="space-y-2.5">
             <div className="flex items-baseline justify-between px-1">
-              <h2 className="text-xl font-bold text-text">{group.title}</h2>
+              <h2 className="text-2xl font-bold text-text">{group.title}</h2>
               <span className="text-sm tabular-nums text-text-3">{group.sounds.length} âm</span>
             </div>
             <div className="grid grid-cols-4 gap-2 sm:gap-2.5 lg:grid-cols-8">

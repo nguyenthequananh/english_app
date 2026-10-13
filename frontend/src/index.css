@@ -69,8 +69,8 @@
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
     text-rendering: optimizeLegibility;
-    /* Inter bản opsz: trục cỡ quang học theo cỡ chữ (nét Display khi chữ lớn), như SF Text/Display. */
-    font-optical-sizing: auto;
+    /* Inter bản opsz: trục cỡ quang học tự theo cỡ chữ (nét Display khi chữ lớn), như SF Text/Display —
+       `font-optical-sizing` mặc định đã là `auto` nên không khai. */
   }
 
   body {

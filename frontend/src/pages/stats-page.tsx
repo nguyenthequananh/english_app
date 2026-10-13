@@ -103,7 +103,7 @@ function OverviewCard({ roadmap, summary }: { roadmap: Roadmap | undefined; summ
 function SectionTitle({ id, children, aside }: { id: string; children: string; aside?: ReactNode }) {
   return (
     <div className="mb-3 flex items-baseline justify-between gap-3">
-      <h2 id={id} className="text-xl font-bold text-text">{children}</h2>
+      <h2 id={id} className="text-2xl font-bold text-text">{children}</h2>
       {aside}
     </div>
   );
