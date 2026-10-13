@@ -3,6 +3,7 @@ import type { CSSProperties } from 'react';
 import { ApiError } from '../api/api-error';
 import { Icon } from './ui/icons';
 import { DESKTOP_QUERY, useMediaQuery } from './ui/use-media-query';
+import { useTheme } from '../config/theme';
 
 /** Hiện một thông báo ngắn. Giữ chữ ký cũ để nơi gọi không phải đổi. */
 export function toast(message: string, kind: 'info' | 'error' = 'info') {
@@ -30,9 +31,11 @@ const TOAST_VARS = {
 /** Một Toaster duy nhất ở gốc app. Điện thoại: trên-giữa (không đè tab bar); màn rộng: dưới-phải. */
 export function Toaster() {
   const desktop = useMediaQuery(DESKTOP_QUERY);
+  // Theo giao diện đang hiển thị (kể cả khi người dùng ép Sáng/Tối), không theo hệ thống.
+  const { resolved } = useTheme();
   return (
     <SonnerToaster
-      theme="system"
+      theme={resolved}
       containerAriaLabel="Thông báo"
       position={desktop ? 'bottom-right' : 'top-center'}
       duration={6000}
