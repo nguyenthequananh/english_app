@@ -5,7 +5,8 @@ import { createQueryClient } from './config/query-client';
 import { createAppRouter } from './router';
 // Inter (OFL) đóng gói kèm cho Windows/máy không có SF Pro — Vite chép woff2 vào dist/assets, chạy offline.
 // Bản `opsz`: trục cỡ quang học 14–32, trình duyệt tự dùng nét Display cho chữ lớn (như SF Text/Display).
-import '@fontsource-variable/inter/opsz.css';
+// Chỉ 4 bộ ký tự cần (latin, latin-ext cho IPA, vietnamese, greek cho θ) — xem font-inter.css.
+import './font-inter.css';
 import './index.css';
 
 const queryClient = createQueryClient();

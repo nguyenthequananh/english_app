@@ -9,7 +9,9 @@ export default function LessonPage() {
   const { code } = useParams();
   const navigate = useNavigate();
   // Cùng khoá với LessonView nên chỉ có một request; ở đây chỉ đọc để đặt tiêu đề thanh trên.
-  const { data: lesson } = useQuery({ queryKey: ['lesson', code], queryFn: () => endpoints.lesson(code!) });
+  // `silent` ở CẢ HAI nơi: meta của query lấy theo observer cập nhật sau cùng, thiếu một bên là lỗi lại thành toast
+  // trong khi LessonView đã hiện QueryError ngay trong trang.
+  const { data: lesson } = useQuery({ queryKey: ['lesson', code], queryFn: () => endpoints.lesson(code!), meta: { silent: true } });
   return (
     <>
       <TopBar
