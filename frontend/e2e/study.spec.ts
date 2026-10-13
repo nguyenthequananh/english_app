@@ -6,7 +6,8 @@ async function createProfile(page: Page, name: string) {
   await page.goto('/profiles/new');
   await page.getByLabel('Tên').fill(name);
   await page.getByRole('button', { name: 'Tạo hồ sơ' }).click();
-  await expect(page.getByRole('link', { name: 'Hôm nay' })).toBeVisible();
+  // exact: true — khớp lỏng (mặc định) trùng cả nút tròn giữa có aria-label "Buổi học hôm nay".
+  await expect(page.getByRole('link', { name: 'Hôm nay', exact: true })).toBeVisible();
 }
 
 async function finishTodaySession(page: Page) {
@@ -39,16 +40,18 @@ async function finishTodaySession(page: Page) {
 test('học trọn một buổi rồi thấy chuỗi ngày học', async ({ page }) => {
   await createProfile(page, 'Lan');
   await finishTodaySession(page);
-  await page.getByRole('link', { name: 'Thống kê' }).click();
+  // /session nằm trong FocusShell (không có thanh điều hướng) — phải về trang chủ (AppShell) trước.
+  await page.getByRole('link', { name: 'Về trang chủ' }).click();
+  await page.getByRole('link', { name: 'Tiến độ' }).click();
   await expect(page.getByTestId('stat-streak')).toHaveText('1');
-  await page.getByRole('link', { name: 'Hôm nay' }).click();
+  await page.getByRole('link', { name: 'Hôm nay', exact: true }).click();
   await expect(page.getByText('✓ Bạn đã hoàn thành buổi học hôm nay')).toBeVisible();
 });
 
 test('F5 ở đường dẫn con vẫn mở đúng trang', async ({ page }) => {
   // Mỗi test Playwright có phiên mới: vào trang chủ để app tự chọn hồ sơ duy nhất (Lan) trước.
   await page.goto('/');
-  await expect(page.getByRole('link', { name: 'Hôm nay' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Hôm nay', exact: true })).toBeVisible();
   await page.goto('/roadmap');
   await page.reload();
   await expect(page.getByRole('heading', { name: 'Lộ trình' })).toBeVisible();
@@ -57,12 +60,12 @@ test('F5 ở đường dẫn con vẫn mở đúng trang', async ({ page }) => {
 test('hai hồ sơ không thấy dữ liệu học của nhau', async ({ page }) => {
   await createProfile(page, 'Minh');
   await page.getByRole('link', { name: 'Kho từ' }).click();
-  await page.getByLabel('Trạng thái').selectOption('LEARNING');
+  await page.getByRole('radio', { name: 'Đang học' }).click();
   await expect(page.getByText('Không có từ nào')).toBeVisible();
 
   await page.getByRole('link', { name: 'Đổi hồ sơ' }).click();
   await page.getByRole('button', { name: /Lan/ }).click();
   await page.getByRole('link', { name: 'Kho từ' }).click();
-  await page.getByLabel('Trạng thái').selectOption('LEARNING');
-  await expect(page.locator('tbody tr').first()).toBeVisible();
+  await page.getByRole('radio', { name: 'Đang học' }).click();
+  await expect(page.getByTestId('word-row').first()).toBeVisible();
 });
