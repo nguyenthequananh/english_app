@@ -45,13 +45,13 @@ function PracticeTile({ to, label, ariaLabel, icon, tone }: {
       <span className="tone-chip inline-flex size-12 shrink-0 items-center justify-center rounded-full shadow-[0_6px_14px_-6px_var(--tone)] dark:shadow-none">
         <Icon name={icon} size={23} strokeWidth={2} />
       </span>
-      <span className="text-[0.8125rem] font-semibold leading-tight text-balance text-text">{label}</span>
+      <span className="text-sm font-semibold leading-tight text-balance text-text">{label}</span>
     </Link>
   );
 }
 
 function Eyebrow({ children }: { children: string }) {
-  return <p className="text-[0.8125rem] font-semibold uppercase tracking-[0.05em] text-text-3">{children}</p>;
+  return <p className="text-sm font-semibold uppercase tracking-[0.04em] text-text-3">{children}</p>;
 }
 
 /**
@@ -72,8 +72,8 @@ function SessionCard({ summary, dailyMinutes }: { summary: Summary; dailyMinutes
       <Card className="flex items-start gap-4">
         <div className="min-w-0 flex-1">
           <Eyebrow>Buổi học hôm nay</Eyebrow>
-          <p className="mt-1.5 text-[1.25rem] font-bold leading-snug tracking-[-0.015em] text-text">✓ Bạn đã hoàn thành buổi học hôm nay</p>
-          <p className="mt-1 text-[0.9375rem] leading-snug text-text-2">Muốn nhớ lâu hơn? Ôn thêm vài thẻ.</p>
+          <p className="mt-1.5 text-xl font-bold text-text">✓ Bạn đã hoàn thành buổi học hôm nay</p>
+          <p className="mt-1 text-base text-text-2">Muốn nhớ lâu hơn? Ôn thêm vài thẻ.</p>
           <ButtonLink to="/review" variant="secondary" className="mt-4">
             Ôn thêm <Icon name="chevron-right" size={16} strokeWidth={2.4} />
           </ButtonLink>
@@ -110,8 +110,8 @@ function SessionCard({ summary, dailyMinutes }: { summary: Summary; dailyMinutes
     <Card className="flex items-start gap-4">
       <div className="min-w-0 flex-1">
         <Eyebrow>Buổi học hôm nay</Eyebrow>
-        <p className="mt-1.5 text-[1.375rem] font-bold leading-tight tracking-[-0.02em] tabular-nums text-text">{headline}</p>
-        <p className="mt-1 text-[0.9375rem] leading-snug text-text-2">{detail}</p>
+        <p className="mt-1.5 text-2xl font-bold tabular-nums text-text">{headline}</p>
+        <p className="mt-1 text-base text-text-2">{detail}</p>
         <ButtonLink to="/session" className="mt-4">
           {inProgress ? 'Tiếp tục buổi học' : 'Bắt đầu buổi học'}
           <Icon name="chevron-right" size={16} strokeWidth={2.4} />
@@ -132,8 +132,8 @@ function UnitCard({ unit }: { unit: Summary['currentUnit'] }) {
           <Icon name="star" size={22} />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="text-[1rem] font-semibold text-text">Bạn đã học hết nội dung hiện có.</p>
-          <Link to="/roadmap" className="focus-ring mt-0.5 inline-block rounded text-[0.9375rem] font-semibold text-accent-text">Xem lộ trình</Link>
+          <p className="text-base font-semibold text-text">Bạn đã học hết nội dung hiện có.</p>
+          <Link to="/roadmap" className="focus-ring mt-0.5 inline-block rounded text-base font-semibold text-accent-text">Xem lộ trình</Link>
         </div>
       </Card>
     );
@@ -144,17 +144,17 @@ function UnitCard({ unit }: { unit: Summary['currentUnit'] }) {
       <div className="flex items-start gap-4">
         <div className="min-w-0 flex-1">
           <Eyebrow>Đang học</Eyebrow>
-          <p className="mt-1.5 text-[1.0625rem] font-semibold leading-snug text-text">
+          <p className="mt-1.5 text-lg font-semibold text-text">
             <span className="text-text-3">{unit.code}</span> · {unit.title}
           </p>
         </div>
-        <p aria-hidden="true" className="shrink-0 text-[2.5rem] font-bold leading-none tracking-[-0.03em] tabular-nums text-text">
-          {Math.round(ratio * 100)}<span className="text-[1.25rem] text-text-3">%</span>
+        <p aria-hidden="true" className="shrink-0 text-5xl font-bold leading-none tabular-nums text-text">
+          {Math.round(ratio * 100)}<span className="text-xl text-text-3">%</span>
         </p>
       </div>
       <ProgressBar value={ratio} label={`Tiến độ unit ${unit.code}`} className="mt-4" />
       <div className="mt-2.5 flex items-center justify-between gap-3">
-        <p className="text-[0.875rem] tabular-nums text-text-3">{unit.lessonsDone}/{unit.lessonsTotal} bài</p>
+        <p className="text-md tabular-nums text-text-3">{unit.lessonsDone}/{unit.lessonsTotal} bài</p>
         {unit.testReady && (
           <ButtonLink to={`/units/${unit.code}/test`} variant="secondary" size="sm">Làm bài kiểm tra unit</ButtonLink>
         )}
@@ -166,7 +166,7 @@ function UnitCard({ unit }: { unit: Summary['currentUnit'] }) {
 function Practice() {
   return (
     <section aria-labelledby="today-practice" className="space-y-3">
-      <h2 id="today-practice" className="text-[1.25rem] font-bold tracking-[-0.015em] text-text">Luyện tập</h2>
+      <h2 id="today-practice" className="text-xl font-bold text-text">Luyện tập</h2>
       <div className="grid grid-cols-4 gap-2.5 sm:gap-3 lg:grid-cols-2">
         <PracticeTile to="/review" label="Ôn thẻ" icon="cards" tone="VOCAB" />
         <PracticeTile to="/words" label="Kho từ" icon="book" tone="READING" />

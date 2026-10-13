@@ -15,7 +15,7 @@ export function QueryError({ error, onRetry, backTo }: {
         <span className="tone-danger inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--tone-soft)] text-[var(--tone-text)]">
           <Icon name="cross" size={18} strokeWidth={2.3} />
         </span>
-        <p className="pt-1.5 text-[0.9375rem] leading-snug text-text">{message}</p>
+        <p className="pt-1.5 text-base text-text">{message}</p>
       </div>
       <div className="flex shrink-0 gap-2">
         {backTo && <ButtonLink to={backTo.to} variant="secondary" size="sm">{backTo.label}</ButtonLink>}

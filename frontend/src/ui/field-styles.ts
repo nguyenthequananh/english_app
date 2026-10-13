@@ -9,6 +9,6 @@ export const fieldControl = cn(
   'aria-[invalid=true]:border-danger',
 );
 
-export const fieldLabel = 'mb-1.5 block px-1 text-[0.875rem] font-semibold text-text-2';
-export const fieldHint = 'mt-1.5 px-1 text-[0.8125rem] leading-snug text-text-3';
-export const fieldError = 'mt-1.5 px-1 text-[0.8125rem] font-medium leading-snug text-danger-text';
+export const fieldLabel = 'mb-1.5 block px-1 text-base font-semibold text-text-2';
+export const fieldHint = 'mt-1.5 px-1 text-sm text-text-3';
+export const fieldError = 'mt-1.5 px-1 text-sm font-medium text-danger-text';

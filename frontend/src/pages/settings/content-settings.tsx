@@ -32,11 +32,11 @@ export function ContentSettings() {
             </span>
             <div className="min-w-0 flex-1">
               <div className="flex items-center justify-between gap-2">
-                <span className="min-w-0 text-[0.9375rem] font-medium break-all text-text">{r.file}</span>
+                <span className="min-w-0 text-base font-medium break-all text-text">{r.file}</span>
                 <Badge tone={r.ok ? 'success' : 'danger'}>{r.ok ? 'Đã nhập' : 'Lỗi'}</Badge>
               </div>
               {r.errors.length > 0 && (
-                <ul className="mt-1.5 space-y-1 text-[0.8125rem] leading-snug break-words text-text-2">
+                <ul className="mt-1.5 space-y-1 text-sm break-words text-text-2">
                   {r.errors.map((err) => <li key={err}>{err}</li>)}
                 </ul>
               )}

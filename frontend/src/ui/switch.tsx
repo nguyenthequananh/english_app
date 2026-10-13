@@ -13,7 +13,7 @@ export function Switch({ label, checked, onCheckedChange, disabled, className }:
   const labelId = useId();
   return (
     <label className={cn('flex min-h-11 cursor-pointer items-center justify-between gap-4', disabled && 'cursor-not-allowed opacity-50', className)}>
-      <span id={labelId} className="text-[1rem] text-text">{label}</span>
+      <span id={labelId} className="text-base text-text">{label}</span>
       <BaseSwitch.Root
         aria-labelledby={labelId}
         checked={checked}

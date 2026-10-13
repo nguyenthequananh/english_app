@@ -35,7 +35,7 @@ export function ProgressBar({ value, label, color = 'accent', showValue = false,
         />
       </div>
       {showValue && (
-        <span aria-hidden="true" className="w-10 shrink-0 text-right text-[0.8125rem] font-semibold tabular-nums text-text-2">{pct}%</span>
+        <span aria-hidden="true" className="w-10 shrink-0 text-right text-sm font-semibold tabular-nums text-text-2">{pct}%</span>
       )}
     </div>
   );

@@ -39,8 +39,8 @@ export function TopBar({ title, subtitle, back, backLabel = 'Quay lại', traili
       <div className="mx-auto grid min-h-[3.75rem] w-full max-w-[720px] grid-cols-[minmax(2.75rem,1fr)_minmax(0,auto)_minmax(2.75rem,1fr)] items-center gap-2 px-4 py-2">
         <IconLink to={back} icon="back" label={backLabel} />
         <div className="min-w-0 text-center">
-          <h1 className="truncate text-[1.0625rem] font-bold leading-tight tracking-[-0.01em] text-text">{title}</h1>
-          {subtitle && <p className="mt-0.5 truncate text-[0.8125rem] leading-tight text-text-3">{subtitle}</p>}
+          <h1 className="truncate text-lg font-bold leading-tight text-text">{title}</h1>
+          {subtitle && <p className="mt-0.5 truncate text-sm leading-tight font-medium text-text-2">{subtitle}</p>}
         </div>
         <div className="flex justify-end">{trailing}</div>
       </div>

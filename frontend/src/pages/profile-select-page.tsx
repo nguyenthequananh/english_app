@@ -13,7 +13,7 @@ import { Skeleton } from '../ui/skeleton';
 import { Icon } from '../ui/icons';
 import { cn } from '../ui/cn';
 
-const avatarCircle = 'relative flex size-24 items-center justify-center rounded-full text-[3rem] leading-none sm:size-28 sm:text-[3.5rem]';
+const avatarCircle = 'relative flex size-24 items-center justify-center rounded-full text-6xl leading-none sm:size-28 sm:text-7xl';
 
 function Spinner() {
   return (
@@ -48,7 +48,7 @@ function ProfileTile({ profile, busy, disabled, onPick }: { profile: Profile; bu
           </span>
         )}
       </span>
-      <span className="line-clamp-2 max-w-[9rem] text-[1rem] leading-snug font-semibold break-words text-text" title={profile.name}>{profile.name}</span>
+      <span className="line-clamp-2 max-w-[9rem] text-base font-semibold break-words text-text" title={profile.name}>{profile.name}</span>
       {profile.hasPin && <span className="sr-only">(có mã PIN)</span>}
     </button>
   );
@@ -113,7 +113,7 @@ export default function ProfileSelectPage() {
           <Icon name="sparkle" filled size={28} strokeWidth={1.6} />
         </span>
         <h1 className="text-large-title text-center text-text">Ai đang học?</h1>
-        <p className="mt-2 text-center text-[1rem] text-text-2">Chọn hồ sơ của bạn để tiếp tục.</p>
+        <p className="mt-2 text-center text-base text-text-2">Chọn hồ sơ của bạn để tiếp tục.</p>
 
         <div className="mt-10 w-full">
           {profilesQuery.error ? (
@@ -145,13 +145,13 @@ export default function ProfileSelectPage() {
                   <span aria-hidden="true" className={cn(avatarCircle, 'border-2 border-dashed border-fill-strong text-accent-text group-hover:border-accent')}>
                     <Icon name="plus" size={34} strokeWidth={2} />
                   </span>
-                  <span className="text-[1rem] leading-snug font-semibold text-accent-text">Thêm hồ sơ</span>
+                  <span className="text-base font-semibold text-accent-text">Thêm hồ sơ</span>
                 </Link>
               </li>
             </ul>
           )}
           {!pinFor && errorMessage && (
-            <p role="alert" className="mt-6 text-center text-[0.9375rem] font-medium text-danger-text">{errorMessage}</p>
+            <p role="alert" className="mt-6 text-center text-base font-medium text-danger-text">{errorMessage}</p>
           )}
         </div>
       </div>

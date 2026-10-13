@@ -38,7 +38,7 @@ function NavItem({ to, label, icon }: { to: string; label: string; icon: IconNam
             />
           )}
           <Icon name={icon} filled={isActive} size={24} strokeWidth={isActive ? 2.1 : 1.85} className="relative lg:size-[22px]" />
-          <span className="relative text-[0.6875rem] leading-none font-medium tracking-[0.005em] group-aria-[current=page]:font-bold lg:text-[0.9375rem] lg:font-medium lg:group-aria-[current=page]:font-semibold">
+          <span className="relative text-xs leading-none font-semibold tracking-[0.01em] group-aria-[current=page]:font-bold lg:text-base lg:font-medium lg:tracking-normal lg:group-aria-[current=page]:font-semibold">
             {label}
           </span>
         </>
@@ -53,17 +53,17 @@ function ProfileCard() {
   return (
     <div className="mt-auto hidden pt-6 lg:block">
       <div className="flex items-center gap-3 rounded-2xl bg-surface p-3 card-edge">
-        <span aria-hidden="true" className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-accent-soft text-[1.25rem] font-semibold text-accent-text">
+        <span aria-hidden="true" className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-accent-soft text-xl font-semibold text-accent-text">
           {profile?.avatar || name.charAt(0).toUpperCase() || '?'}
         </span>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-[0.9375rem] font-semibold text-text" title={name || undefined}>{name || '…'}</p>
-          <p className="text-[0.75rem] text-text-3">Hồ sơ đang dùng</p>
+          <p className="truncate text-base font-semibold text-text" title={name || undefined}>{name || '…'}</p>
+          <p className="text-xs text-text-3">Hồ sơ đang dùng</p>
         </div>
       </div>
       <Link
         to="/profiles?manual=1"
-        className="pressable focus-ring mt-2 flex h-10 items-center justify-center rounded-xl text-[0.875rem] font-semibold text-accent-text hover:bg-fill"
+        className="pressable focus-ring mt-2 flex h-10 items-center justify-center rounded-xl text-base font-semibold text-accent-text hover:bg-fill"
       >
         Đổi hồ sơ
       </Link>
@@ -97,7 +97,7 @@ export function NavBar() {
           <span className="tone-accent tone-chip inline-flex size-8 items-center justify-center rounded-[10px]">
             <Icon name="sparkle" filled size={18} strokeWidth={1.6} />
           </span>
-          <span className="text-[1.0625rem] font-bold tracking-[-0.01em] text-text">IELTS App</span>
+          <span className="text-lg font-bold text-text">IELTS App</span>
         </div>
         <div className="absolute top-0 left-1/2 z-10 -translate-x-1/2 lg:static lg:mb-5 lg:translate-x-0">
           <CenterAction />

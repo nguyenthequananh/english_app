@@ -25,7 +25,7 @@ export function SkillTile({ to, label, icon, tone, className }: {
       <span className="tone-chip inline-flex size-12 items-center justify-center rounded-full shadow-[0_6px_14px_-6px_var(--tone)] dark:shadow-none">
         <Icon name={icon} size={23} strokeWidth={2} />
       </span>
-      <span className="text-[0.8125rem] font-semibold leading-tight text-text">{label}</span>
+      <span className="text-sm font-semibold text-text">{label}</span>
     </Link>
   );
 }

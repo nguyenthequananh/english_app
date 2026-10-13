@@ -51,14 +51,14 @@ export function StepBar({ step, reviewsLeft, newLeft }: { step: SessionStep; rev
               </div>
               <p
                 className={cn(
-                  'mt-2 flex min-w-0 items-center gap-1 text-[0.8125rem] leading-tight',
+                  'mt-2 flex min-w-0 items-center gap-1 text-sm leading-tight',
                   current ? 'font-semibold text-text' : 'text-text-3',
                 )}
               >
                 {done && <Icon name="check" size={13} strokeWidth={2.6} className="text-accent-text" />}
                 <span className="truncate">{s.label}</span>
                 {current && counts[s.step] !== undefined && (
-                  <span className="shrink-0 rounded-full bg-accent-soft px-1.5 text-[0.75rem] leading-[1.125rem] tabular-nums text-accent-text">
+                  <span className="shrink-0 rounded-full bg-accent-soft px-1.5 text-xs leading-[1.125rem] tabular-nums text-accent-text">
                     {counts[s.step]}
                     <span className="sr-only"> thẻ còn lại</span>
                   </span>
@@ -89,7 +89,7 @@ export function SessionTimer() {
     return () => clearInterval(t);
   }, []);
   return (
-    <span className="inline-flex items-center gap-1 rounded-full bg-fill px-2.5 py-1 text-[0.8125rem] font-semibold tabular-nums text-text-2">
+    <span className="inline-flex items-center gap-1 rounded-full bg-fill px-2.5 py-1 text-sm font-semibold tabular-nums text-text-2">
       <Icon name="clock" size={14} strokeWidth={2.2} />
       <span className="sr-only">Thời gian học </span>
       {format(Math.floor((now - start) / 1000))}

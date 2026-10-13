@@ -43,7 +43,7 @@ export function ExerciseSet({ exercises, results, onSubmit, submitting = false, 
         // Thanh nộp bài nổi ở đáy khi cuộn qua danh sách câu dài; hết danh sách thì nằm yên cuối form.
         <div className="sticky bottom-[calc(env(safe-area-inset-bottom,0px)+0.75rem)] z-10 pt-2">
           <div className="material flex items-center gap-3 rounded-full py-2 pr-2 pl-5 shadow-[var(--shadow-card)] card-edge">
-            <p className="min-w-0 flex-1 text-[0.875rem] leading-tight text-text-2">
+            <p className="min-w-0 flex-1 text-base leading-tight text-text-2">
               Đã làm <span className="font-semibold tabular-nums text-text">{answered}/{exercises.length}</span> câu
             </p>
             <Button type="submit" loading={submitting}>{submitLabel}</Button>
@@ -63,7 +63,7 @@ function ExerciseItem({ index, total, exercise, value, onChange, result, disable
     <Card as="section">
       <fieldset className="m-0 min-w-0 border-0 p-0">
         <legend className="sr-only">Câu {index}</legend>
-        <div aria-hidden="true" className="mb-2.5 flex items-center gap-2 text-[0.8125rem] font-semibold text-text-3">
+        <div aria-hidden="true" className="mb-2.5 flex items-center gap-2 text-sm font-semibold text-text-3">
           <span className="tabular-nums">Câu {index}<span className="font-normal opacity-70">/{total}</span></span>
           <span className="size-[3px] rounded-full bg-current opacity-50" />
           <span className="font-medium">{KIND_LABEL[exercise.type]}</span>
@@ -77,14 +77,14 @@ function ExerciseItem({ index, total, exercise, value, onChange, result, disable
 
         {exercise.type === 'MINIMAL_PAIR' ? (
           <>
-            <p className="text-[1.0625rem] font-semibold leading-snug text-text">Nghe và chọn từ bạn nghe được</p>
+            <p className="text-lg font-semibold text-text">Nghe và chọn từ bạn nghe được</p>
             <div className="mt-3 flex flex-wrap gap-2">
               <ListenButton label="Nghe từ" onClick={() => speak(exercise.prompt)} />
             </div>
           </>
         ) : exercise.type === 'DICTATION' ? (
           <>
-            <p className="text-[1.0625rem] font-semibold leading-snug text-text">Nghe và chép lại câu</p>
+            <p className="text-lg font-semibold text-text">Nghe và chép lại câu</p>
             <div className="mt-3 flex flex-wrap gap-2">
               <ListenButton label="Nghe câu" onClick={() => speak(exercise.prompt)} />
               <ListenButton label="Nghe chậm" slow
@@ -92,7 +92,7 @@ function ExerciseItem({ index, total, exercise, value, onChange, result, disable
             </div>
           </>
         ) : (
-          <p className="text-[1.0625rem] font-semibold leading-snug text-pretty text-text"><PromptText text={exercise.prompt} /></p>
+          <p className="text-lg font-semibold text-pretty text-text"><PromptText text={exercise.prompt} /></p>
         )}
 
         {typed ? (
@@ -124,7 +124,7 @@ function ExerciseItem({ index, total, exercise, value, onChange, result, disable
         {result && (
           <div className={cn('mt-3 flex gap-2.5 rounded-control bg-[var(--tone-soft)] px-3.5 py-3', toneClass(result.correct ? 'success' : 'danger'))}>
             <Icon name={result.correct ? 'check' : 'cross'} size={18} strokeWidth={2.6} className="mt-0.5 text-[var(--tone-text)]" />
-            <div className="min-w-0 text-[0.9375rem] leading-snug">
+            <div className="min-w-0 text-base">
               <p className="font-semibold break-words text-[var(--tone-text)]">
                 {result.correct ? 'Đúng' : `Sai — đáp án: ${result.answer}`}
               </p>
@@ -150,7 +150,7 @@ function OptionChoice({ name, option, selected, disabled, result, onSelect }: {
   return (
     <label
       className={cn(
-        'relative flex min-h-12 items-center gap-3 rounded-control border-[1.5px] px-3.5 py-2.5 text-[1rem] leading-snug',
+        'relative flex min-h-12 items-center gap-3 rounded-control border-[1.5px] px-3.5 py-2.5 text-base',
         'has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-[var(--focus-ring)]',
         tone && cn(toneClass(tone), 'border-[var(--tone)] bg-[var(--tone-soft)] font-semibold text-text'),
         !tone && selected && 'border-accent bg-accent-soft font-semibold text-text',

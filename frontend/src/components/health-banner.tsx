@@ -22,7 +22,7 @@ export function HealthBanner() {
       <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--tone-soft)] text-[var(--tone-text)]">
         <Icon name="download" size={18} strokeWidth={2.1} />
       </span>
-      <p className="min-w-0 flex-1 pt-1.5 text-[0.9375rem] leading-snug break-words text-text">{message}</p>
+      <p className="min-w-0 flex-1 pt-1.5 text-base break-words text-text">{message}</p>
       <Button variant="ghost" size="sm" onClick={() => setHidden(true)}>Đóng</Button>
     </div>
   );

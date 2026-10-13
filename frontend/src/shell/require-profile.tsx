@@ -29,7 +29,7 @@ export default function RequireProfile() {
           <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="2.5" opacity="0.2" />
           <path d="M21 12a9 9 0 0 0-9-9" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
         </svg>
-        <p className="text-[0.9375rem]">Đang tải…</p>
+        <p className="text-base">Đang tải…</p>
       </div>
     );
   }
@@ -41,8 +41,8 @@ export default function RequireProfile() {
           <span className="tone-danger mx-auto mb-4 inline-flex size-14 items-center justify-center rounded-full bg-[var(--tone-soft)] text-[var(--tone-text)]">
             <Icon name="power" size={26} />
           </span>
-          <p className="text-[1.0625rem] font-semibold text-text">Không tải được hồ sơ</p>
-          <p className="mt-1.5 text-[0.9375rem] leading-relaxed text-text-2">
+          <p className="text-lg font-semibold text-text">Không tải được hồ sơ</p>
+          <p className="mt-1.5 text-base text-text-2">
             {error instanceof ApiError ? error.message : 'Không tải được dữ liệu.'}
           </p>
           <Button className="mt-6" block loading={isFetching} onClick={() => refetch()}>Thử lại</Button>

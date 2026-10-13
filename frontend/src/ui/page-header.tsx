@@ -15,7 +15,7 @@ export function PageHeader({ title, subtitle, back, backLabel = 'Quay lại', ac
       <div className="flex items-end gap-3">
         <div className="min-w-0 flex-1">
           <h1 className="text-large-title text-balance text-text">{title}</h1>
-          {subtitle && <div className="mt-1 text-[0.9375rem] leading-snug text-text-2">{subtitle}</div>}
+          {subtitle && <div className="mt-1 text-base text-text-2">{subtitle}</div>}
         </div>
         {actions && <div className="flex shrink-0 items-center gap-2 pb-1">{actions}</div>}
       </div>

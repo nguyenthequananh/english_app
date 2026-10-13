@@ -20,7 +20,7 @@ import { dayLabel, lessonSkill, lessonTypeLabel } from './labels';
 const MARKDOWN_COMPONENTS: Components = {
   table: ({ node: _node, ...props }) => (
     <div className="markdown-table -mx-1 my-4 overflow-x-auto overscroll-x-contain px-1 [scrollbar-width:thin]" tabIndex={0} role="region" aria-label="Bảng">
-      <table {...props} className="w-full border-collapse text-[0.9375rem] leading-snug [&_td]:min-w-[7.5rem] [&_th]:min-w-[7.5rem]" />
+      <table {...props} className="w-full border-collapse text-base [&_td]:min-w-[7.5rem] [&_th]:min-w-[7.5rem]" />
     </div>
   ),
 };
@@ -63,25 +63,25 @@ export function LessonView({ code, onDone, doneLabel = 'Xong', showTitle = true 
             {skill && <Icon name={SKILL_META[skill].icon} size={13} strokeWidth={2.2} />}
             {lessonTypeLabel(lesson.type)}
           </Badge>
-          {showTitle && <span className="text-[0.8125rem] text-text-3">{dayLabel(lesson.day)}</span>}
+          {showTitle && <span className="text-sm text-text-3">{dayLabel(lesson.day)}</span>}
           {lesson.bestScore !== null && !noExercises && (
-            <span className="ml-auto text-[0.8125rem] text-text-3">
+            <span className="ml-auto text-sm text-text-3">
               Điểm cao nhất <span className="font-semibold tabular-nums text-text-2">{Math.round(lesson.bestScore * 100)}%</span>
             </span>
           )}
         </div>
-        {showTitle && <h2 className="text-[1.75rem] leading-tight font-bold tracking-[-0.02em] text-balance text-text">{lesson.title}</h2>}
+        {showTitle && <h2 className="text-4xl font-bold text-balance text-text">{lesson.title}</h2>}
       </header>
 
-      <Card as="section" className="markdown px-5 py-5 text-[1.0625rem] leading-[1.6] sm:px-6 [&_h2:first-child]:mt-0 [&_h3]:mt-6 [&_h2]:mt-7 [&_h2]:mb-3 [&_li]:my-1 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_table_td]:border-t [&_table_td]:border-separator [&_table_td]:px-3 [&_table_td]:py-2 [&_table_td]:align-top [&_table_th]:bg-fill [&_table_th]:px-3 [&_table_th]:py-2 [&_table_th]:text-left [&_table_th]:font-semibold [&_table_th:first-child]:rounded-l-lg [&_table_th:last-child]:rounded-r-lg [&_del]:text-text-3 [&_hr]:my-6 [&_hr]:border-separator">
+      <Card as="section" className="markdown px-5 py-5 text-prose sm:px-6 [&_h2:first-child]:mt-0 [&_h3]:mt-6 [&_h2]:mt-7 [&_h2]:mb-3 [&_li]:my-1 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_table_td]:border-t [&_table_td]:border-separator [&_table_td]:px-3 [&_table_td]:py-2 [&_table_td]:align-top [&_table_th]:bg-fill [&_table_th]:px-3 [&_table_th]:py-2 [&_table_th]:text-left [&_table_th]:font-semibold [&_table_th:first-child]:rounded-l-lg [&_table_th:last-child]:rounded-r-lg [&_del]:text-text-3 [&_hr]:my-6 [&_hr]:border-separator">
         <Markdown remarkPlugins={[remarkGfm]} components={MARKDOWN_COMPONENTS}>{lesson.bodyMd}</Markdown>
       </Card>
 
       {!noExercises && (
         <section className="space-y-3" aria-labelledby={`${code}-exercises`}>
           <div className="flex items-baseline justify-between px-1 pt-2">
-            <h2 id={`${code}-exercises`} className="text-[1.375rem] font-bold tracking-[-0.015em] text-text">Bài tập</h2>
-            <span className="text-[0.875rem] text-text-3 tabular-nums">{lesson.exercises.length} câu</span>
+            <h2 id={`${code}-exercises`} className="text-2xl font-bold text-text">Bài tập</h2>
+            <span className="text-md text-text-3 tabular-nums">{lesson.exercises.length} câu</span>
           </div>
           <ExerciseSet exercises={lesson.exercises} results={result?.results} submitting={submit.isPending}
             onSubmit={(answers) => submit.mutate(answers)} />
@@ -99,13 +99,13 @@ export function LessonView({ code, onDone, doneLabel = 'Xong', showTitle = true 
           {!noExercises ? (
             <>
               <ProgressRing value={result.score} label="Điểm bài tập" size={60}>
-                <span className="text-[0.8125rem] font-bold tabular-nums text-text">
+                <span className="text-sm font-bold tabular-nums text-text">
                   {result.results.filter((r) => r.correct).length}/{result.results.length}
                 </span>
               </ProgressRing>
               <div className="min-w-0 flex-1">
-                <p className="text-[1.0625rem] font-semibold tabular-nums text-text">Điểm: {Math.round(result.score * 100)}%</p>
-                <p className="text-[0.875rem] leading-snug text-text-2">{scoreNote(result.score)}</p>
+                <p className="text-lg font-semibold tabular-nums text-text">Điểm: {Math.round(result.score * 100)}%</p>
+                <p className="text-base text-text-2">{scoreNote(result.score)}</p>
               </div>
             </>
           ) : (
@@ -113,7 +113,7 @@ export function LessonView({ code, onDone, doneLabel = 'Xong', showTitle = true 
               <span className="tone-success inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-[var(--tone-soft)] text-[var(--tone-text)]">
                 <Icon name="check" size={20} strokeWidth={2.6} />
               </span>
-              <p className="text-[1.0625rem] font-semibold text-text">Đã học xong bài này</p>
+              <p className="text-lg font-semibold text-text">Đã học xong bài này</p>
             </div>
           )}
         </Card>

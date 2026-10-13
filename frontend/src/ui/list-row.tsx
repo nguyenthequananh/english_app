@@ -10,10 +10,10 @@ export function ListGroup({ title, footer, children }: { title?: string; footer?
   return (
     <section aria-labelledby={title ? id : undefined} className="space-y-1.5">
       {title && (
-        <h2 id={id} className="px-4 text-[0.8125rem] font-semibold uppercase tracking-[0.04em] text-text-3">{title}</h2>
+        <h2 id={id} className="px-4 text-sm font-semibold uppercase tracking-[0.04em] text-text-3">{title}</h2>
       )}
       <ul className="overflow-hidden rounded-card bg-surface card-edge">{children}</ul>
-      {footer && <div className="px-4 text-[0.8125rem] leading-snug text-text-3">{footer}</div>}
+      {footer && <div className="px-4 text-sm text-text-3">{footer}</div>}
     </section>
   );
 }
@@ -37,10 +37,10 @@ export function ListRow({ title, subtitle, leading, trailing, to, onClick, chevr
       {leading && <span className="flex shrink-0 items-center">{leading}</span>}
       <span className="flex min-h-[3.25rem] min-w-0 flex-1 items-center gap-3 py-2.5 pr-4 group-[:not(:first-child)]/row:border-t group-[:not(:first-child)]/row:border-separator">
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-[1rem] leading-snug text-text">{title}</span>
-          {subtitle && <span className="mt-0.5 block text-[0.8125rem] leading-snug text-text-3">{subtitle}</span>}
+          <span className="block truncate text-base text-text">{title}</span>
+          {subtitle && <span className="mt-0.5 block text-sm text-text-3">{subtitle}</span>}
         </span>
-        {trailing && <span className="flex shrink-0 items-center gap-2 text-[0.9375rem] text-text-3">{trailing}</span>}
+        {trailing && <span className="flex shrink-0 items-center gap-2 text-base text-text-3">{trailing}</span>}
         {showChevron && <Icon name="chevron-right" size={16} strokeWidth={2.4} className="text-text-3 opacity-70" />}
       </span>
     </>

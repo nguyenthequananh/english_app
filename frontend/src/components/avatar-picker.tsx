@@ -16,7 +16,7 @@ export function AvatarPicker({ value, onChange }: { value: string; onChange: (v:
             aria-pressed={selected}
             onClick={() => onChange(a)}
             className={cn(
-              'pressable focus-ring flex aspect-square w-full max-w-16 items-center justify-center justify-self-center rounded-full text-[1.875rem] leading-none',
+              'pressable focus-ring flex aspect-square w-full max-w-16 items-center justify-center justify-self-center rounded-full text-4xl leading-none',
               selected
                 ? 'bg-accent-soft shadow-[0_0_0_2.5px_var(--accent)]'
                 : 'bg-fill hover:bg-fill-strong',

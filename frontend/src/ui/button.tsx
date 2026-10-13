@@ -6,7 +6,7 @@ import { cn } from './cn';
 export const buttonStyles = cva(
   [
     'pressable focus-ring relative inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap',
-    'rounded-full font-semibold tracking-[-0.01em] no-underline',
+    'rounded-full font-semibold no-underline',
     'disabled:cursor-not-allowed disabled:opacity-45 aria-disabled:cursor-not-allowed aria-disabled:opacity-45',
   ],
   {
@@ -20,9 +20,9 @@ export const buttonStyles = cva(
         'danger-solid': 'bg-danger-solid text-on-accent hover:bg-[color-mix(in_oklab,var(--danger-solid)_88%,black)] active:bg-[color-mix(in_oklab,var(--danger-solid)_82%,black)]',
       },
       size: {
-        sm: 'min-h-9 px-3.5 text-[0.875rem]',
-        md: 'min-h-11 px-5 text-[0.9375rem]',
-        lg: 'min-h-13 px-6 text-[1.0625rem]',
+        sm: 'min-h-9 px-3.5 text-md',
+        md: 'min-h-11 px-5 text-base',
+        lg: 'min-h-13 px-6 text-lg',
       },
       block: { true: 'w-full', false: '' },
     },

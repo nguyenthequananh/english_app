@@ -69,14 +69,14 @@ export function Heatmap({ days, today = new Date() }: { days: DayMinutes[]; toda
   return (
     <div>
       <div role="img" aria-label={`Lịch học ${WEEKS} tuần: ${studied} ngày có học`} className="flex gap-1.5 sm:gap-2">
-        <div aria-hidden="true" className="grid shrink-0 grid-rows-[auto_repeat(7,minmax(0,1fr))] gap-[2px] text-[0.625rem] leading-none text-text-3 sm:gap-[3px]">
+        <div aria-hidden="true" className="grid shrink-0 grid-rows-[auto_repeat(7,minmax(0,1fr))] gap-[2px] text-2xs leading-none text-text-3 sm:gap-[3px]">
           <span className="h-3" />
           {WEEKDAY_LABELS.map((l, i) => <span key={i} className="flex items-center">{l}</span>)}
         </div>
         <div className="min-w-0 flex-1">
           <div aria-hidden="true" className="relative mb-[2px] grid h-3 gap-[2px] sm:mb-[3px] sm:gap-[3px]" style={grid}>
             {monthLabels.map((m, i) => (
-              <span key={i} className="overflow-visible text-[0.625rem] leading-none whitespace-nowrap text-text-3">{m}</span>
+              <span key={i} className="overflow-visible text-2xs leading-none whitespace-nowrap text-text-3">{m}</span>
             ))}
           </div>
           <div className="grid grid-flow-col grid-rows-7 gap-[2px] sm:gap-[3px]" style={grid}>
@@ -88,7 +88,7 @@ export function Heatmap({ days, today = new Date() }: { days: DayMinutes[]; toda
           </div>
         </div>
       </div>
-      <div aria-hidden="true" className="mt-3 flex items-center justify-end gap-1.5 text-[0.6875rem] text-text-3">
+      <div aria-hidden="true" className="mt-3 flex items-center justify-end gap-1.5 text-xs text-text-3">
         <span className="mr-0.5">Ít</span>
         {[0, 1, 2, 3, 4].map((lv) => <Cell key={lv} lv={lv} className="size-2.5 sm:rounded-[3px]" />)}
         <span className="ml-0.5">Nhiều</span>

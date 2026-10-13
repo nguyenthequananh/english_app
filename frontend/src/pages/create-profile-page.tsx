@@ -14,9 +14,9 @@ import { Select } from '../ui/select';
 function FormGroup({ title, footer, children }: { title?: string; footer?: string; children: ReactNode }) {
   return (
     <section className="space-y-1.5">
-      {title && <h2 className="px-4 text-[0.8125rem] font-semibold uppercase tracking-[0.04em] text-text-3">{title}</h2>}
+      {title && <h2 className="px-4 text-sm font-semibold uppercase tracking-[0.04em] text-text-3">{title}</h2>}
       <div className="space-y-4 rounded-card bg-surface p-4 card-edge sm:p-5">{children}</div>
-      {footer && <p className="px-4 text-[0.8125rem] leading-snug text-text-3">{footer}</p>}
+      {footer && <p className="px-4 text-sm text-text-3">{footer}</p>}
     </section>
   );
 }
@@ -64,11 +64,11 @@ export default function CreateProfilePage() {
       <div className="mx-auto w-full max-w-md">
         <IconLink to="/profiles?manual=1" icon="back" label="Quay lại" />
         <div className="mt-4 mb-6 flex flex-col items-center text-center">
-          <span aria-hidden="true" className="inline-flex size-24 items-center justify-center rounded-full bg-surface text-[3rem] leading-none card-edge">
+          <span aria-hidden="true" className="inline-flex size-24 items-center justify-center rounded-full bg-surface text-6xl leading-none card-edge">
             {avatar}
           </span>
           <h1 className="mt-4 text-large-title text-text">Tạo hồ sơ</h1>
-          <p className="mt-1.5 max-w-xs text-[0.9375rem] leading-snug text-balance text-text-2">
+          <p className="mt-1.5 max-w-xs text-base text-balance text-text-2">
             Mỗi người học một hồ sơ riêng, tiến độ không lẫn vào nhau.
           </p>
         </div>
@@ -87,7 +87,7 @@ export default function CreateProfilePage() {
               onChange={(e) => setName(e.target.value)}
             />
             <fieldset>
-              <legend className="mb-2 px-1 text-[0.875rem] font-semibold text-text-2">Avatar</legend>
+              <legend className="mb-2 px-1 text-base font-semibold text-text-2">Avatar</legend>
               <AvatarPicker value={avatar} onChange={setAvatar} />
             </fieldset>
           </FormGroup>

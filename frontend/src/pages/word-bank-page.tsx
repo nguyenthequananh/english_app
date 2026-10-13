@@ -58,19 +58,19 @@ function WordRow({ item }: { item: WordBankItem }) {
       className={`${ROW_GRID} px-4 py-3 lg:py-2 [&:not(:first-child)]:border-t [&:not(:first-child)]:border-separator`}
     >
       <div role="cell" className="min-w-0 [grid-area:word]">
-        <span className="text-[1.0625rem] font-semibold tracking-[-0.01em] break-words text-text lg:text-[1rem]">{word.headword}</span>
-        {' '}<span className="text-[0.8125rem] whitespace-nowrap italic text-text-3">{word.pos}</span>
+        <span className="text-lg font-semibold break-words text-text lg:text-base">{word.headword}</span>
+        {' '}<span className="text-sm whitespace-nowrap italic text-text-3">{word.pos}</span>
       </div>
-      <div role="cell" className={`min-w-0 text-[0.9375rem] break-words text-text-2 [grid-area:ipa] ${ipa ? '' : 'max-lg:hidden'}`}>
+      <div role="cell" className={`min-w-0 text-base break-words text-text-2 [grid-area:ipa] ${ipa ? '' : 'max-lg:hidden'}`}>
         {ipa ?? <span aria-label="Chưa có IPA" className="text-text-3">—</span>}
       </div>
-      <div role="cell" className="mt-1 min-w-0 text-[0.9375rem] leading-snug break-words text-text [grid-area:mean] lg:mt-0">
+      <div role="cell" className="mt-1 min-w-0 text-base break-words text-text [grid-area:mean] lg:mt-0">
         {word.meaningVi}
       </div>
       <div role="cell" className="mt-2 [grid-area:status] lg:mt-0">
         <Badge tone={STATUS_TONE[item.status]}>{WORD_STATUS_LABEL[item.status]}</Badge>
       </div>
-      <div role="cell" className="mt-2 min-w-0 text-[0.8125rem] tabular-nums text-text-3 [grid-area:due] lg:mt-0 lg:text-[0.875rem] lg:text-text-2">
+      <div role="cell" className="mt-2 min-w-0 text-sm tabular-nums text-text-3 [grid-area:due] lg:mt-0 lg:text-md lg:text-text-2">
         {due ? <><span className="lg:hidden">Ôn lại </span>{due}</> : <span className="max-lg:hidden" aria-label="Chưa có lịch ôn">—</span>}
       </div>
       <div role="cell" className="self-start justify-self-end [grid-area:speak] lg:self-center">
@@ -84,7 +84,7 @@ function WordTable({ items }: { items: WordBankItem[] }) {
   return (
     <div role="table" aria-label="Danh sách từ" className="overflow-hidden rounded-card bg-surface card-edge">
       <div role="rowgroup" className="hidden border-b border-separator bg-fill/40 lg:block">
-        <div role="row" className={`${ROW_GRID} px-4 py-2.5 text-[0.75rem] font-semibold uppercase tracking-[0.04em] text-text-3`}>
+        <div role="row" className={`${ROW_GRID} px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.04em] text-text-3`}>
           <div role="columnheader" className="[grid-area:word]">Từ</div>
           <div role="columnheader" className="[grid-area:ipa]">IPA</div>
           <div role="columnheader" className="[grid-area:mean]">Nghĩa</div>
@@ -178,7 +178,7 @@ export default function WordBankPage() {
         </div>
       ) : (
         <>
-          <p className="mb-2 px-1 text-[0.8125rem] tabular-nums text-text-3" aria-live="polite">
+          <p className="mb-2 px-1 text-sm tabular-nums text-text-3" aria-live="polite">
             {data.length >= RESULT_LIMIT ? `Hiện ${RESULT_LIMIT} từ đầu tiên — gõ để tìm chính xác hơn` : `${data.length} từ`}
           </p>
           <div className={`transition-opacity duration-(--duration-fast) ${wordsQuery.isPlaceholderData ? 'opacity-55' : ''}`}>
@@ -235,7 +235,7 @@ function AddWordForm({ onDone }: { onDone: () => void }) {
       </div>
       <TextField label="Nghĩa tiếng Việt" required {...bind('meaningVi')} />
       <fieldset className="space-y-4 border-t border-separator pt-4">
-        <legend className="float-left mb-1 w-full px-1 text-[0.8125rem] font-semibold uppercase tracking-[0.04em] text-text-3">Không bắt buộc</legend>
+        <legend className="float-left mb-1 w-full px-1 text-sm font-semibold uppercase tracking-[0.04em] text-text-3">Không bắt buộc</legend>
         <TextField label="IPA" autoCapitalize="none" spellCheck={false} placeholder="VD: /bʊk/" {...bind('ipaUs')} />
         <TextField label="Câu ví dụ" autoCapitalize="sentences" {...bind('exampleEn')} />
         <TextField label="Nghĩa câu ví dụ" {...bind('exampleVi')} />

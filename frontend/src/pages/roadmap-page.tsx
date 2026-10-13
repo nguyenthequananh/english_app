@@ -57,11 +57,11 @@ function StageSection({ stage }: { stage: StageView }) {
     <section aria-labelledby={headingId} className="space-y-2.5">
       <div className="flex items-end gap-3 px-1">
         <div className="min-w-0 flex-1">
-          <p className="text-[0.8125rem] font-semibold uppercase tracking-[0.04em] text-text-3">Chặng {stage.code}</p>
-          <h2 id={headingId} className="mt-0.5 text-[1.375rem] leading-tight font-bold tracking-[-0.015em] text-balance text-text">
+          <p className="text-sm font-semibold uppercase tracking-[0.04em] text-text-3">Chặng {stage.code}</p>
+          <h2 id={headingId} className="mt-0.5 text-2xl font-bold text-balance text-text">
             {stage.title}
           </h2>
-          <p className="mt-1 flex flex-wrap items-center gap-x-1.5 text-[0.875rem] text-text-2">
+          <p className="mt-1 flex flex-wrap items-center gap-x-1.5 text-md text-text-2">
             <span>Mục tiêu band {stage.targetBand}</span>
             <span aria-hidden="true" className="text-text-3">·</span>
             <span className="tabular-nums">{done}/{stage.units.length} unit</span>
@@ -92,7 +92,7 @@ function UnitNumber({ order, status }: { order: number; status: Status }) {
     <span
       aria-hidden="true"
       className={cn(
-        'inline-flex size-9 items-center justify-center rounded-full text-[0.9375rem] font-bold tabular-nums',
+        'inline-flex size-9 items-center justify-center rounded-full text-base font-bold tabular-nums',
         status === 'ACTIVE' && 'bg-accent text-on-accent shadow-[0_4px_12px_-4px_var(--accent)]',
         status === 'DONE' && 'bg-fill text-text-2',
         status === 'LOCKED' && 'bg-fill text-text-3',
@@ -118,8 +118,8 @@ function UnitRow({ unit, order }: { unit: UnitView; order: number }) {
           <UnitNumber order={order} status="LOCKED" />
           <span className={cn('flex min-h-[3.75rem] min-w-0 flex-1 items-center gap-3 py-2.5 pr-4', ROW_DIVIDER)}>
             <span className="min-w-0 flex-1">
-              <span className="line-clamp-2 block text-[1rem] leading-snug text-pretty text-text-3">{unit.title}</span>
-              <span className="mt-0.5 block text-[0.8125rem] leading-snug text-text-3">{unit.code}</span>
+              <span className="line-clamp-2 block text-base text-pretty text-text-3">{unit.title}</span>
+              <span className="mt-0.5 block text-sm text-text-3">{unit.code}</span>
             </span>
             <Icon name="lock" size={18} className="text-text-3" />
             <span className="sr-only">{STATUS_LABEL.LOCKED}</span>
@@ -142,8 +142,8 @@ function UnitRow({ unit, order }: { unit: UnitView; order: number }) {
         <UnitNumber order={order} status={unit.status} />
         <span className={cn('flex min-h-[3.75rem] min-w-0 flex-1 items-center gap-3 py-2.5 pr-4', ROW_DIVIDER)}>
           <span className="min-w-0 flex-1">
-            <span className={cn('line-clamp-2 block text-[1rem] leading-snug text-pretty text-text', active && 'font-semibold')}>{unit.title}</span>
-            <span className="mt-0.5 block text-[0.8125rem] leading-snug text-text-3">
+            <span className={cn('line-clamp-2 block text-base text-pretty text-text', active && 'font-semibold')}>{unit.title}</span>
+            <span className="mt-0.5 block text-sm text-text-3">
               {active && <><span className="font-semibold text-accent-text">{STATUS_LABEL.ACTIVE}</span> · </>}
               {unit.code}
             </span>
@@ -182,7 +182,7 @@ function UnitLessons({ code }: { code: string }) {
   const { data } = lessonsQuery;
   if (lessonsQuery.error) {
     return (
-      <p role="alert" className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 pt-1 pb-4 pl-16 text-[0.875rem] text-danger-text">
+      <p role="alert" className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 pt-1 pb-4 pl-16 text-base text-danger-text">
         Không tải được danh sách bài.
         <button type="button" className="focus-ring font-semibold text-accent-text" onClick={() => lessonsQuery.refetch()}>Thử lại</button>
       </p>
@@ -203,7 +203,7 @@ function UnitLessons({ code }: { code: string }) {
   return (
     <div className="pt-0.5 pr-3 pb-3 pl-[3.75rem]">
       <ProgressBar value={data.length ? completed / data.length : 0} label={`Tiến độ ${code}`} className="mr-1 mb-1.5 ml-2" />
-      <p className="mb-1 ml-2 text-[0.8125rem] tabular-nums text-text-3">{completed}/{data.length} bài đã học</p>
+      <p className="mb-1 ml-2 text-sm tabular-nums text-text-3">{completed}/{data.length} bài đã học</p>
       <ul>
         {data.map((l) => {
           const skill = lessonSkill(l.type);
@@ -215,8 +215,8 @@ function UnitLessons({ code }: { code: string }) {
                   <Icon name={skill ? SKILL_META[skill].icon : 'book'} size={17} strokeWidth={2} />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="line-clamp-2 block text-[0.9375rem] leading-snug font-medium text-pretty text-text">{l.title}</span>
-                  <span className="mt-0.5 block text-[0.8125rem] leading-snug text-text-3">
+                  <span className="line-clamp-2 block text-base font-medium text-pretty text-text">{l.title}</span>
+                  <span className="mt-0.5 block text-sm text-text-3">
                     {dayLabel(l.day)} · {lessonTypeLabel(l.type)}
                   </span>
                 </span>
@@ -241,7 +241,7 @@ function UnitLessons({ code }: { code: string }) {
           <Icon name="chevron-right" size={16} strokeWidth={2.4} />
         </Link>
       ) : (
-        <p className="mt-1.5 flex items-center gap-2 px-2 text-[0.8125rem] leading-snug text-text-3">
+        <p className="mt-1.5 flex items-center gap-2 px-2 text-sm text-text-3">
           <Icon name="lock" size={14} />
           Học xong {data.length - completed} bài còn lại để mở bài kiểm tra unit.
         </p>

@@ -18,12 +18,12 @@ import { useSaveProfile } from './use-save-profile';
 export function ProfileCard({ profile }: { profile: Profile }) {
   return (
     <Card className="flex items-center gap-4">
-      <span aria-hidden="true" className="inline-flex size-16 shrink-0 items-center justify-center rounded-full bg-accent-soft text-[2.125rem] leading-none font-semibold text-accent-text">
+      <span aria-hidden="true" className="inline-flex size-16 shrink-0 items-center justify-center rounded-full bg-accent-soft text-5xl leading-none font-semibold text-accent-text">
         {profile.avatar || profile.name.charAt(0).toUpperCase() || '?'}
       </span>
       <div className="min-w-0 flex-1">
-        <p className="line-clamp-2 text-[1.25rem] leading-tight font-bold tracking-[-0.015em] break-words text-text" title={profile.name}>{profile.name}</p>
-        <p className="mt-0.5 text-[0.875rem] tabular-nums text-text-2">
+        <p className="line-clamp-2 text-xl font-bold break-words text-text" title={profile.name}>{profile.name}</p>
+        <p className="mt-0.5 text-md tabular-nums text-text-2">
           {profile.dailyMinutes} phút mỗi ngày{profile.hasPin ? ' · Có mã PIN' : ''}
         </p>
       </div>
@@ -104,7 +104,7 @@ function ProfileForm({ profile, onSaved }: { profile: Profile; onSaved: () => vo
     <form className="space-y-5" onSubmit={submit}>
       <TextField label="Tên hồ sơ" required maxLength={30} autoComplete="off" value={name} onChange={(e) => setName(e.target.value)} />
       <fieldset>
-        <legend className="mb-2 px-1 text-[0.875rem] font-semibold text-text-2">Avatar</legend>
+        <legend className="mb-2 px-1 text-base font-semibold text-text-2">Avatar</legend>
         <AvatarPicker value={avatar} onChange={setAvatar} />
       </fieldset>
       <TextField

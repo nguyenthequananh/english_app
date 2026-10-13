@@ -33,11 +33,11 @@ export function VoiceSettings({ profile }: { profile: Profile }) {
       </GroupItem>
       <GroupItem>
         <div className="mb-1.5 flex items-baseline justify-between px-1">
-          <label htmlFor={rateId} className="text-[0.875rem] font-semibold text-text-2">Tốc độ đọc</label>
-          <span className="text-[0.9375rem] font-semibold tabular-nums text-text">{speechRate.toFixed(1)}×</span>
+          <label htmlFor={rateId} className="text-base font-semibold text-text-2">Tốc độ đọc</label>
+          <span className="text-base font-semibold tabular-nums text-text">{speechRate.toFixed(1)}×</span>
         </div>
         <div className="flex items-center gap-3">
-          <span aria-hidden="true" className="text-[0.75rem] text-text-3">Chậm</span>
+          <span aria-hidden="true" className="text-xs text-text-3">Chậm</span>
           <input
             id={rateId}
             type="range"
@@ -49,7 +49,7 @@ export function VoiceSettings({ profile }: { profile: Profile }) {
             onChange={(e) => setSpeechRate(Number(e.target.value))}
             className="h-11 min-w-0 flex-1 cursor-pointer accent-accent"
           />
-          <span aria-hidden="true" className="text-[0.75rem] text-text-3">Nhanh</span>
+          <span aria-hidden="true" className="text-xs text-text-3">Nhanh</span>
         </div>
       </GroupItem>
       <GroupItem className="flex flex-wrap gap-2">

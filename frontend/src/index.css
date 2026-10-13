@@ -27,13 +27,6 @@
   -webkit-backdrop-filter: blur(28px) saturate(180%);
   backdrop-filter: blur(28px) saturate(180%);
 }
-/* Tiêu đề lớn kiểu iOS: 34/41, đậm, tracking âm. */
-@utility text-large-title {
-  font-size: 2.125rem;
-  line-height: 1.2;
-  font-weight: 700;
-  letter-spacing: -0.022em;
-}
 /* Phản hồi nhấn: thu nhẹ ngay khi chạm, ease-out ngắn. */
 @utility pressable {
   transition-property: transform, background-color, color, opacity, box-shadow;
@@ -67,6 +60,8 @@
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
     text-rendering: optimizeLegibility;
+    /* Inter bản opsz: trục cỡ quang học theo cỡ chữ (nét Display khi chữ lớn), như SF Text/Display. */
+    font-optical-sizing: auto;
   }
 
   body {
@@ -74,6 +69,10 @@
     background: transparent;
     color: var(--text);
     font-family: var(--font-sans);
+    /* Cỡ chữ mặc định 14px đặt ở body (không đổi html: spacing Tailwind tính theo rem). */
+    font-size: var(--text-base);
+    line-height: var(--text-base--line-height);
+    letter-spacing: var(--text-base--letter-spacing);
     -webkit-tap-highlight-color: transparent;
     /*
      * Chặn kéo-để-tải-lại (Android Chrome/iOS Safari) — lỡ tay kéo giữa buổi học là mất bài đang làm.
@@ -103,10 +102,19 @@
     background-color: color-mix(in srgb, var(--accent) 24%, transparent);
   }
 
+  /* Ô nhập theo cỡ chữ thân khi dùng chuột; trên màn cảm ứng giữ ≥16px để iOS không tự phóng to khi focus. */
   input,
   textarea,
   select {
-    font-size: max(16px, 1rem);
+    font-size: var(--text-base);
+    line-height: var(--text-base--line-height);
+  }
+  @media (pointer: coarse) {
+    input,
+    textarea,
+    select {
+      font-size: max(16px, 1rem);
+    }
   }
 
   button,
@@ -236,13 +244,14 @@
     padding: 14px 16px;
   }
   [data-sonner-toast].app-toast .app-toast-title {
-    font-size: 0.9375rem;
+    font-size: var(--text-base);
     font-weight: 600;
-    line-height: 1.35;
+    line-height: var(--text-base--line-height);
+    letter-spacing: var(--text-base--letter-spacing);
   }
 
-  .markdown h2 { @apply mt-2 text-xl font-semibold tracking-tight text-text; }
-  .markdown h3 { @apply mt-2 text-lg font-semibold text-text; }
+  .markdown h2 { @apply mt-2 text-2xl font-semibold text-text; }
+  .markdown h3 { @apply mt-2 text-xl font-semibold text-text; }
   .markdown p { @apply my-2 text-text; }
   .markdown ul { @apply my-2 list-disc pl-6 marker:text-text-3; }
   .markdown strong { @apply font-semibold text-text; }

@@ -58,11 +58,11 @@ function SessionDone({ view }: { view: SessionView }) {
           <Icon name="check" size={30} strokeWidth={2.6} />
         </motion.span>
       </MotionConfig>
-      <h2 className="mt-5 text-[1.5rem] font-bold leading-tight tracking-[-0.02em] text-balance text-text">🎉 Xong buổi học hôm nay!</h2>
-      <p className="mt-2 text-[1rem] text-text-2">
+      <h2 className="mt-5 text-3xl font-bold text-balance text-text">🎉 Xong buổi học hôm nay!</h2>
+      <p className="mt-2 text-base text-text-2">
         Bạn đã ôn <span className="font-semibold tabular-nums text-text">{new Intl.NumberFormat('vi-VN').format(view.cardsDone)}</span> thẻ.
       </p>
-      <p className="mt-1 text-[0.875rem] text-text-3">Lịch ôn những ngày tới đã được cập nhật.</p>
+      <p className="mt-1 text-md text-text-3">Lịch ôn những ngày tới đã được cập nhật.</p>
       <div className="mt-8 flex w-full max-w-sm flex-col gap-2.5">
         <ButtonLink to="/" size="lg" block>Về trang chủ</ButtonLink>
         <div className="grid grid-cols-2 gap-2.5">

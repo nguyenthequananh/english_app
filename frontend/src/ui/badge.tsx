@@ -12,7 +12,7 @@ export function Badge({ tone = 'neutral', children, className }: {
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1 rounded-full bg-[var(--tone-soft)] px-2.5 py-0.5 text-[0.75rem] font-semibold leading-5 whitespace-nowrap text-[var(--tone-text)]',
+        'inline-flex items-center gap-1 rounded-full bg-[var(--tone-soft)] px-2.5 py-0.5 text-xs font-semibold leading-5 whitespace-nowrap text-[var(--tone-text)]',
         toneClass(tone),
         className,
       )}

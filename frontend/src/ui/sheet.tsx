@@ -90,9 +90,9 @@ export function Sheet({ open, onOpenChange, title, description, children }: {
                     <div aria-hidden="true" className="mx-auto mb-2 h-1.5 w-10 rounded-full bg-fill-strong lg:hidden" />
                     <div className="flex items-start gap-3">
                       <div className="min-w-0 flex-1 pt-1.5">
-                        <Dialog.Title className="text-[1.1875rem] font-bold leading-snug tracking-[-0.015em]">{title}</Dialog.Title>
+                        <Dialog.Title className="text-xl font-bold">{title}</Dialog.Title>
                         {description && (
-                          <Dialog.Description className="mt-1 text-[0.9375rem] leading-snug text-text-2">{description}</Dialog.Description>
+                          <Dialog.Description className="mt-1 text-base text-text-2">{description}</Dialog.Description>
                         )}
                       </div>
                       <Dialog.Close

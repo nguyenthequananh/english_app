@@ -30,7 +30,7 @@ function encouragement(stats: Stats | undefined) {
 function StudyTime({ minutes }: { minutes: number }) {
   const h = Math.floor(minutes / 60);
   const m = minutes % 60;
-  const unit = 'ml-[1px] text-[0.8125rem] font-semibold tracking-normal text-text-2';
+  const unit = 'ml-[1px] text-sm font-semibold tracking-normal text-text-2';
   const full = h > 0 ? `${num.format(h)} giờ${m ? ` ${m} phút` : ''}` : `${m} phút`;
   return (
     <>
@@ -61,8 +61,8 @@ function OverviewCard({ roadmap, summary }: { roadmap: Roadmap | undefined; summ
           <Icon name="check" size={24} strokeWidth={2.4} />
         </span>
         <div className="min-w-0">
-          <p className="text-[1.0625rem] font-bold text-text">Đã xong toàn bộ lộ trình</p>
-          <p className="mt-0.5 text-[0.9375rem] text-text-2">{roadmap.stages.length} chặng đã hoàn thành.</p>
+          <p className="text-lg font-bold text-text">Đã xong toàn bộ lộ trình</p>
+          <p className="mt-0.5 text-base text-text-2">{roadmap.stages.length} chặng đã hoàn thành.</p>
         </div>
       </Card>
     );
@@ -75,23 +75,23 @@ function OverviewCard({ roadmap, summary }: { roadmap: Roadmap | undefined; summ
     <Card className="space-y-4">
       <div className="flex items-center gap-4">
         <ProgressRing value={ratio} size={84} label={`Hoàn thành chặng ${stage.title}`}>
-          <span className="text-[1.375rem] font-bold leading-none tracking-[-0.02em] tabular-nums text-text">
-            {Math.round(ratio * 100)}<span className="text-[0.75rem] font-semibold text-text-2">%</span>
+          <span className="text-2xl font-bold leading-none tabular-nums text-text">
+            {Math.round(ratio * 100)}<span className="text-xs font-semibold text-text-2">%</span>
           </span>
         </ProgressRing>
         <div className="min-w-0 flex-1">
-          <p className="text-[0.8125rem] font-semibold text-accent-text">Chặng đang học · Band {stage.targetBand}</p>
-          <p className="mt-0.5 text-[1.1875rem] font-bold leading-snug tracking-[-0.015em] text-balance break-words text-text">{stage.title}</p>
-          <p className="mt-0.5 text-[0.875rem] tabular-nums text-text-2">{done}/{total} unit đã xong</p>
+          <p className="text-sm font-semibold text-accent-text">Chặng đang học · Band {stage.targetBand}</p>
+          <p className="mt-0.5 text-xl font-bold text-balance break-words text-text">{stage.title}</p>
+          <p className="mt-0.5 text-md tabular-nums text-text-2">{done}/{total} unit đã xong</p>
         </div>
       </div>
       {unit && (
         <div className="rounded-control bg-fill px-3.5 py-3">
           <div className="flex items-baseline justify-between gap-3">
-            <p className="min-w-0 truncate text-[0.9375rem] font-semibold text-text">
+            <p className="min-w-0 truncate text-base font-semibold text-text">
               <span className="font-normal text-text-2">Unit: </span>{unit.title}
             </p>
-            <span className="shrink-0 text-[0.8125rem] tabular-nums text-text-2">{unit.lessonsDone}/{unit.lessonsTotal} bài</span>
+            <span className="shrink-0 text-sm tabular-nums text-text-2">{unit.lessonsDone}/{unit.lessonsTotal} bài</span>
           </div>
           <ProgressBar className="mt-2" value={unit.lessonsTotal ? unit.lessonsDone / unit.lessonsTotal : 0} label={`Tiến độ unit ${unit.title}`} />
         </div>
@@ -103,7 +103,7 @@ function OverviewCard({ roadmap, summary }: { roadmap: Roadmap | undefined; summ
 function SectionTitle({ id, children, aside }: { id: string; children: string; aside?: ReactNode }) {
   return (
     <div className="mb-3 flex items-baseline justify-between gap-3">
-      <h2 id={id} className="text-[1.0625rem] font-bold tracking-[-0.01em] text-text">{children}</h2>
+      <h2 id={id} className="text-xl font-bold text-text">{children}</h2>
       {aside}
     </div>
   );
@@ -145,7 +145,7 @@ export default function StatsPage() {
               <StatTile icon="star" value={num.format(s.heatmap.length)} label="Buổi đã xong" />
             </div>
             <Card as="section" aria-labelledby="stats-heatmap">
-              <SectionTitle id="stats-heatmap" aside={<span className="text-[0.8125rem] text-text-3">26 tuần gần nhất</span>}>Lịch học</SectionTitle>
+              <SectionTitle id="stats-heatmap" aside={<span className="text-sm text-text-3">26 tuần gần nhất</span>}>Lịch học</SectionTitle>
               <Heatmap days={s.heatmap} />
             </Card>
           </div>
@@ -155,18 +155,18 @@ export default function StatsPage() {
               <SectionTitle id="stats-known">Từ vựng</SectionTitle>
               <div className="mb-4 flex gap-6">
                 <div>
-                  <p className="text-[1.75rem] font-bold leading-none tracking-[-0.02em] tabular-nums text-text">
+                  <p className="text-4xl font-bold leading-none tabular-nums text-text">
                     <span data-testid="stat-known">{num.format(s.knownWords)}</span>
                   </p>
-                  <p className="mt-1.5 flex items-center gap-1.5 text-[0.8125rem] text-text-2">
+                  <p className="mt-1.5 flex items-center gap-1.5 text-sm text-text-2">
                     <span aria-hidden="true" className="size-2 rounded-full bg-accent" />Đã thuộc
                   </p>
                 </div>
                 <div>
-                  <p className="text-[1.75rem] font-bold leading-none tracking-[-0.02em] tabular-nums text-text-2">
+                  <p className="text-4xl font-bold leading-none tabular-nums text-text-2">
                     <span data-testid="stat-learning">{num.format(s.learningWords)}</span>
                   </p>
-                  <p className="mt-1.5 flex items-center gap-1.5 text-[0.8125rem] text-text-2">
+                  <p className="mt-1.5 flex items-center gap-1.5 text-sm text-text-2">
                     <span aria-hidden="true" className="size-2 rounded-full bg-fill-strong" />Đang học
                   </p>
                 </div>
@@ -192,7 +192,7 @@ export default function StatsPage() {
                     subtitle={`${t.kind === 'UNIT' ? 'Kiểm tra unit' : 'Kiểm tra chặng'} · ${formatDate(t.takenAt)}`}
                     trailing={
                       <>
-                        <span className="text-[1rem] font-semibold tabular-nums text-text">{Math.round(t.score * 100)}%</span>
+                        <span className="text-base font-semibold tabular-nums text-text">{Math.round(t.score * 100)}%</span>
                         <Badge tone={t.passed ? 'success' : 'danger'} className="max-sm:sr-only">{t.passed ? 'Đạt' : 'Chưa đạt'}</Badge>
                       </>
                     }

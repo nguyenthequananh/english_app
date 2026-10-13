@@ -83,10 +83,10 @@ function IntroCard({ kind, test }: { kind: 'UNIT' | 'STAGE'; test: TestDto }) {
         <Icon name="star" size={22} filled />
       </span>
       <div className="min-w-0 flex-1">
-        <p className="text-[1.0625rem] font-semibold leading-snug text-text">
+        <p className="text-lg font-semibold text-text">
           {test.exercises.length} câu · cần đạt {percent(test.passRatio)} để qua
         </p>
-        <p className="mt-1 text-[0.9375rem] leading-snug text-text-2">
+        <p className="mt-1 text-base text-text-2">
           {kind === 'UNIT'
             ? 'Đạt bài này thì unit tiếp theo được mở.'
             : 'Bài tổng hợp cả chặng. Đạt thì chặng tiếp theo được mở.'}
@@ -103,11 +103,11 @@ function ResultCard({ kind, test, result, onRetry }: {
   return (
     <Card as="section" aria-live="polite" className="flex flex-col items-center px-5 pt-7 pb-5 text-center">
       <ProgressRing value={result.score} label="Điểm bài kiểm tra" size={132}>
-        <span className="text-[2.25rem] leading-none font-bold tracking-[-0.03em] tabular-nums text-text">
-          {Math.round(result.score * 100)}<span className="text-[1.25rem] font-semibold">%</span>
+        <span className="text-5xl leading-none font-bold tabular-nums text-text">
+          {Math.round(result.score * 100)}<span className="text-xl font-semibold">%</span>
         </span>
         {result.results.length > 0 && (
-          <span className="mt-1 text-[0.75rem] font-medium tabular-nums text-text-3">{correct}/{result.results.length} câu</span>
+          <span className="mt-1 text-xs font-medium tabular-nums text-text-3">{correct}/{result.results.length} câu</span>
         )}
       </ProgressRing>
 
@@ -117,14 +117,14 @@ function ResultCard({ kind, test, result, onRetry }: {
       </Badge>
 
       {/* Vòng nói điểm, nhãn nói đạt/chưa đạt; câu dưới chỉ nói hệ quả để không lặp số. */}
-      <p className="mt-2.5 max-w-sm text-[1.0625rem] font-semibold leading-snug text-balance text-text">
+      <p className="mt-2.5 max-w-sm text-lg font-semibold text-balance text-text">
         {result.passed
           ? (kind === 'UNIT' ? 'Unit tiếp theo đã mở.' : 'Chặng tiếp theo đã mở.')
           : `Cần ${percent(test.passRatio)} để qua.`}
       </p>
       {!result.passed && result.weakUnits.length > 0 && (
         <div className="mt-4 w-full rounded-control bg-surface-2 px-4 py-3 text-left">
-          <p className="text-[0.8125rem] font-semibold uppercase tracking-[0.04em] text-text-3">Nên ôn lại</p>
+          <p className="text-sm font-semibold uppercase tracking-[0.04em] text-text-3">Nên ôn lại</p>
           <ul className="mt-2 flex flex-wrap gap-1.5">
             {result.weakUnits.map((u) => (
               <li key={u}><Badge tone="warning">{u}</Badge></li>
@@ -143,7 +143,7 @@ function ResultCard({ kind, test, result, onRetry }: {
           </>
         )}
       </div>
-      <p className="mt-3 text-[0.8125rem] text-text-3">Xem lại từng câu bên dưới.</p>
+      <p className="mt-3 text-sm text-text-3">Xem lại từng câu bên dưới.</p>
     </Card>
   );
 }

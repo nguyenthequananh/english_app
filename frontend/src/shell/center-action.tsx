@@ -27,7 +27,7 @@ export function CenterAction({ target = CENTER_ACTION }: { target?: CenterAction
       ].join(' ')}
     >
       <Icon name={target.icon ?? 'sparkle'} filled size={26} strokeWidth={1.6} className="lg:size-[22px]" />
-      <span className="sr-only lg:not-sr-only lg:text-[0.9375rem] lg:font-semibold">{target.label}</span>
+      <span className="sr-only lg:not-sr-only lg:text-base lg:font-semibold">{target.label}</span>
     </Link>
   );
 }

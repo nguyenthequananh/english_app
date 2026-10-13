@@ -47,7 +47,7 @@ export function KnownChart({ points }: { points: WeekCount[] }) {
 
   if (points.length < 2) {
     return (
-      <p className="rounded-control bg-fill px-4 py-6 text-center text-[0.9375rem] leading-snug text-text-2">
+      <p className="rounded-control bg-fill px-4 py-6 text-center text-base text-text-2">
         Cần ít nhất 2 tuần dữ liệu để vẽ biểu đồ.
       </p>
     );

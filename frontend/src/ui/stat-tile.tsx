@@ -19,8 +19,8 @@ export function StatTile({ icon, tone = 'accent', value, label, testId, classNam
         <Icon name={icon} size={19} strokeWidth={2} />
       </span>
       <div>
-        <div data-testid={testId} className="text-[1.625rem] font-bold leading-tight tracking-[-0.02em] tabular-nums text-text">{value}</div>
-        <div className="mt-0.5 text-[0.8125rem] leading-snug text-text-3">{label}</div>
+        <div data-testid={testId} className="text-3xl font-bold tabular-nums text-text">{value}</div>
+        <div className="mt-0.5 text-sm text-text-3">{label}</div>
       </div>
     </div>
   );

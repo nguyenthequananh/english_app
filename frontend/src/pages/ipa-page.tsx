@@ -31,8 +31,8 @@ export default function IpaPage() {
         {IPA_GROUPS.map((group) => (
           <section key={group.title} aria-label={group.title} className="space-y-2.5">
             <div className="flex items-baseline justify-between px-1">
-              <h2 className="text-[1.25rem] font-bold tracking-[-0.015em] text-text">{group.title}</h2>
-              <span className="text-[0.8125rem] tabular-nums text-text-3">{group.sounds.length} âm</span>
+              <h2 className="text-xl font-bold text-text">{group.title}</h2>
+              <span className="text-sm tabular-nums text-text-3">{group.sounds.length} âm</span>
             </div>
             <div className="grid grid-cols-4 gap-2 sm:gap-2.5 lg:grid-cols-8">
               {group.sounds.map((s) => {
@@ -55,10 +55,10 @@ export default function IpaPage() {
                       strokeWidth={2.2}
                       className={cn('absolute top-2 right-2 transition-colors duration-(--duration-press)', active ? 'text-[var(--tone-text)]' : 'text-text-3 opacity-50')}
                     />
-                    <span className={cn('text-[1.625rem] leading-none font-semibold tracking-[-0.01em] sm:text-[1.75rem]', active ? 'text-[var(--tone-text)]' : 'text-text')}>
+                    <span className={cn('text-3xl leading-none font-semibold sm:text-4xl', active ? 'text-[var(--tone-text)]' : 'text-text')}>
                       {s.symbol}
                     </span>
-                    <span className="max-w-full truncate text-[0.75rem] leading-tight text-text-3 sm:text-[0.8125rem]">{s.example}</span>
+                    <span className="max-w-full truncate text-xs leading-tight text-text-3 sm:text-sm">{s.example}</span>
                   </button>
                 );
               })}

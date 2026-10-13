@@ -63,7 +63,7 @@ export function BackupSettings() {
 
       {restoreMessage && (
         <div role="status" className="tone-warning flex flex-col gap-3 rounded-card bg-[var(--tone-soft)] p-4 sm:flex-row sm:items-center">
-          <p className="flex-1 text-[0.9375rem] leading-snug text-text">{restoreMessage}</p>
+          <p className="flex-1 text-base text-text">{restoreMessage}</p>
           <ShutdownButton />
         </div>
       )}
@@ -74,12 +74,12 @@ export function BackupSettings() {
         ) : backupsQuery.error ? (
           <GroupItem>
             <div className="flex items-center gap-3">
-              <p className="flex-1 text-[0.9375rem] text-text-2">Không tải được danh sách bản sao lưu.</p>
+              <p className="flex-1 text-base text-text-2">Không tải được danh sách bản sao lưu.</p>
               <Button size="sm" variant="secondary" onClick={() => backupsQuery.refetch()}>Thử lại</Button>
             </div>
           </GroupItem>
         ) : backups && backups.length === 0 ? (
-          <GroupItem><p className="py-1 text-[0.9375rem] text-text-2">Chưa có bản sao lưu nào.</p></GroupItem>
+          <GroupItem><p className="py-1 text-base text-text-2">Chưa có bản sao lưu nào.</p></GroupItem>
         ) : (
           backups?.map((b) => (
             <ListRow

@@ -22,7 +22,7 @@ function Kbd({ children }: { children: ReactNode }) {
   return (
     <kbd
       aria-hidden="true"
-      className="hidden min-w-5 items-center justify-center rounded-md bg-[color-mix(in_srgb,currentColor_14%,transparent)] px-1.5 font-sans text-[0.6875rem] font-semibold leading-5 lg:inline-flex"
+      className="hidden min-w-5 items-center justify-center rounded-md bg-[color-mix(in_srgb,currentColor_14%,transparent)] px-1.5 font-sans text-xs font-semibold leading-5 lg:inline-flex"
     >
       {children}
     </kbd>
@@ -38,18 +38,18 @@ function headwordSize(text: string) {
 
 /** Nghĩa ngắn hiện to như một câu trả lời; nghĩa dài (cả câu giải thích) hạ cỡ để còn chỗ cho ví dụ. */
 function meaningSize(text: string) {
-  return text.length <= 32 ? 'text-[1.5rem] font-semibold' : 'text-[1.1875rem] font-semibold';
+  return text.length <= 32 ? 'text-3xl font-semibold' : 'text-xl font-semibold';
 }
 
 function Pos({ pos }: { pos: string }) {
   if (!pos) return null;
-  return <span className="text-[0.9375rem] italic text-text-3">{pos}</span>;
+  return <span className="text-base italic text-text-3">{pos}</span>;
 }
 
 function Ipa({ tag, value }: { tag: string; value: string }) {
   return (
-    <span className="inline-flex items-baseline gap-1.5 rounded-full bg-fill px-3 py-1 text-[0.9375rem] text-text-2">
-      <span className="text-[0.6875rem] font-semibold tracking-[0.04em] text-text-3">{tag}</span>
+    <span className="inline-flex items-baseline gap-1.5 rounded-full bg-fill px-3 py-1 text-base text-text-2">
+      <span className="text-xs font-semibold tracking-[0.04em] text-text-3">{tag}</span>
       {value}
     </span>
   );
@@ -137,7 +137,7 @@ export function Flashcard({ word, onGrade, busy = false }: { word: Word; onGrade
                 <SpeakButton text={word.headword} />
               </div>
             </div>
-            <p aria-hidden="true" className="pb-5 text-center text-[0.8125rem] text-text-3">Chạm thẻ để xem nghĩa</p>
+            <p aria-hidden="true" className="pb-5 text-center text-sm text-text-3">Chạm thẻ để xem nghĩa</p>
           </Face>
 
           {revealed && (
@@ -145,7 +145,7 @@ export function Flashcard({ word, onGrade, busy = false }: { word: Word; onGrade
               <div data-testid="card-back" className="flex flex-1 flex-col gap-5 p-5 sm:p-7">
                 <div className="flex flex-col items-center gap-2 text-center">
                   <div className="flex items-center gap-2">
-                    <p lang="en" className="text-[1.75rem] font-bold leading-tight tracking-[-0.02em] text-text hyphens-auto [overflow-wrap:anywhere]">{word.headword}</p>
+                    <p lang="en" className="text-4xl font-bold text-text hyphens-auto [overflow-wrap:anywhere]">{word.headword}</p>
                     <SpeakButton text={word.headword} />
                   </div>
                   {(word.ipaUs || word.ipaUk) && (
@@ -157,13 +157,13 @@ export function Flashcard({ word, onGrade, busy = false }: { word: Word; onGrade
                   <Pos pos={word.pos} />
                 </div>
 
-                <p className={cn(meaningSize(word.meaningVi), 'text-center leading-snug tracking-[-0.01em] text-balance text-text')}>{word.meaningVi}</p>
+                <p className={cn(meaningSize(word.meaningVi), 'text-center text-balance text-text')}>{word.meaningVi}</p>
 
                 {(word.exampleEn || word.exampleVi) && (
                   <div className="mt-auto flex items-start gap-3 rounded-[18px] bg-surface-2 p-4">
                     <div className="min-w-0 flex-1 space-y-1">
-                      {word.exampleEn && <p className="text-[1rem] leading-relaxed text-text">{word.exampleEn}</p>}
-                      {word.exampleVi && <p className="text-[0.9375rem] leading-relaxed text-text-2">{word.exampleVi}</p>}
+                      {word.exampleEn && <p className="text-lg text-text">{word.exampleEn}</p>}
+                      {word.exampleVi && <p className="text-base text-text-2">{word.exampleVi}</p>}
                     </div>
                     {word.exampleEn && <SpeakButton text={word.exampleEn} label="Nghe câu" />}
                   </div>
@@ -193,7 +193,7 @@ export function Flashcard({ word, onGrade, busy = false }: { word: Word; onGrade
                   g.tone,
                   'pressable focus-ring inline-flex min-h-14 items-center justify-center gap-2 rounded-[18px] px-2',
                   // Nền đục (pha tông vào màu thẻ) thay vì nhuộm trong suốt: đè lên nền dải màu thì màu không bị đục bẩn.
-                  'bg-[color-mix(in_srgb,var(--tone)_13%,var(--surface))] text-[1rem] font-semibold text-[var(--tone-text)] card-edge',
+                  'bg-[color-mix(in_srgb,var(--tone)_13%,var(--surface))] text-base font-semibold text-[var(--tone-text)] card-edge',
                   'hover:bg-[color-mix(in_srgb,var(--tone)_20%,var(--surface))] disabled:cursor-not-allowed disabled:opacity-45',
                 )}
               >

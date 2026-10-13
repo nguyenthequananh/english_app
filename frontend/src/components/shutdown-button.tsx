@@ -30,7 +30,7 @@ export function ShutdownButton() {
           <span className="inline-flex size-16 items-center justify-center rounded-full bg-fill text-text-2">
             <Icon name="power" size={30} />
           </span>
-          <p className="text-[1.375rem] font-bold tracking-[-0.015em] text-text">App đã tắt. Bạn có thể đóng tab này.</p>
+          <p className="text-2xl font-bold text-text">App đã tắt. Bạn có thể đóng tab này.</p>
         </div>,
         document.body,
       )}
