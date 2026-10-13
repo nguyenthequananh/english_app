@@ -40,13 +40,19 @@ function SessionCard({ summary, dailyMinutes }: { summary: Summary; dailyMinutes
       <Card className="flex items-start gap-4">
         <div className="min-w-0 flex-1">
           <Eyebrow>Buổi học hôm nay</Eyebrow>
-          <p className="mt-1.5 text-xl font-bold text-text">✓ Bạn đã hoàn thành buổi học hôm nay</p>
+          <p className="mt-1.5 flex items-start gap-2 text-xl font-bold text-text">
+            {/* Dấu hoàn thành là icon (cùng kiểu dấu "Đã xong" ở Lộ trình), không phải ký tự "✓" trong câu. */}
+            <span className="tone-success mt-px inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-[var(--tone-soft)] text-[var(--tone-text)]">
+              <Icon name="check" size={14} strokeWidth={3} />
+            </span>
+            Bạn đã hoàn thành buổi học hôm nay
+          </p>
           <p className="mt-1 text-base text-text-2">Muốn nhớ lâu hơn? Ôn thêm vài thẻ.</p>
           <ButtonLink to="/review" variant="secondary" className="mt-4">
             Ôn thêm <Icon name="chevron-right" size={16} strokeWidth={2.4} />
           </ButtonLink>
         </div>
-        {/* Dấu ✓ đã nằm trong câu (E2E bám đúng câu đó) nên vòng màu dùng ngọn lửa: chuỗi ngày đã giữ được. */}
+        {/* Dấu hoàn thành đã đứng đầu câu nên vòng màu dùng ngọn lửa: chuỗi ngày đã giữ được. */}
         <span className="tone-warning tone-chip inline-flex size-14 shrink-0 items-center justify-center rounded-full">
           <Icon name="flame" filled size={26} strokeWidth={1.8} />
         </span>

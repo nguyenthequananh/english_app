@@ -144,7 +144,7 @@ test('đã học xong hôm nay và unit đủ bài thì mời ôn thêm và làm
     currentUnit: { code: 'S0-U01', title: 'Chào hỏi', lessonsDone: 2, lessonsTotal: 2, testReady: true },
   } }) });
   renderRoutes('/');
-  expect(await screen.findByText('✓ Bạn đã hoàn thành buổi học hôm nay')).toBeInTheDocument();
+  expect(await screen.findByText('Bạn đã hoàn thành buổi học hôm nay')).toBeInTheDocument();
   expect(screen.getByRole('link', { name: 'Ôn thêm' })).toHaveAttribute('href', '/review');
   expect(screen.getByRole('link', { name: 'Làm bài kiểm tra unit' })).toHaveAttribute('href', '/units/S0-U01/test');
 });
@@ -196,7 +196,7 @@ test('buổi học: bước bài chính rồi hoàn thành', async () => {
   renderRoutes('/session');
   await user.click(await screen.findByRole('button', { name: 'Đã học xong bài này' }));
   await user.click(await screen.findByRole('button', { name: 'Hoàn thành buổi học' }));
-  expect(await screen.findByText('🎉 Xong buổi học hôm nay!')).toBeInTheDocument();
+  expect(await screen.findByText('Xong buổi học hôm nay!')).toBeInTheDocument();
 });
 
 test('ôn thêm: chấm hết thẻ đến hạn thì báo hết thẻ', async () => {
@@ -264,7 +264,7 @@ test('trang Hôm nay: lỗi tải tổng quan thì có nút thử lại', async 
 test('buổi học: xong thì có tổng kết và ba lối đi tiếp', async () => {
   mockApi({ 'GET /session/today': () => ({ body: view({ step: 'DONE', currentCard: null, newLeft: 0, cardsDone: 7, finished: true }) }) });
   renderRoutes('/session');
-  expect(await screen.findByText('🎉 Xong buổi học hôm nay!')).toBeInTheDocument();
+  expect(await screen.findByText('Xong buổi học hôm nay!')).toBeInTheDocument();
   expect(screen.getByText(/Bạn đã ôn/)).toHaveTextContent('Bạn đã ôn 7 thẻ.');
   expect(screen.getByTestId('session-step')).toHaveAttribute('data-step', 'DONE');
   expect(screen.getByRole('link', { name: 'Về trang chủ' })).toHaveAttribute('href', '/');

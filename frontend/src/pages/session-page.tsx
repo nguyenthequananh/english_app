@@ -10,6 +10,7 @@ import { SessionTimer, StepBar } from '../components/step-bar';
 import { ButtonLink } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Icon } from '../components/ui/icons';
+import { SPRING } from '../components/ui/motion';
 import { Skeleton } from '../components/ui/skeleton';
 import { TopBar } from '../components/ui/top-bar';
 import type { Grade, SessionView } from '../types/api';
@@ -52,13 +53,17 @@ function SessionDone({ view }: { view: SessionView }) {
         <motion.span
           initial={{ opacity: 0, transform: 'scale(0.82)' }}
           animate={{ opacity: 1, transform: 'scale(1)' }}
-          transition={{ type: 'spring', visualDuration: 0.45, bounce: 0.35 }}
+          // Hiện ra do hệ thống (không do cử chỉ có quán tính) ⇒ lò xo tới hạn, không nảy.
+          transition={SPRING}
           className="tone-success tone-chip inline-flex size-16 items-center justify-center rounded-full"
         >
           <Icon name="check" size={30} strokeWidth={2.6} />
         </motion.span>
       </MotionConfig>
-      <h2 className="mt-5 text-3xl font-bold text-balance text-text">🎉 Xong buổi học hôm nay!</h2>
+      <h2 className="mt-5 inline-flex items-center gap-2 text-3xl font-bold text-balance text-text">
+        <Icon name="sparkle" filled size={26} className="shrink-0 text-accent" />
+        Xong buổi học hôm nay!
+      </h2>
       <p className="mt-2 text-base text-text-2">
         Bạn đã ôn <span className="font-semibold tabular-nums text-text">{new Intl.NumberFormat('vi-VN').format(view.cardsDone)}</span> thẻ.
       </p>

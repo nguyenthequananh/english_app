@@ -34,7 +34,7 @@ async function finishTodaySession(page: Page) {
   if (await submit.isVisible()) await submit.click();
   else await done.click();
   await page.getByRole('button', { name: 'Hoàn thành buổi học' }).click();
-  await expect(page.getByText('🎉 Xong buổi học hôm nay!')).toBeVisible();
+  await expect(page.getByText('Xong buổi học hôm nay!')).toBeVisible();
 }
 
 test('học trọn một buổi rồi thấy chuỗi ngày học', async ({ page }) => {
@@ -45,7 +45,7 @@ test('học trọn một buổi rồi thấy chuỗi ngày học', async ({ page
   await page.getByRole('link', { name: 'Tiến độ' }).click();
   await expect(page.getByTestId('stat-streak')).toHaveText('1');
   await page.getByRole('link', { name: 'Hôm nay', exact: true }).click();
-  await expect(page.getByText('✓ Bạn đã hoàn thành buổi học hôm nay')).toBeVisible();
+  await expect(page.getByText('Bạn đã hoàn thành buổi học hôm nay')).toBeVisible();
 });
 
 test('F5 ở đường dẫn con vẫn mở đúng trang', async ({ page }) => {
