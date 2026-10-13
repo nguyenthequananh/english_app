@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { motion, MotionConfig } from 'motion/react';
 import { endpoints } from '../api/endpoints';
+import { SESSION_KEY, SUMMARY_KEY } from '../api/query-keys';
 import { ApiError } from '../api/api-error';
 import { notifyError } from '../components/toaster';
 import { Flashcard } from '../components/flashcard';
@@ -16,7 +17,6 @@ import { TopBar } from '../components/ui/top-bar';
 import type { Grade, SessionView } from '../types/api';
 
 const RELOAD_CODES = ['CARD_MISMATCH', 'NO_SESSION', 'WRONG_STEP'];
-export const SESSION_KEY = ['session', 'today'];
 
 const DATE_FORMAT = new Intl.DateTimeFormat('vi-VN', { weekday: 'long', day: 'numeric', month: 'numeric' });
 
@@ -135,7 +135,7 @@ export default function SessionPage() {
           <LessonView key={v.lessonCode} code={v.lessonCode} doneLabel="Hoàn thành buổi học"
             onDone={() => {
               queryClient.invalidateQueries({ queryKey: SESSION_KEY });
-              queryClient.invalidateQueries({ queryKey: ['summary'] });
+              queryClient.invalidateQueries({ queryKey: SUMMARY_KEY });
             }} />
         )}
         {v.step === 'DONE' && <SessionDone view={v} />}

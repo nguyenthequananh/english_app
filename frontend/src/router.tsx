@@ -12,7 +12,7 @@ import TodayPage from './pages/today-page';
  * Trong lúc tải: lần đầu mở app thì hiện `hydrateFallbackElement` (khung giữ chỗ, shell vẫn có nav);
  * chuyển trang sau đó thì router giữ nguyên màn cũ tới khi chunk mới sẵn sàng — không chớp trắng.
  * Hôm nay (`/`) nạp sẵn: là màn mở app thường gặp nhất. Đã đo: tải lười Hôm nay không bớt byte nào cho `/`
- * (shell, bộ UI, motion đã nằm trong chunk đầu; Hôm nay còn import SessionPage để lấy SESSION_KEY) mà thêm
+ * (shell, bộ UI, motion đã nằm trong chunk đầu) mà thêm
  * một vòng chờ chunk trước khi vẽ được màn đầu.
  */
 const page = (load: () => Promise<{ default: ComponentType }>) => async () => ({ Component: (await load()).default });

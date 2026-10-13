@@ -1,12 +1,11 @@
 import { RouterProvider } from 'react-router';
 import { QueryClientProvider, type QueryClient } from '@tanstack/react-query';
 import { setProfileRequiredHandler } from './config/interceptors';
+import { PROFILE_INDEPENDENT_KEYS } from './api/query-keys';
 import { Toaster } from './components/toaster';
 import type { createAppRouter } from './router';
 
 type AppRouter = ReturnType<typeof createAppRouter>;
-
-const KEEP_ON_LOGOUT = ['profiles', 'health'];
 
 /**
  * Đăng ký xử lý PROFILE_REQUIRED: xoá cache (trừ hồ sơ, sức khoẻ) rồi về /profiles.
@@ -15,7 +14,7 @@ const KEEP_ON_LOGOUT = ['profiles', 'health'];
  */
 export function registerProfileRequiredHandler(router: Pick<AppRouter, 'navigate'>, queryClient: QueryClient) {
   setProfileRequiredHandler(() => {
-    queryClient.removeQueries({ predicate: (q) => !KEEP_ON_LOGOUT.includes(String(q.queryKey[0])) });
+    queryClient.removeQueries({ predicate: (q) => !PROFILE_INDEPENDENT_KEYS.includes(String(q.queryKey[0])) });
     void router.navigate('/profiles', { replace: true });
   });
 }

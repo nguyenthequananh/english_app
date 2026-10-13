@@ -2,13 +2,12 @@ import { useEffect } from 'react';
 import { Navigate, Outlet } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { endpoints } from '../api/endpoints';
+import { CURRENT_PROFILE_KEY } from '../api/query-keys';
 import { ApiError } from '../api/api-error';
 import { configureSpeech } from '../speech/speech';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Icon } from '../components/ui/icons';
-
-export const CURRENT_PROFILE_KEY = ['profile', 'current'] as const;
 
 /** Hồ sơ đang dùng; dùng chung cache với RequireProfile nên không gọi lại API. */
 export function useCurrentProfile() {

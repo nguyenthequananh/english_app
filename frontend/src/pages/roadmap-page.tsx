@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { endpoints } from '../api/endpoints';
+import { ROADMAP_KEY, unitLessonsKey } from '../api/query-keys';
 import type { StageView, Status, UnitView } from '../types/api';
 import { QueryError } from '../components/query-error';
 import { dayLabel, lessonSkill, lessonTypeLabel, STATUS_LABEL } from '../components/labels';
@@ -31,7 +32,7 @@ const ROW_DIVIDER = 'group-[:not(:first-child)]/row:border-t group-[:not(:first-
 const EXPAND = { ...SPRING, opacity: { duration: DURATION.press, ease: EASE_OUT } };
 
 export default function RoadmapPage() {
-  const roadmapQuery = useQuery({ queryKey: ['roadmap'], queryFn: endpoints.roadmap });
+  const roadmapQuery = useQuery({ queryKey: ROADMAP_KEY, queryFn: endpoints.roadmap });
   const { data } = roadmapQuery;
   const units = data?.stages.flatMap((s) => s.units) ?? [];
   const doneUnits = units.filter((u) => u.status === 'DONE').length;
@@ -195,7 +196,7 @@ function UnitRow({ unit, order }: { unit: UnitView; order: number }) {
 }
 
 function UnitLessons({ code }: { code: string }) {
-  const lessonsQuery = useQuery({ queryKey: ['unitLessons', code], queryFn: () => endpoints.unitLessons(code) });
+  const lessonsQuery = useQuery({ queryKey: unitLessonsKey(code), queryFn: () => endpoints.unitLessons(code) });
   const { data } = lessonsQuery;
   if (lessonsQuery.error) {
     return (

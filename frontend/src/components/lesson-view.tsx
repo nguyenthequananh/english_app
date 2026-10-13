@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { endpoints } from '../api/endpoints';
+import { LESSON_KEY, lessonKey, ROADMAP_KEY, SUMMARY_KEY, UNIT_LESSONS_KEY } from '../api/query-keys';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
@@ -15,8 +16,7 @@ import { dayLabel, lessonSkill, lessonTypeLabel } from './labels';
 
 /*
  * react-markdown + remark-gfm (~150 kB) chỉ cần khi thật sự hiện lý thuyết, nên tách thành chunk riêng.
- * Không import tĩnh ở đây: LessonView nằm trong SessionPage, mà Hôm nay import SessionPage (SESSION_KEY)
- * — import tĩnh sẽ kéo cả bộ Markdown vào chunk đầu của app.
+ * LessonView còn nằm trong bước LESSON của Buổi học — phần lớn buổi học là thẻ, không cần tải bộ Markdown.
  */
 const LessonMarkdown = lazy(() => import('./lesson-markdown'));
 
@@ -32,13 +32,13 @@ export function LessonView({ code, onDone, doneLabel = 'Xong', showTitle = true 
 }) {
   const queryClient = useQueryClient();
   // Lỗi tải bài hiện ngay trong khung (QueryError) nên không bắn thêm toast — tránh báo một lỗi hai lần.
-  const lessonQuery = useQuery({ queryKey: ['lesson', code], queryFn: () => endpoints.lesson(code), meta: { silent: true } });
+  const lessonQuery = useQuery({ queryKey: lessonKey(code), queryFn: () => endpoints.lesson(code), meta: { silent: true } });
   const { data: lesson, isLoading } = lessonQuery;
   const submit = useMutation({
     mutationFn: (answers: Record<string, string>) => endpoints.submitLesson(code, answers),
     onSuccess: () => {
-      for (const key of ['summary', 'unitLessons', 'roadmap', 'lesson']) {
-        queryClient.invalidateQueries({ queryKey: [key] });
+      for (const key of [SUMMARY_KEY, UNIT_LESSONS_KEY, ROADMAP_KEY, LESSON_KEY]) {
+        queryClient.invalidateQueries({ queryKey: key });
       }
     },
   });

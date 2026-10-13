@@ -2,6 +2,7 @@ import { useRef, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { endpoints } from '../api/endpoints';
+import { HEALTH_KEY } from '../api/query-keys';
 import { AvatarPicker, AVATARS } from '../components/avatar-picker';
 import type { Profile } from '../types/api';
 import { useEnglishVoices } from '../speech/speech';
@@ -34,7 +35,7 @@ export default function CreateProfilePage() {
       return profile;
     },
     onSuccess: () => {
-      queryClient.removeQueries({ predicate: (q) => String(q.queryKey[0]) !== 'health' });
+      queryClient.removeQueries({ predicate: (q) => String(q.queryKey[0]) !== HEALTH_KEY[0] });
       navigate('/', { replace: true });
     },
   });

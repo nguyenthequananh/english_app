@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { endpoints } from '../api/endpoints';
+import { ROADMAP_KEY, STATS_KEY, SUMMARY_KEY } from '../api/query-keys';
 import type { TestDto, TestResult } from '../types/api';
 import { ExerciseSet } from '../components/exercise-set';
 import { QueryError } from '../components/query-error';
@@ -34,7 +35,7 @@ export default function TestPage({ kind }: { kind: 'UNIT' | 'STAGE' }) {
   const submit = useMutation({
     mutationFn: (answers: Record<string, string>) => endpoints.submitTest(test.data!.code, answers),
     onSuccess: () => {
-      for (const key of ['roadmap', 'summary', 'stats']) queryClient.invalidateQueries({ queryKey: [key] });
+      for (const key of [ROADMAP_KEY, SUMMARY_KEY, STATS_KEY]) queryClient.invalidateQueries({ queryKey: key });
     },
   });
   const result = submit.data;

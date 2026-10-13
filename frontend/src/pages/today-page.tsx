@@ -1,6 +1,7 @@
 import { Link } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { endpoints } from '../api/endpoints';
+import { ROADMAP_KEY, SESSION_KEY, SUMMARY_KEY } from '../api/query-keys';
 import { QueryError } from '../components/query-error';
 import { toIsoDate } from '../dates';
 import { useCurrentProfile } from '../shell/require-profile';
@@ -14,7 +15,6 @@ import { Eyebrow, SectionTitle } from '../components/ui/section-heading';
 import { SkillTile } from '../components/ui/skill-tile';
 import { Skeleton } from '../components/ui/skeleton';
 import { StatTile } from '../components/ui/stat-tile';
-import { SESSION_KEY } from './session-page';
 
 /** Số lớn có dấu chấm ngăn cách hàng nghìn (12.345), như màn Tiến độ. */
 const num = new Intl.NumberFormat('vi-VN');
@@ -125,7 +125,7 @@ const NO_UNIT_COPY: Record<NoUnitState['kind'], { icon: IconName; title: string;
 
 function NoUnitCard() {
   // Dùng chung cache với Lộ trình/Tiến độ; lỗi thì rơi về trạng thái "chưa rõ", không báo lỗi trùng.
-  const roadmapQuery = useQuery({ queryKey: ['roadmap'], queryFn: endpoints.roadmap, meta: { silent: true } });
+  const roadmapQuery = useQuery({ queryKey: ROADMAP_KEY, queryFn: endpoints.roadmap, meta: { silent: true } });
   if (roadmapQuery.isPending) return <Skeleton className="h-20 rounded-card" />;
   const state = noUnitState(roadmapQuery.data);
   const copy = NO_UNIT_COPY[state.kind];
@@ -217,7 +217,7 @@ function greeting(s: Summary | undefined) {
 }
 
 export default function TodayPage() {
-  const summaryQuery = useQuery({ queryKey: ['summary'], queryFn: endpoints.summary });
+  const summaryQuery = useQuery({ queryKey: SUMMARY_KEY, queryFn: endpoints.summary });
   const { data: profile } = useCurrentProfile();
   const s = summaryQuery.data;
 

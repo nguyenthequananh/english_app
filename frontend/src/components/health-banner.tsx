@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { endpoints } from '../api/endpoints';
+import { HEALTH_KEY } from '../api/query-keys';
 import { Button } from './ui/button';
 import { Icon } from './ui/icons';
 
 export function HealthBanner() {
   const [hidden, setHidden] = useState(false);
-  const { data } = useQuery({ queryKey: ['health'], queryFn: endpoints.health, meta: { silent: true } });
+  const { data } = useQuery({ queryKey: HEALTH_KEY, queryFn: endpoints.health, meta: { silent: true } });
   if (!data || hidden) return null;
   let message: string | null = null;
   if (data.recoveredFrom === 'NONE') {

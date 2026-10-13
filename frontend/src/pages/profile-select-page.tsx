@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { endpoints } from '../api/endpoints';
+import { PROFILE_INDEPENDENT_KEYS, PROFILES_KEY } from '../api/query-keys';
 import { ApiError } from '../api/api-error';
 import type { Profile } from '../types/api';
 import { QueryError } from '../components/query-error';
@@ -63,12 +64,12 @@ export default function ProfileSelectPage() {
   const [pin, setPin] = useState('');
   const [pickedId, setPickedId] = useState<number | null>(null);
 
-  const profilesQuery = useQuery({ queryKey: ['profiles'], queryFn: endpoints.profiles });
+  const profilesQuery = useQuery({ queryKey: PROFILES_KEY, queryFn: endpoints.profiles });
   const profiles = profilesQuery.data;
   const select = useMutation({
     mutationFn: ({ id, pin }: { id: number; pin?: string }) => endpoints.selectProfile(id, pin),
     onSuccess: () => {
-      queryClient.removeQueries({ predicate: (q) => !['profiles', 'health'].includes(String(q.queryKey[0])) });
+      queryClient.removeQueries({ predicate: (q) => !PROFILE_INDEPENDENT_KEYS.includes(String(q.queryKey[0])) });
       navigate('/', { replace: true });
     },
     meta: { silent: true },

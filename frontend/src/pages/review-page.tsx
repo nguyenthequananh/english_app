@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { endpoints } from '../api/endpoints';
+import { SUMMARY_KEY } from '../api/query-keys';
 import { Flashcard } from '../components/flashcard';
 import { QueryError } from '../components/query-error';
 import { ButtonLink } from '../components/ui/button';
@@ -20,7 +21,7 @@ export default function ReviewPage() {
     mutationFn: ({ wordId, grade }: { wordId: number; grade: Grade }) => endpoints.reviewCard(wordId, grade),
     onSuccess: () => {
       setIndex((i) => i + 1);
-      queryClient.invalidateQueries({ queryKey: ['summary'] });
+      queryClient.invalidateQueries({ queryKey: SUMMARY_KEY });
     },
   });
 

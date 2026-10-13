@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { downloads, endpoints } from '../../api/endpoints';
+import { PROFILES_KEY } from '../../api/query-keys';
 import { ApiError } from '../../api/api-error';
 import { notifyError, toast } from '../../components/toaster';
 import { DownloadRow, FileRow, ListGroup } from '../../components/ui/list-row';
@@ -20,7 +21,7 @@ export function TransferSettings() {
     },
     onSuccess: (r) => {
       toast(`Đã nhập hồ sơ "${r.profile.name}"${r.skippedRows ? ` (bỏ qua ${r.skippedRows} dòng không khớp nội dung)` : ''}`);
-      queryClient.invalidateQueries({ queryKey: ['profiles'] });
+      queryClient.invalidateQueries({ queryKey: PROFILES_KEY });
     },
     onError: (e) => {
       if (e instanceof ApiError) notifyError(e);

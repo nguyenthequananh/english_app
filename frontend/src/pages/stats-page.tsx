@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { endpoints } from '../api/endpoints';
+import { ROADMAP_KEY, STATS_KEY, SUMMARY_KEY } from '../api/query-keys';
 import type { Roadmap, Stats, Summary } from '../types/api';
 import { Heatmap } from '../components/heatmap';
 import { KnownChart } from '../components/known-chart';
@@ -112,10 +113,10 @@ function StatsSkeleton() {
 }
 
 export default function StatsPage() {
-  const statsQuery = useQuery({ queryKey: ['stats'], queryFn: endpoints.stats });
+  const statsQuery = useQuery({ queryKey: STATS_KEY, queryFn: endpoints.stats });
   // Thẻ tổng quan dùng chung cache với Hôm nay/Lộ trình; lỗi thì chỉ ẩn thẻ (không chặn trang, không báo trùng).
-  const summaryQuery = useQuery({ queryKey: ['summary'], queryFn: endpoints.summary, meta: { silent: true } });
-  const roadmapQuery = useQuery({ queryKey: ['roadmap'], queryFn: endpoints.roadmap, meta: { silent: true } });
+  const summaryQuery = useQuery({ queryKey: SUMMARY_KEY, queryFn: endpoints.summary, meta: { silent: true } });
+  const roadmapQuery = useQuery({ queryKey: ROADMAP_KEY, queryFn: endpoints.roadmap, meta: { silent: true } });
   const s = statsQuery.data;
   const minutes = s ? s.heatmap.reduce((sum, d) => sum + d.minutes, 0) : 0;
 

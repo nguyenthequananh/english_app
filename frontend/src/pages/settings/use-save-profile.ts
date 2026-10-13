@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { endpoints } from '../../api/endpoints';
+import { CURRENT_PROFILE_KEY } from '../../api/query-keys';
 import type { Profile, UpdateProfile } from '../../types/api';
-import { CURRENT_PROFILE_KEY } from '../../shell/require-profile';
 import { configureSpeech } from '../../speech/speech';
 import { toast } from '../../components/toaster';
 
