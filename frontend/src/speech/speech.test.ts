@@ -1,5 +1,5 @@
 import { configureSpeech, englishVoices, speak } from './speech';
-import { stubSpeech } from '../test/speechStub';
+import { stubSpeech } from '../test/speech-stub';
 
 test('đọc bằng giọng và tốc độ trong hồ sơ', () => {
   const spoken = stubSpeech();
