@@ -15,11 +15,19 @@ import { ProgressBar } from '../components/ui/progress-bar';
 import { Skeleton } from '../components/ui/skeleton';
 import { SKILL_META, toneClass } from '../components/ui/skill';
 import { cn } from '../components/ui/cn';
+import { DURATION, EASE_OUT, FADE, SPRING } from '../components/ui/motion';
 
 const STATUS_TONE: Record<Status, 'neutral' | 'accent' | 'success'> = { LOCKED: 'neutral', ACTIVE: 'accent', DONE: 'success' };
 
 /** Đường kẻ giữa các dòng, thụt sau phần leading — cùng cách ListRow vẽ để hàng tự làm và ListRow nằm chung một nhóm. */
 const ROW_DIVIDER = 'group-[:not(:first-child)]/row:border-t group-[:not(:first-child)]/row:border-separator';
+
+/*
+ * Mở/đóng unit: chiều cao bảng bài và góc xoay chevron chạy chung MỘT lò xo (cùng một object transition) nên luôn
+ * khớp nhau, ngắt giữa chừng được và đường về tự đối xứng. Độ mờ đi nhanh hơn chiều cao để nội dung không lộ ra
+ * bị cắt dở lúc thu lại.
+ */
+const EXPAND = { ...SPRING, opacity: { duration: DURATION.press, ease: EASE_OUT } };
 
 export default function RoadmapPage() {
   const roadmapQuery = useQuery({ queryKey: ['roadmap'], queryFn: endpoints.roadmap });
@@ -110,6 +118,7 @@ function UnitRow({ unit, order }: { unit: UnitView; order: number }) {
   // Giảm chuyển động: bỏ co giãn chiều cao, chỉ còn mờ dần ngắn.
   const reduceMotion = useReducedMotion();
   const collapsed = reduceMotion ? { opacity: 0 } : { height: 0, opacity: 0 };
+  const transition = reduceMotion ? FADE : EXPAND;
 
   if (unit.status === 'LOCKED') {
     return (
@@ -154,8 +163,15 @@ function UnitRow({ unit, order }: { unit: UnitView; order: number }) {
               <span className="sr-only">{STATUS_LABEL.DONE}</span>
             </span>
           )}
-          <Icon name="chevron-right" size={16} strokeWidth={2.4}
-            className={cn('text-text-3 opacity-70 transition-transform duration-(--duration-fast) ease-out', open && 'rotate-90')} />
+          <motion.span
+            aria-hidden="true"
+            className="inline-flex text-text-3 opacity-70"
+            initial={false}
+            animate={{ rotate: open ? 90 : 0 }}
+            transition={reduceMotion ? { duration: 0 } : transition}
+          >
+            <Icon name="chevron-right" size={16} strokeWidth={2.4} />
+          </motion.span>
         </span>
       </button>
       <AnimatePresence initial={false}>
@@ -166,7 +182,7 @@ function UnitRow({ unit, order }: { unit: UnitView; order: number }) {
             initial={collapsed}
             animate={{ height: 'auto', opacity: 1 }}
             exit={collapsed}
-            transition={{ duration: reduceMotion ? 0.12 : 0.24, ease: [0.23, 1, 0.32, 1] }}
+            transition={transition}
             className="overflow-hidden"
           >
             <UnitLessons code={unit.code} />

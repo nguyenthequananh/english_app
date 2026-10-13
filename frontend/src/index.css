@@ -17,15 +17,24 @@
   box-shadow: var(--shadow-card), inset 0 0 0 1px var(--card-border);
 }
 /* Vật liệu kính: thanh trên, tab bar, sidebar. */
+/* Giảm trong suốt: nền đã thành đặc qua token (--material = --surface), ở đây bỏ luôn blur. */
 @utility material {
   background-color: var(--material);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   backdrop-filter: blur(20px) saturate(180%);
+  @media (prefers-reduced-transparency: reduce) {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
 }
 @utility material-strong {
   background-color: var(--material-strong);
   -webkit-backdrop-filter: blur(28px) saturate(180%);
   backdrop-filter: blur(28px) saturate(180%);
+  @media (prefers-reduced-transparency: reduce) {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
 }
 /* Phản hồi nhấn: thu nhẹ ngay khi chạm, ease-out ngắn. */
 @utility pressable {
@@ -304,6 +313,12 @@
     box-shadow: var(--shadow-toast), inset 0 0 0 1px var(--card-border);
     font-family: var(--font-sans);
     padding: 14px 16px;
+  }
+  @media (prefers-reduced-transparency: reduce) {
+    [data-sonner-toast].app-toast {
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+    }
   }
   [data-sonner-toast].app-toast .app-toast-title {
     font-size: var(--text-base);
