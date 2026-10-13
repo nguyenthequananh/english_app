@@ -10,6 +10,7 @@ import ReviewPage from '@/pages/review-page';
 import { renderAt } from '@test/render';
 import { mockApi, problem } from '@test/mock-api';
 import { stubSpeech } from '@test/speech-stub';
+import { toIsoDate } from '@/dates';
 import type { SessionView, Word } from '@/types/api';
 
 const word = (id: number, headword: string): Word => ({
@@ -38,10 +39,44 @@ test('trang Hôm nay: chuỗi ngày, thẻ đến hạn, tiến độ unit và n
     currentUnit: { code: 'S0-U01', title: 'Chào hỏi', lessonsDone: 1, lessonsTotal: 2, testReady: false },
   } }) });
   renderRoutes('/');
-  expect(await screen.findByText('🔥 3 ngày liên tiếp')).toBeInTheDocument();
-  expect(screen.getByText('12 thẻ đến hạn')).toBeInTheDocument();
+  expect(await screen.findByTestId('today-streak')).toHaveTextContent('3');
+  expect(screen.getByText('ngày liên tiếp')).toBeInTheDocument();
+  expect(screen.getByTestId('today-due')).toHaveTextContent('12');
+  expect(screen.getByText('thẻ đến hạn')).toBeInTheDocument();
   expect(screen.getByText('1/2 bài')).toBeInTheDocument();
+  expect(screen.getByRole('progressbar', { name: 'Tiến độ unit S0-U01' })).toHaveAttribute('aria-valuenow', '50');
   expect(screen.getByRole('link', { name: 'Bắt đầu buổi học' })).toHaveAttribute('href', '/session');
+});
+
+test('trang Hôm nay: chào theo tên hồ sơ, lưới Luyện tập dẫn tới các màn phụ', async () => {
+  mockApi({
+    'GET /profiles/current': () => ({ body: { id: 1, name: 'Lan', avatar: null, hasPin: false, dailyMinutes: 30, voice: null, speechRate: 1 } }),
+    'GET /progress/summary': () => ({ body: { streak: 0, dueCount: 0, finishedToday: false, currentUnit: null } }),
+  });
+  renderRoutes('/');
+  expect(await screen.findByRole('heading', { level: 1, name: 'Chào, Lan' })).toBeInTheDocument();
+  expect(await screen.findByText(/khoảng 30 phút/)).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Ôn thẻ' })).toHaveAttribute('href', '/review');
+  expect(screen.getByRole('link', { name: 'Kho từ' })).toHaveAttribute('href', '/words');
+  expect(screen.getByRole('link', { name: 'Phát âm IPA' })).toHaveAttribute('href', '/ipa');
+  // Ô Lộ trình đổi tên đọc để không trùng với mục "Lộ trình" của thanh điều hướng.
+  expect(screen.getByRole('link', { name: 'Mở lộ trình' })).toHaveAttribute('href', '/roadmap');
+  expect(screen.getByText('Bạn đã học hết nội dung hiện có.')).toBeInTheDocument();
+});
+
+test('trang Hôm nay: buổi học đang dở thì nút đổi thành Tiếp tục, không tự gọi tạo buổi học', async () => {
+  const user = userEvent.setup();
+  stubSpeech();
+  const calls = mockApi({
+    'GET /session/today': () => ({ body: view({ studyDate: toIsoDate(new Date()), reviewsLeft: 0, newLeft: 2, cardsDone: 1 }) }),
+    'GET /progress/summary': () => ({ body: { streak: 2, dueCount: 0, finishedToday: false, currentUnit: null } }),
+  });
+  renderRoutes('/session');
+  await screen.findByText('hello');
+  await user.click(screen.getByRole('link', { name: 'Quay lại' }));
+  expect(await screen.findByRole('link', { name: 'Tiếp tục buổi học' })).toHaveAttribute('href', '/session');
+  expect(screen.getByText('Còn 2 từ mới')).toBeInTheDocument();
+  expect(calls.filter((c) => c.path === '/session/today')).toHaveLength(1);
 });
 
 test('đã học xong hôm nay và unit đủ bài thì mời ôn thêm và làm bài kiểm tra', async () => {
@@ -164,5 +199,44 @@ test('trang Hôm nay: lỗi tải tổng quan thì có nút thử lại', async 
   expect(await screen.findByRole('alert')).toHaveTextContent('Có lỗi xảy ra, hãy thử lại');
   fail = false;
   await user.click(screen.getByRole('button', { name: 'Thử lại' }));
-  expect(await screen.findByText('🔥 3 ngày liên tiếp')).toBeInTheDocument();
+  expect(await screen.findByTestId('today-streak')).toHaveTextContent('3');
+});
+
+test('buổi học: xong thì có tổng kết và ba lối đi tiếp', async () => {
+  mockApi({ 'GET /session/today': () => ({ body: view({ step: 'DONE', currentCard: null, newLeft: 0, cardsDone: 7, finished: true }) }) });
+  renderRoutes('/session');
+  expect(await screen.findByText('🎉 Xong buổi học hôm nay!')).toBeInTheDocument();
+  expect(screen.getByText(/Bạn đã ôn/)).toHaveTextContent('Bạn đã ôn 7 thẻ.');
+  expect(screen.getByTestId('session-step')).toHaveAttribute('data-step', 'DONE');
+  expect(screen.getByRole('link', { name: 'Về trang chủ' })).toHaveAttribute('href', '/');
+  expect(screen.getByRole('link', { name: 'Ôn thêm' })).toHaveAttribute('href', '/review');
+  expect(screen.getByRole('link', { name: 'Lộ trình' })).toHaveAttribute('href', '/roadmap');
+});
+
+test('buổi học: thanh bước đánh dấu bước đang làm và số thẻ còn lại', async () => {
+  stubSpeech();
+  mockApi({ 'GET /session/today': () => ({ body: view({ step: 'NEW', newLeft: 4 }) }) });
+  renderRoutes('/session');
+  await screen.findByText('hello');
+  const current = screen.getByRole('listitem', { current: 'step' });
+  expect(current).toHaveTextContent('Từ mới');
+  expect(current).toHaveTextContent('4 thẻ còn lại');
+  const [review, , lesson] = screen.getAllByRole('listitem');
+  expect(review).toHaveTextContent('Ôn tập, đã xong');
+  expect(lesson).not.toHaveTextContent('đã xong');
+});
+
+test('ôn thêm: đếm thẻ còn lại trên thanh trên', async () => {
+  stubSpeech();
+  mockApi({
+    'GET /cards/due?limit=200': () => ({ body: [word(1, 'hello'), word(2, 'book')] }),
+    'POST /cards/1/review': () => ({ body: { ease: 2.5, intervalDays: 6, repetitions: 2, lapses: 0, dueDate: '2026-10-13' } }),
+  });
+  renderRoutes('/review');
+  await screen.findByText('hello');
+  expect(screen.getByText('Còn 2 thẻ')).toBeInTheDocument();
+  fireEvent.keyDown(window, { key: ' ', code: 'Space' });
+  fireEvent.keyDown(window, { key: '3' });
+  expect(await screen.findByText('book')).toBeInTheDocument();
+  expect(screen.getByText('Còn 1 thẻ')).toBeInTheDocument();
 });
