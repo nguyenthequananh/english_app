@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { endpoints } from '../../api/endpoints';
-import type { Profile } from '../../api/types';
+import type { Profile } from '../../types/api';
 import { AvatarPicker } from '../../components/avatar-picker';
 import { QueryError } from '../../components/query-error';
 import { toast } from '../../components/toaster';

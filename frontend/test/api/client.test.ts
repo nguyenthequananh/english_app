@@ -1,5 +1,7 @@
 import { vi } from 'vitest';
-import { api, ApiError, setProfileRequiredHandler } from '@/api/client';
+import { api } from '@/api/client';
+import { ApiError } from '@/api/api-error';
+import { setProfileRequiredHandler } from '@/config/interceptors';
 import { mockApi, mockNetworkDown, problem } from '@test/mock-api';
 
 test('lỗi ProblemDetail thành ApiError có code, detail và errors', async () => {

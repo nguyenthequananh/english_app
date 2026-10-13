@@ -1,7 +1,7 @@
 import { useDeferredValue, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { endpoints } from '../api/endpoints';
-import type { AddWord, WordStatus } from '../api/types';
+import type { AddWord, WordStatus } from '../types/api';
 import { QueryError } from '../components/query-error';
 import { SpeakButton } from '../components/speak-button';
 import { toast } from '../components/toaster';

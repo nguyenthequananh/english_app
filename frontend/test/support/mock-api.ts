@@ -1,5 +1,5 @@
 import { AxiosError, AxiosHeaders, type AxiosAdapter, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
-import { http } from '@/api/client';
+import { http } from '@/config/axios';
 
 export interface MockReply { status?: number; body?: unknown }
 export type MockHandler = (body: unknown) => MockReply;

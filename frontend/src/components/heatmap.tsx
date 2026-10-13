@@ -1,4 +1,4 @@
-import type { DayMinutes } from '../api/types';
+import type { DayMinutes } from '../types/api';
 import { toIsoDate } from '../dates';
 
 const WEEKS = 26;

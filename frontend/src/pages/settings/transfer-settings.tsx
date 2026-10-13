@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { downloads, endpoints } from '../../api/endpoints';
-import { ApiError } from '../../api/client';
+import { ApiError } from '../../api/api-error';
 import { notifyError, toast } from '../../components/toaster';
 
 export function TransferSettings() {

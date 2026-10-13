@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { endpoints } from '../api/endpoints';
-import type { UnitView } from '../api/types';
+import type { UnitView } from '../types/api';
 import { QueryError } from '../components/query-error';
 import { DAY_LABEL, LESSON_TYPE_LABEL, STATUS_LABEL } from '../components/labels';
 

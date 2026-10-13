@@ -1,13 +1,13 @@
 import { Link } from 'react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { endpoints } from '../api/endpoints';
-import { ApiError } from '../api/client';
+import { ApiError } from '../api/api-error';
 import { notifyError } from '../components/toaster';
 import { Flashcard } from '../components/flashcard';
 import { LessonView } from '../components/lesson-view';
 import { QueryError } from '../components/query-error';
 import { StepBar } from '../components/step-bar';
-import type { Grade } from '../api/types';
+import type { Grade } from '../types/api';
 
 const RELOAD_CODES = ['CARD_MISMATCH', 'NO_SESSION', 'WRONG_STEP'];
 const SESSION_KEY = ['session', 'today'];

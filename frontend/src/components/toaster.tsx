@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ApiError } from '../api/client';
+import { ApiError } from '../api/api-error';
 
 interface ToastItem { id: number; message: string; kind: 'info' | 'error' }
 

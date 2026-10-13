@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { Navigate, Route, Routes, useNavigate } from 'react-router';
-import { setProfileRequiredHandler } from './api/client';
+import { setProfileRequiredHandler } from './config/interceptors';
 import Layout from './components/layout';
 import { Toaster } from './components/toaster';
 import CreateProfilePage from './pages/create-profile-page';

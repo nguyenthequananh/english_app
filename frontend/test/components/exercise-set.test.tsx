@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { ExerciseSet } from '@/components/exercise-set';
 import { stubSpeech } from '@test/speech-stub';
 import { configureSpeech } from '@/speech/speech';
-import type { ExerciseView } from '@/api/types';
+import type { ExerciseView } from '@/types/api';
 
 const exercises: ExerciseView[] = [
   { code: 'E1', type: 'MCQ', prompt: 'She ___ to school.', options: ['go', 'goes'] },

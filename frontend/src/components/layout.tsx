@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { Link, Navigate, NavLink, Outlet } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { endpoints } from '../api/endpoints';
-import { ApiError } from '../api/client';
+import { ApiError } from '../api/api-error';
 import { configureSpeech } from '../speech/speech';
 import { HealthBanner } from './health-banner';
 import { VoiceBanner } from './voice-banner';

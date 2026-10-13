@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import type { Grade, Word } from '../api/types';
+import type { Grade, Word } from '../types/api';
 import { SpeakButton } from './speak-button';
 
 const GRADES: { grade: Grade; label: string; cls: string }[] = [

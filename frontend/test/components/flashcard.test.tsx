@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Flashcard } from '@/components/flashcard';
 import { stubSpeech } from '@test/speech-stub';
-import type { Word } from '@/api/types';
+import type { Word } from '@/types/api';
 
 const word: Word = {
   id: 5, headword: 'hello', pos: 'exclamation', ipaUs: '/həˈloʊ/', ipaUk: '/həˈləʊ/', meaningVi: 'xin chào',

@@ -1,4 +1,4 @@
-import type { WeekCount } from '../api/types';
+import type { WeekCount } from '../types/api';
 
 const W = 600;
 const H = 160;

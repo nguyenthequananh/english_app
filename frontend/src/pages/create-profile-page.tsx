@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { endpoints } from '../api/endpoints';
 import { AvatarPicker, AVATARS } from '../components/avatar-picker';
-import type { Profile } from '../api/types';
+import type { Profile } from '../types/api';
 import { useEnglishVoices } from '../speech/speech';
 
 export default function CreateProfilePage() {

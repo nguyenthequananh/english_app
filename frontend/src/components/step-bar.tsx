@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import type { SessionStep } from '../api/types';
+import type { SessionStep } from '../types/api';
 
 const STEPS: { step: SessionStep; label: string }[] = [
   { step: 'REVIEW', label: 'Ôn tập' },

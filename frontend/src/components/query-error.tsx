@@ -1,5 +1,5 @@
 import { Link } from 'react-router';
-import { ApiError } from '../api/client';
+import { ApiError } from '../api/api-error';
 
 export function QueryError({ error, onRetry, backTo }: {
   error: unknown;

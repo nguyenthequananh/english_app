@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter } from 'react-router';
-import { createQueryClient } from '@/api/query-client';
+import { createQueryClient } from '@/config/query-client';
 import userEvent from '@testing-library/user-event';
 import { Route, Routes } from 'react-router';
 import TodayPage from '@/pages/today-page';
@@ -10,7 +10,7 @@ import ReviewPage from '@/pages/review-page';
 import { renderAt } from '@test/render';
 import { mockApi, problem } from '@test/mock-api';
 import { stubSpeech } from '@test/speech-stub';
-import type { SessionView, Word } from '@/api/types';
+import type { SessionView, Word } from '@/types/api';
 
 const word = (id: number, headword: string): Word => ({
   id, headword, pos: 'noun', ipaUs: null, ipaUk: null, meaningVi: `nghĩa ${headword}`,

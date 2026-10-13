@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { endpoints } from '../api/endpoints';
 import { Flashcard } from '../components/flashcard';
 import { QueryError } from '../components/query-error';
-import type { Grade } from '../api/types';
+import type { Grade } from '../types/api';
 
 export default function ReviewPage() {
   const queryClient = useQueryClient();

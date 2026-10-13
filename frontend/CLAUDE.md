@@ -23,9 +23,11 @@ Phiên bản thư viện mới hơn tên thường gặp (React Router **8**, Vi
 
 **Đặt tên**: file và thư mục trong `src/`, `e2e/` dùng kebab-case (`session-page.tsx`, `query-client.ts`); tên component/hàm trong code giữ PascalCase/camelCase.
 
-**Gọi API**: mọi request qua `src/api/client.ts` (`api.get/post/put/del`, đường dẫn tương đối `/api…`, cookie session `same-origin`). Lỗi được chuẩn hoá thành `ApiError(status, code, message, errors)` đọc từ ProblemDetail của backend; lỗi mạng → `code: 'NETWORK'`. Khi gặp `PROFILE_REQUIRED`, handler đăng ký trong `app.tsx` xoá cache (trừ `profiles`, `health`) và đưa về `/profiles`. Thêm endpoint thì khai trong `src/api/endpoints.ts`, kiểu trong `src/api/types.ts` — trang không gọi `fetch` trực tiếp.
+**Gọi API**: mọi request qua `src/api/client.ts` (`api.get/post/put/del`, đường dẫn tương đối `/api…`, cookie session `same-origin`) — bản thân `client.ts` chỉ là wrapper mỏng gọi instance axios `http` khai ở `src/config/axios.ts`; interceptor chuẩn hoá lỗi nằm ở `src/config/interceptors.ts`. Lỗi được chuẩn hoá thành `ApiError(status, code, message, errors)` (`src/api/api-error.ts`) đọc từ ProblemDetail của backend; lỗi mạng → `code: 'NETWORK'`. Khi gặp `PROFILE_REQUIRED`, handler đăng ký trong `app.tsx` (qua `setProfileRequiredHandler` từ `src/config/interceptors.ts`) xoá cache (trừ `profiles`, `health`) và đưa về `/profiles`. Thêm endpoint thì khai trong `src/api/endpoints.ts`, kiểu trong `src/types/api.ts` — trang không gọi `fetch` trực tiếp.
 
-**TanStack Query** (`src/api/query-client.ts`): không retry, không refetch khi focus. `QueryCache`/`MutationCache` tự hiện toast cho mọi lỗi; đặt `meta: { silent: true }` khi trang tự xử lý lỗi (ví dụ `SessionPage` tự reload khi gặp `CARD_MISMATCH`/`NO_SESSION`/`WRONG_STEP`). Trang có query chính thì hiển thị `<QueryError>` (thông báo + Thử lại + link quay về) thay vì kẹt ở "Đang tải…".
+**TanStack Query** (`src/config/query-client.ts`): không retry, không refetch khi focus. `QueryCache`/`MutationCache` tự hiện toast cho mọi lỗi; đặt `meta: { silent: true }` khi trang tự xử lý lỗi (ví dụ `SessionPage` tự reload khi gặp `CARD_MISMATCH`/`NO_SESSION`/`WRONG_STEP`). Trang có query chính thì hiển thị `<QueryError>` (thông báo + Thử lại + link quay về) thay vì kẹt ở "Đang tải…".
+
+**Cấu trúc**: hạ tầng (axios, interceptor, TanStack Query) ở `src/config/`; kiểu dữ liệu dùng chung ở `src/types/`; `src/api/` chỉ có `ApiError`, wrapper `api.*` và `endpoints`.
 
 **Định tuyến** (`app.tsx`): `/profiles`, `/profiles/new` ở ngoài; mọi trang khác nằm trong `<Layout>` (thanh điều hướng, banner sức khoẻ/giọng đọc, nút tắt app). Trang ở `src/pages/`, thành phần dùng chung ở `src/components/`, nhãn tiếng Việt cho enum backend ở `components/labels.ts`.
 

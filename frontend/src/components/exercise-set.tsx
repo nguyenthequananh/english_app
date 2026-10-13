@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { ExerciseResult, ExerciseView } from '../api/types';
+import type { ExerciseResult, ExerciseView } from '../types/api';
 import { currentSpeechRate, speak } from '../speech/speech';
 import { SpeakButton } from './speak-button';
 

@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { endpoints } from '../api/endpoints';
-import { ApiError } from '../api/client';
-import type { Profile } from '../api/types';
+import { ApiError } from '../api/api-error';
+import type { Profile } from '../types/api';
 import { QueryError } from '../components/query-error';
 
 export default function ProfileSelectPage() {

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { endpoints } from '../api/endpoints';
-import { ApiError } from '../api/client';
+import { ApiError } from '../api/api-error';
 import { ExerciseSet } from '../components/exercise-set';
 
 export default function TestPage({ kind }: { kind: 'UNIT' | 'STAGE' }) {
