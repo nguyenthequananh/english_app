@@ -35,7 +35,7 @@ export function ProgressRing({ value, label, size = 64, children, className }: {
           strokeLinecap="round"
           strokeDasharray={circumference}
           strokeDashoffset={circumference * (1 - pct / 100)}
-          className="transition-[stroke-dashoffset] duration-700 ease-out"
+          className="transition-[stroke-dashoffset] duration-(--duration-progress) ease-out"
         />
       </svg>
       {children !== undefined && <div className="relative flex flex-col items-center justify-center text-center">{children}</div>}

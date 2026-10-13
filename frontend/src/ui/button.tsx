@@ -16,6 +16,8 @@ export const buttonStyles = cva(
         secondary: 'bg-accent-soft text-accent-text active:bg-[color-mix(in_srgb,var(--accent)_22%,transparent)] hover:bg-[color-mix(in_srgb,var(--accent)_20%,transparent)]',
         ghost: 'bg-transparent text-accent-text hover:bg-fill active:bg-fill',
         danger: 'bg-[color-mix(in_srgb,var(--danger)_12%,transparent)] text-danger-text hover:bg-[color-mix(in_srgb,var(--danger)_18%,transparent)] active:bg-[color-mix(in_srgb,var(--danger)_22%,transparent)]',
+        /* Nút xác nhận thao tác phá huỷ (ConfirmDialog): nền đỏ đặc, chữ trắng — đạt AA ở cả sáng lẫn tối. */
+        'danger-solid': 'bg-danger-solid text-on-accent hover:bg-[color-mix(in_oklab,var(--danger-solid)_88%,black)] active:bg-[color-mix(in_oklab,var(--danger-solid)_82%,black)]',
       },
       size: {
         sm: 'min-h-9 px-3.5 text-[0.875rem]',

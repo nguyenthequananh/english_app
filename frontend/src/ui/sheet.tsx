@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useRef, type ReactNode } from 'react';
 import { Dialog } from '@base-ui/react/dialog';
 import { AnimatePresence, motion, MotionConfig, useDragControls, type HTMLMotionProps, type PanInfo } from 'motion/react';
 import { Icon } from './icons';
@@ -8,6 +8,10 @@ import { DESKTOP_QUERY, useMediaQuery } from './use-media-query';
 const SHEET_SPRING = { type: 'spring', bounce: 0.14, duration: 0.42 } as const;
 /* Đóng nhanh hơn mở: hệ thống đáp lại thì phải gọn. */
 const SHEET_EXIT = { type: 'spring', bounce: 0, duration: 0.28 } as const;
+
+const TABBABLE = 'input:not([disabled]), textarea:not([disabled]), select:not([disabled]), button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])';
+/* Chạm vào những phần tử này trong vùng đầu bảng là để bấm, không phải để kéo bảng. */
+const NO_DRAG = 'button, a, input, textarea, select, [role="button"]';
 
 /**
  * Bảng trượt: điện thoại — trượt từ đáy lên (lò xo, kéo thanh nắm xuống để đóng);
@@ -22,6 +26,17 @@ export function Sheet({ open, onOpenChange, title, description, children }: {
 }) {
   const desktop = useMediaQuery(DESKTOP_QUERY);
   const dragControls = useDragControls();
+  const popupRef = useRef<HTMLDivElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
+
+  /*
+   * Focus khi mở: chạm → base-ui focus chính bảng (không bật bàn phím ảo); chuột/bàn phím → ô đầu tiên trong
+   * nội dung, không có thì chính bảng. Không để rơi vào nút Đóng — vừa sai trọng tâm vừa hiện vòng focus thừa.
+   */
+  function initialFocus(type: string) {
+    if (type === 'touch') return true;
+    return bodyRef.current?.querySelector<HTMLElement>(TABBABLE) ?? popupRef.current;
+  }
 
   function onDragEnd(_: unknown, info: PanInfo) {
     // Vuốt nhanh là đủ (theo vận tốc), không bắt kéo quá ngưỡng.
@@ -37,7 +52,8 @@ export function Sheet({ open, onOpenChange, title, description, children }: {
     : {
         initial: { opacity: 1, y: '100%' },
         animate: { opacity: 1, y: 0, transition: SHEET_SPRING },
-        // Có opacity trong exit để base-ui nhận ra hoạt ảnh đóng và chờ nó xong; mờ ở cuối, khi bảng gần khuất.
+        // AnimatePresence giữ Portal (keepMounted) tới khi exit xong. Mờ ở cuối, khi bảng gần khuất, để bóng đổ
+        // phía trên bảng không còn lơ lửng ở mép đáy lúc bảng đã trượt hết xuống.
         exit: { y: '100%', opacity: 0, transition: { y: SHEET_EXIT, opacity: { duration: 0.1, delay: 0.18 } } },
         drag: 'y' as const,
         dragListener: false,
@@ -59,12 +75,17 @@ export function Sheet({ open, onOpenChange, title, description, children }: {
               />
               <Dialog.Viewport className="fixed inset-0 z-50 flex items-end justify-center lg:items-center lg:p-8">
                 <Dialog.Popup
-                  className="flex max-h-[min(88dvh,760px)] w-full flex-col overflow-hidden rounded-t-[28px] bg-surface text-text shadow-[var(--shadow-sheet),inset_0_0_0_1px_var(--card-border)] outline-none lg:max-w-[520px] lg:rounded-[28px]"
+                  ref={popupRef}
+                  initialFocus={initialFocus}
+                  className="flex max-h-[min(88dvh,760px)] w-full max-w-[640px] flex-col overflow-hidden rounded-t-[28px] bg-surface text-text shadow-[var(--shadow-sheet),inset_0_0_0_1px_var(--card-border)] outline-none lg:max-w-[520px] lg:rounded-[28px]"
                   render={<motion.div {...motionProps} />}
                 >
                   <div
                     className="shrink-0 touch-none px-5 pt-2 lg:touch-auto lg:pt-5"
-                    onPointerDown={(e) => { if (!desktop) dragControls.start(e); }}
+                    onPointerDown={(e) => {
+                      if (desktop || (e.target as Element).closest(NO_DRAG)) return;
+                      dragControls.start(e);
+                    }}
                   >
                     <div aria-hidden="true" className="mx-auto mb-2 h-1.5 w-10 rounded-full bg-fill-strong lg:hidden" />
                     <div className="flex items-start gap-3">
@@ -76,15 +97,16 @@ export function Sheet({ open, onOpenChange, title, description, children }: {
                       </div>
                       <Dialog.Close
                         aria-label="Đóng"
-                        className="pressable focus-ring -mr-1.5 inline-flex size-11 shrink-0 items-center justify-center rounded-full text-text-2"
+                        className="pressable group -mr-1.5 inline-flex size-11 shrink-0 items-center justify-center rounded-full text-text-2 outline-none"
                       >
-                        <span className="inline-flex size-8 items-center justify-center rounded-full bg-fill">
+                        {/* Vùng chạm 44px, nhưng vòng focus ôm đúng hình tròn 32px nhìn thấy. */}
+                        <span className="inline-flex size-8 items-center justify-center rounded-full bg-fill group-focus-visible:outline-2 group-focus-visible:outline-offset-2 group-focus-visible:outline-[var(--focus-ring)]">
                           <Icon name="close" size={16} strokeWidth={2.4} />
                         </span>
                       </Dialog.Close>
                     </div>
                   </div>
-                  <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pt-3 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] lg:pb-6">
+                  <div ref={bodyRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pt-3 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] lg:pb-6">
                     {children}
                   </div>
                 </Dialog.Popup>

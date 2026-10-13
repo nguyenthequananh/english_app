@@ -21,11 +21,11 @@ export function Switch({ label, checked, onCheckedChange, disabled, className }:
         onCheckedChange={(v) => onCheckedChange(v)}
         className={cn(
           'focus-ring relative inline-flex h-[31px] w-[51px] shrink-0 items-center rounded-full p-[2px]',
-          'bg-fill-strong transition-colors duration-200 ease-out data-[checked]:bg-accent',
+          'bg-fill-strong transition-colors duration-(--duration-fast) ease-out data-[checked]:bg-accent',
         )}
       >
         <BaseSwitch.Thumb
-          className="block size-[27px] rounded-full bg-[var(--knob)] shadow-[var(--shadow-knob)] transition-transform duration-200 ease-[var(--ease-out)] data-[checked]:translate-x-[20px]"
+          className="block size-[27px] rounded-full bg-[var(--knob)] shadow-[var(--shadow-knob)] transition-transform duration-(--duration-fast) ease-[var(--ease-out)] data-[checked]:translate-x-[20px]"
         />
       </BaseSwitch.Root>
     </label>

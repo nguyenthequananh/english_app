@@ -32,7 +32,7 @@ export function TopBar({ title, subtitle, back, backLabel = 'Quay lại', traili
       data-top-bar=""
       data-scrolled={scrolled ? '' : undefined}
       className={cn(
-        'sticky top-0 z-30 pt-safe transition-[background-color,box-shadow,backdrop-filter] duration-200',
+        'sticky top-0 z-30 pt-safe transition-[background-color,box-shadow] duration-(--duration-fast)',
         scrolled ? 'material shadow-[0_1px_0_var(--separator)]' : 'bg-transparent',
       )}
     >

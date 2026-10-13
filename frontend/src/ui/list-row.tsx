@@ -46,7 +46,7 @@ export function ListRow({ title, subtitle, leading, trailing, to, onClick, chevr
     </>
   );
   const rowClass = 'flex w-full items-center gap-3 pl-4 text-left';
-  const pressClass = 'focus-ring transition-colors duration-150 hover:bg-fill active:bg-fill-strong [outline-offset:-2px]';
+  const pressClass = 'focus-ring transition-colors duration-(--duration-press) hover:bg-fill active:bg-fill-strong [outline-offset:-2px]';
   return (
     <li className="group/row">
       {to ? (

@@ -1,6 +1,6 @@
 /*
  * Token thiết kế — nguồn sự thật duy nhất cho màu, bóng, bán kính, chuyển động.
- * Component không dùng mã màu cứng: dùng biến ở đây hoặc lớp Tailwind sinh từ @theme inline bên dưới.
+ * Component không dùng mã màu cứng: dùng biến ở đây hoặc lớp Tailwind sinh từ @theme / @theme inline bên dưới.
  *
  * Tương phản (WCAG 2.x) đã đo:
  *   sáng: --text 17.7 · --text-2 7.6 · --text-3 5.0 trên --bg-base (≥4.8 trên --surface/--surface-2)
@@ -54,6 +54,7 @@
   --shadow-float: 0 8px 24px rgb(118 86 248 / 0.38);
   --shadow-bar: 0 -1px 0 rgb(60 60 67 / 0.08), 0 -8px 32px rgb(16 24 40 / 0.06);
   --shadow-sheet: 0 -8px 40px rgb(16 24 40 / 0.16);
+  --shadow-toast: 0 10px 30px -10px rgb(16 24 40 / 0.25);
   --card-border: transparent;
   --focus-ring: #7656F8;
   --thumb: #FFFFFF;
@@ -61,21 +62,14 @@
   --shadow-knob: 0 3px 8px rgb(0 0 0 / 0.15), 0 1px 1px rgb(0 0 0 / 0.16);
   --shadow-thumb: 0 1px 3px rgb(16 24 40 / 0.14), 0 1px 1px rgb(16 24 40 / 0.06);
 
-  --radius-card: 22px;
-  --radius-control: 14px;
-  --radius-pill: 9999px;
-
-  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
-  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
-  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
   --duration-press: 140ms;
   --duration-fast: 200ms;
   --duration-base: 300ms;
+  /* Thanh/vòng tiến độ đổi giá trị: chậm hơn UI thường để mắt kịp theo con số mới. */
+  --duration-progress: 600ms;
 
   --tabbar-height: 64px;
   --sidebar-width: 264px;
-
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -121,6 +115,7 @@
     --shadow-float: 0 8px 24px rgb(0 0 0 / 0.5);
     --shadow-bar: 0 -1px 0 rgb(255 255 255 / 0.06);
     --shadow-sheet: 0 -8px 40px rgb(0 0 0 / 0.5);
+    --shadow-toast: 0 10px 30px -10px rgb(0 0 0 / 0.6);
     --card-border: rgb(255 255 255 / 0.06);
     --focus-ring: #B3A3FF;
     --thumb: #3A3F4C;
@@ -145,6 +140,22 @@
   }
 }
 
+/*
+ * Hằng số không đổi giữa sáng/tối: khai một lần ở đây bằng giá trị thật (không qua :root) để vừa sinh lớp
+ * Tailwind (rounded-card, rounded-control, rounded-pill, font-sans, ease-out, ease-in-out) vừa có biến
+ * var(--radius-card)… dùng trực tiếp. `static`: luôn xuất biến kể cả khi chưa lớp nào dùng tới, vì
+ * style inline/JS cũng đọc chúng.
+ */
+@theme static {
+  --radius-card: 22px;
+  --radius-control: 14px;
+  --radius-pill: 9999px;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+/* Màu đổi theo sáng/tối nên trỏ về biến :root (inline: lớp Tailwind dùng thẳng var(--surface)…). */
 @theme inline {
   --color-bg: var(--bg-base);
   --color-surface: var(--surface);
@@ -171,9 +182,4 @@
   --color-danger: var(--danger);
   --color-danger-text: var(--danger-text);
   --color-danger-solid: var(--danger-solid);
-  --radius-card: var(--radius-card);
-  --radius-control: var(--radius-control);
-  --font-sans: var(--font-sans);
-  --ease-out: var(--ease-out);
-  --ease-in-out: var(--ease-in-out);
 }

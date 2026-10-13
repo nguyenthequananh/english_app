@@ -66,7 +66,6 @@
     -moz-osx-font-smoothing: grayscale;
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
-    overscroll-behavior: none;
     text-rendering: optimizeLegibility;
   }
 
@@ -76,6 +75,11 @@
     color: var(--text);
     font-family: var(--font-sans);
     -webkit-tap-highlight-color: transparent;
+    /*
+     * Chặn kéo-để-tải-lại (Android Chrome/iOS Safari) — lỡ tay kéo giữa buổi học là mất bài đang làm.
+     * `contain` chứ không `none`: vẫn giữ độ nảy cao su của iOS và vệt sáng khi chạm mép.
+     */
+    overscroll-behavior-y: contain;
   }
 
   /*
@@ -139,6 +143,15 @@
     .pressable:active {
       transform: none !important;
       opacity: 0.7;
+    }
+    /* Chỉ báo đang tải vẫn phải chạy — đứng im thì trông như treo. Quay chậm, nhịp mờ chậm. */
+    .animate-spin {
+      animation-duration: 1.2s !important;
+      animation-iteration-count: infinite !important;
+    }
+    .animate-pulse {
+      animation-duration: 2s !important;
+      animation-iteration-count: infinite !important;
     }
   }
 }
@@ -218,7 +231,7 @@
   [data-sonner-toast].app-toast {
     -webkit-backdrop-filter: blur(24px) saturate(180%);
     backdrop-filter: blur(24px) saturate(180%);
-    box-shadow: 0 10px 30px -10px rgb(16 24 40 / 0.25), inset 0 0 0 1px var(--card-border);
+    box-shadow: var(--shadow-toast), inset 0 0 0 1px var(--card-border);
     font-family: var(--font-sans);
     padding: 14px 16px;
   }

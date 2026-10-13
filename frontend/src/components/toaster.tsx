@@ -33,6 +33,7 @@ export function Toaster() {
   return (
     <SonnerToaster
       theme="system"
+      containerAriaLabel="Thông báo"
       position={desktop ? 'bottom-right' : 'top-center'}
       duration={6000}
       gap={10}

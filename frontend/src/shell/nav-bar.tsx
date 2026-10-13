@@ -22,9 +22,9 @@ function NavItem({ to, label, icon }: { to: string; label: string; icon: IconNam
       end={to === '/'}
       className={[
         'pressable focus-ring group relative flex h-full flex-col items-center justify-center gap-[3px] rounded-2xl',
-        'text-text-2 aria-[current=page]:text-text',
+        'text-text-2 aria-[current=page]:text-accent-text',
         'lg:h-11 lg:flex-row lg:justify-start lg:gap-3 lg:rounded-xl lg:px-3',
-        'lg:hover:bg-fill lg:aria-[current=page]:text-accent-text lg:aria-[current=page]:hover:bg-transparent',
+        'lg:hover:bg-fill lg:aria-[current=page]:hover:bg-transparent',
       ].join(' ')}
     >
       {({ isActive }) => (
@@ -34,7 +34,7 @@ function NavItem({ to, label, icon }: { to: string; label: string; icon: IconNam
               layoutId="nav-active-indicator"
               aria-hidden="true"
               transition={INDICATOR_SPRING}
-              className="absolute inset-x-1 inset-y-1.5 rounded-2xl bg-fill lg:inset-0 lg:rounded-xl lg:bg-accent-soft"
+              className="absolute inset-x-1 inset-y-1.5 rounded-2xl bg-accent-soft lg:inset-0 lg:rounded-xl"
             />
           )}
           <Icon name={icon} filled={isActive} size={24} strokeWidth={isActive ? 2.1 : 1.85} className="relative lg:size-[22px]" />
@@ -75,6 +75,10 @@ function ProfileCard() {
  * MỘT phần tử <nav> cho mọi kích thước: <lg là tab bar kính mờ dính đáy (4 mục + nút tròn giữa),
  * ≥lg là sidebar kính mờ bên trái (nút chính ở đầu, thẻ hồ sơ + "Đổi hồ sơ" ở cuối).
  * Không render hai bộ link song song — phần chỉ có ở sidebar được ẩn bằng CSS dưới lg.
+ *
+ * Nút chính đứng TRƯỚC danh sách trong DOM để thứ tự Tab khớp thứ tự nhìn của sidebar (không dùng `order`).
+ * Ở tab bar nó được đặt tuyệt đối vào giữa thanh; danh sách chừa trống cột 3 (mục thứ ba bắt đầu ở cột 4)
+ * nên không cần ô giả trong danh sách.
  */
 export function NavBar() {
   const [first, second, ...rest] = NAV_ITEMS;
@@ -95,13 +99,15 @@ export function NavBar() {
           </span>
           <span className="text-[1.0625rem] font-bold tracking-[-0.01em] text-text">IELTS App</span>
         </div>
+        <div className="absolute top-0 left-1/2 z-10 -translate-x-1/2 lg:static lg:mb-5 lg:translate-x-0">
+          <CenterAction />
+        </div>
         <ul className="mx-auto grid h-[var(--tabbar-height)] max-w-[560px] grid-cols-5 px-1.5 lg:mx-0 lg:flex lg:h-auto lg:max-w-none lg:flex-col lg:gap-1 lg:px-0">
           <li><NavItem {...first} /></li>
           <li><NavItem {...second} /></li>
-          <li className="flex justify-center lg:order-first lg:mb-5 lg:block">
-            <CenterAction />
-          </li>
-          {rest.map((item) => <li key={item.to}><NavItem {...item} /></li>)}
+          {rest.map((item, i) => (
+            <li key={item.to} className={i === 0 ? 'col-start-4' : undefined}><NavItem {...item} /></li>
+          ))}
         </ul>
         <ProfileCard />
       </nav>

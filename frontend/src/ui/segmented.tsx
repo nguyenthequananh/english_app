@@ -37,7 +37,7 @@ export function Segmented<T extends string>({ label, value, onChange, options, c
               value={o.value}
               className={cn(
                 'focus-ring relative flex min-h-9 flex-1 cursor-pointer items-center justify-center rounded-full px-3',
-                'text-[0.875rem] font-semibold transition-colors duration-150',
+                'text-[0.875rem] font-semibold transition-colors duration-(--duration-press)',
                 selected ? 'text-text' : 'text-text-2 hover:text-text',
               )}
             >

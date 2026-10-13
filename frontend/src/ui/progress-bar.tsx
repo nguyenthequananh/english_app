@@ -30,7 +30,7 @@ export function ProgressBar({ value, label, color = 'accent', showValue = false,
         className="relative h-2 flex-1 overflow-hidden rounded-full bg-fill"
       >
         <div
-          className="absolute inset-0 rounded-full bg-[var(--tone)] transition-transform duration-500 ease-out"
+          className="absolute inset-0 rounded-full bg-[var(--tone)] transition-transform duration-(--duration-progress) ease-out"
           style={{ transform: `translateX(${pct - 100}%)` }}
         />
       </div>
