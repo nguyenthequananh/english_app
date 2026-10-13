@@ -137,7 +137,7 @@ function UnitRow({ unit, order }: { unit: UnitView; order: number }) {
         aria-expanded={open}
         aria-controls={panelId}
         onClick={() => setOpen((o) => !o)}
-        className="focus-ring flex w-full items-center gap-3 pl-4 text-left transition-colors duration-150 [outline-offset:-2px] hover:bg-fill active:bg-fill-strong"
+        className="focus-ring flex w-full items-center gap-3 pl-4 text-left transition-colors duration-(--duration-press) [outline-offset:-2px] hover:bg-fill active:bg-fill-strong"
       >
         <UnitNumber order={order} status={unit.status} />
         <span className={cn('flex min-h-[3.75rem] min-w-0 flex-1 items-center gap-3 py-2.5 pr-4', ROW_DIVIDER)}>
@@ -155,7 +155,7 @@ function UnitRow({ unit, order }: { unit: UnitView; order: number }) {
             </span>
           )}
           <Icon name="chevron-right" size={16} strokeWidth={2.4}
-            className={cn('text-text-3 opacity-70 transition-transform duration-200 ease-out', open && 'rotate-90')} />
+            className={cn('text-text-3 opacity-70 transition-transform duration-(--duration-fast) ease-out', open && 'rotate-90')} />
         </span>
       </button>
       <AnimatePresence initial={false}>

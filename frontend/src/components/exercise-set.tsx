@@ -165,7 +165,7 @@ function OptionChoice({ name, option, selected, disabled, result, onSelect }: {
       <span
         aria-hidden="true"
         className={cn(
-          'inline-flex size-6 shrink-0 items-center justify-center rounded-full border-2 transition-colors duration-150',
+          'inline-flex size-6 shrink-0 items-center justify-center rounded-full border-2 transition-colors duration-(--duration-press)',
           tone ? 'border-[var(--tone)] bg-[var(--tone)] text-surface'
             : selected ? 'border-accent bg-accent text-on-accent' : 'border-text-3/45',
         )}

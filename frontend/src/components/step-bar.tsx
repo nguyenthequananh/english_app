@@ -45,7 +45,7 @@ export function StepBar({ step, reviewsLeft, newLeft }: { step: SessionStep; rev
                 )}
               >
                 <div
-                  className="absolute inset-0 rounded-full bg-accent transition-transform duration-500 ease-out"
+                  className="absolute inset-0 rounded-full bg-accent transition-transform duration-(--duration-progress) ease-out"
                   style={{ transform: `translateX(${(fill - 1) * 100}%)` }}
                 />
               </div>

@@ -19,7 +19,7 @@ export function IconChip({ icon, tone = 'accent' }: { icon: IconName; tone?: 'ac
 }
 
 const rowClass = 'flex w-full items-center gap-3 pl-4 text-left';
-const pressClass = 'focus-ring transition-colors duration-150 hover:bg-fill active:bg-fill-strong [outline-offset:-2px]';
+const pressClass = 'focus-ring transition-colors duration-(--duration-press) hover:bg-fill active:bg-fill-strong [outline-offset:-2px]';
 
 function RowInner({ title, subtitle, leading, trailing }: { title: ReactNode; subtitle?: ReactNode; leading?: ReactNode; trailing?: ReactNode }) {
   return (

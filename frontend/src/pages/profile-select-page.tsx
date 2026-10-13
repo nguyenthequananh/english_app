@@ -37,7 +37,7 @@ function ProfileTile({ profile, busy, disabled, onPick }: { profile: Profile; bu
         aria-hidden="true"
         className={cn(
           avatarCircle,
-          'bg-surface card-edge transition-shadow duration-200',
+          'bg-surface card-edge transition-shadow duration-(--duration-fast)',
           'group-hover:shadow-[var(--shadow-card),0_0_0_3px_var(--accent)] group-focus-visible:shadow-[var(--shadow-card),0_0_0_3px_var(--accent)]',
         )}
       >

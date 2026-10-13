@@ -181,7 +181,7 @@ export default function WordBankPage() {
           <p className="mb-2 px-1 text-[0.8125rem] tabular-nums text-text-3" aria-live="polite">
             {data.length >= RESULT_LIMIT ? `Hiện ${RESULT_LIMIT} từ đầu tiên — gõ để tìm chính xác hơn` : `${data.length} từ`}
           </p>
-          <div className={`transition-opacity duration-200 ${wordsQuery.isPlaceholderData ? 'opacity-55' : ''}`}>
+          <div className={`transition-opacity duration-(--duration-fast) ${wordsQuery.isPlaceholderData ? 'opacity-55' : ''}`}>
             <WordTable items={data} />
           </div>
         </>

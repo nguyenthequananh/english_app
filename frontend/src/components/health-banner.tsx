@@ -18,7 +18,7 @@ export function HealthBanner() {
   }
   if (!message) return null;
   return (
-    <div role="alert" className="tone-grammar mt-4 flex items-start gap-3 rounded-card bg-surface p-4 card-edge">
+    <div role="alert" className="tone-accent mt-4 flex items-start gap-3 rounded-card bg-surface p-4 card-edge">
       <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--tone-soft)] text-[var(--tone-text)]">
         <Icon name="download" size={18} strokeWidth={2.1} />
       </span>

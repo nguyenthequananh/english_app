@@ -53,7 +53,7 @@ export default function IpaPage() {
                       name="speaker"
                       size={13}
                       strokeWidth={2.2}
-                      className={cn('absolute top-2 right-2 transition-colors duration-150', active ? 'text-[var(--tone-text)]' : 'text-text-3 opacity-50')}
+                      className={cn('absolute top-2 right-2 transition-colors duration-(--duration-press)', active ? 'text-[var(--tone-text)]' : 'text-text-3 opacity-50')}
                     />
                     <span className={cn('text-[1.625rem] leading-none font-semibold tracking-[-0.01em] sm:text-[1.75rem]', active ? 'text-[var(--tone-text)]' : 'text-text')}>
                       {s.symbol}
