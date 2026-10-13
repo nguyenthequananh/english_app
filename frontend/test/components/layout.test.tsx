@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react';
 import { Route, Routes } from 'react-router';
 import Layout from '@/components/layout';
 import { renderAt } from '@test/render';
-import { mockApi, problem } from '@test/mock-api';
+import { mockApi, mockNetworkDown, problem } from '@test/mock-api';
 import { stubSpeech } from '@test/speech-stub';
 
 const profile = { id: 1, name: 'Lan', avatar: '🦊', hasPin: false, dailyMinutes: 30, voice: null, speechRate: 1 };
@@ -56,7 +56,7 @@ test('máy không có giọng tiếng Anh thì hiện hướng dẫn cài giọn
 
 test('lỗi mạng thì hiện màn lỗi có nút thử lại', async () => {
   stubSpeech();
-  vi.stubGlobal('fetch', vi.fn(async () => { throw new TypeError('Failed to fetch'); }));
+  mockNetworkDown();
   renderLayout();
   expect(await screen.findByRole('button', { name: 'Thử lại' })).toBeInTheDocument();
 });

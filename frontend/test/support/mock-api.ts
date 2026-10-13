@@ -1,29 +1,56 @@
-import { vi } from 'vitest';
+import { AxiosError, AxiosHeaders, type AxiosAdapter, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
+import { http } from '@/api/client';
 
 export interface MockReply { status?: number; body?: unknown }
 export type MockHandler = (body: unknown) => MockReply;
 export interface MockCall { method: string; path: string; body: unknown }
 
-/** Giả lập fetch: khoá "METHOD /path?query" (không có tiền tố /api). Không có handler → 404 JSON. */
+const realAdapter = http.defaults.adapter;
+
+function install(adapter: AxiosAdapter) {
+  http.defaults.adapter = adapter;
+}
+
+/** Trả adapter thật cho instance axios (gọi trong afterEach của setup.ts). */
+export function resetApiMock() {
+  http.defaults.adapter = realAdapter;
+}
+
+function respond(config: InternalAxiosRequestConfig, status: number, body: unknown): AxiosResponse {
+  const response: AxiosResponse = {
+    data: body === undefined ? '' : body,
+    status,
+    statusText: String(status),
+    headers: new AxiosHeaders({ 'content-type': 'application/json' }),
+    config,
+  };
+  if (status >= 200 && status < 300) return response;
+  throw new AxiosError(`Request failed with status code ${status}`, AxiosError.ERR_BAD_RESPONSE, config, null, response);
+}
+
+/** Giả backend: khoá "METHOD /path?query" (không có tiền tố /api). Không có handler → 404 ProblemDetail. */
 export function mockApi(handlers: Record<string, MockHandler>): MockCall[] {
   const calls: MockCall[] = [];
-  vi.stubGlobal('fetch', vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
-    const url = typeof input === 'string' ? input : input.toString();
-    const method = init?.method ?? 'GET';
-    const path = url.replace(/^\/api/, '');
-    const body = typeof init?.body === 'string' ? JSON.parse(init.body) : init?.body;
+  install(async (config) => {
+    const method = (config.method ?? 'get').toUpperCase();
+    const path = config.url ?? '';
+    const body = typeof config.data === 'string' ? JSON.parse(config.data) : config.data;
     calls.push({ method, path, body });
     const handler = handlers[`${method} ${path}`];
     if (!handler) {
-      return new Response(JSON.stringify({ status: 404, code: 'NOT_FOUND', detail: `Không có mock cho ${method} ${path}` }),
-        { status: 404, headers: { 'Content-Type': 'application/problem+json' } });
+      return respond(config, 404, { status: 404, code: 'NOT_FOUND', detail: `Không có mock cho ${method} ${path}` });
     }
     const reply = handler(body);
-    const status = reply.status ?? 200;
-    return new Response(reply.body === undefined ? null : JSON.stringify(reply.body),
-      { status, headers: { 'Content-Type': 'application/json' } });
-  }));
+    return respond(config, reply.status ?? 200, reply.body);
+  });
   return calls;
+}
+
+/** Giả mất kết nối: mọi request lỗi mạng (không có response). */
+export function mockNetworkDown() {
+  install(async (config) => {
+    throw new AxiosError('Network Error', AxiosError.ERR_NETWORK, config);
+  });
 }
 
 export function problem(status: number, code: string, detail: string): MockReply {
