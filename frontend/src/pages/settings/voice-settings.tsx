@@ -1,11 +1,10 @@
 import { useId, useState, type CSSProperties } from 'react';
 import type { Profile } from '../../types/api';
 import { speak, useEnglishVoices } from '../../speech/speech';
-import { ListGroup } from '../../components/ui/list-row';
+import { GroupItem, ListGroup } from '../../components/ui/list-row';
 import { Select } from '../../components/ui/select';
 import { Button } from '../../components/ui/button';
 import { Icon } from '../../components/ui/icons';
-import { GroupItem } from './settings-rows';
 import { useSaveProfile } from './use-save-profile';
 
 const SAMPLE = 'Hello, welcome to your English lesson.';

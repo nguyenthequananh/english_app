@@ -12,6 +12,7 @@ import { Icon } from '../components/ui/icons';
 import { ListGroup, ListRow } from '../components/ui/list-row';
 import { PageHeader } from '../components/ui/page-header';
 import { ProgressBar } from '../components/ui/progress-bar';
+import { Eyebrow } from '../components/ui/section-heading';
 import { Skeleton } from '../components/ui/skeleton';
 import { SKILL_META, toneClass } from '../components/ui/skill';
 import { cn } from '../components/ui/cn';
@@ -65,7 +66,7 @@ function StageSection({ stage }: { stage: StageView }) {
     <section aria-labelledby={headingId} className="space-y-2.5">
       <div className="flex items-end gap-3 px-1">
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold uppercase tracking-[0.04em] text-text-3">Chặng {stage.code}</p>
+          <Eyebrow>Chặng {stage.code}</Eyebrow>
           <h2 id={headingId} className="mt-0.5 text-2xl font-bold text-balance text-text">
             {stage.title}
           </h2>

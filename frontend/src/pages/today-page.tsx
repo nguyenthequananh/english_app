@@ -10,6 +10,7 @@ import { Card } from '../components/ui/card';
 import { Icon, type IconName } from '../components/ui/icons';
 import { PageHeader } from '../components/ui/page-header';
 import { ProgressBar } from '../components/ui/progress-bar';
+import { Eyebrow, SectionTitle } from '../components/ui/section-heading';
 import { SkillTile } from '../components/ui/skill-tile';
 import { Skeleton } from '../components/ui/skeleton';
 import { StatTile } from '../components/ui/stat-tile';
@@ -17,10 +18,6 @@ import { SESSION_KEY } from './session-page';
 
 /** Số lớn có dấu chấm ngăn cách hàng nghìn (12.345), như màn Tiến độ. */
 const num = new Intl.NumberFormat('vi-VN');
-
-function Eyebrow({ children }: { children: string }) {
-  return <p className="text-sm font-semibold uppercase tracking-[0.04em] text-text-3">{children}</p>;
-}
 
 /**
  * Buổi học hôm nay đang dở, đọc từ cache của màn Buổi học — không gọi API vì GET /session/today sẽ tạo buổi học.
@@ -181,7 +178,7 @@ function UnitCard({ unit }: { unit: Summary['currentUnit'] }) {
 function Practice() {
   return (
     <section aria-labelledby="today-practice" className="space-y-3">
-      <h2 id="today-practice" className="text-2xl font-bold text-text">Luyện tập</h2>
+      <SectionTitle id="today-practice">Luyện tập</SectionTitle>
       <div className="grid grid-cols-4 gap-2.5 sm:gap-3 lg:grid-cols-2">
         {/* Màu kỹ năng chỉ cho đích thuộc loại bài (ôn thẻ → từ vựng, IPA → phát âm); Kho từ, Lộ trình là tiện ích → trung tính. */}
         <SkillTile to="/review" label="Ôn thẻ" icon="cards" tone="VOCAB" />

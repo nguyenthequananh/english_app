@@ -2,8 +2,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { downloads, endpoints } from '../../api/endpoints';
 import { ApiError } from '../../api/api-error';
 import { notifyError, toast } from '../../components/toaster';
-import { ListGroup } from '../../components/ui/list-row';
-import { DownloadRow, FileRow, IconChip } from './settings-rows';
+import { DownloadRow, FileRow, ListGroup } from '../../components/ui/list-row';
+import { IconChip } from '../../components/ui/icon-chip';
 
 /** Nhóm "Chuyển hồ sơ": xuất hồ sơ hiện tại ra JSON, nhập hồ sơ từ file. */
 export function TransferSettings() {

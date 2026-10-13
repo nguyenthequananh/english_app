@@ -11,7 +11,7 @@ import { Sheet } from '../../components/ui/sheet';
 import { ConfirmDialog } from '../../components/ui/dialog';
 import { TextField } from '../../components/ui/text-field';
 import { Switch } from '../../components/ui/switch';
-import { IconChip } from './settings-rows';
+import { IconChip } from '../../components/ui/icon-chip';
 import { useSaveProfile } from './use-save-profile';
 
 /** Thẻ đầu trang Cá nhân: avatar lớn, tên, số phút/ngày + "Đổi hồ sơ". */

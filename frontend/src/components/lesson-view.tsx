@@ -6,6 +6,7 @@ import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { Icon } from './ui/icons';
 import { ProgressRing } from './ui/progress-ring';
+import { SectionTitle } from './ui/section-heading';
 import { Skeleton } from './ui/skeleton';
 import { SKILL_META } from './ui/skill';
 import { ExerciseSet } from './exercise-set';
@@ -76,10 +77,10 @@ export function LessonView({ code, onDone, doneLabel = 'Xong', showTitle = true 
 
       {!noExercises && (
         <section className="space-y-3" aria-labelledby={`${code}-exercises`}>
-          <div className="flex items-baseline justify-between px-1 pt-2">
-            <h2 id={`${code}-exercises`} className="text-2xl font-bold text-text">Bài tập</h2>
-            <span className="text-md text-text-3 tabular-nums">{lesson.exercises.length} câu</span>
-          </div>
+          <SectionTitle id={`${code}-exercises`} className="px-1 pt-2"
+            aside={<span className="text-md text-text-3 tabular-nums">{lesson.exercises.length} câu</span>}>
+            Bài tập
+          </SectionTitle>
           <ExerciseSet exercises={lesson.exercises} results={result?.results} submitting={submit.isPending}
             onSubmit={(answers) => submit.mutate(answers)} />
         </section>

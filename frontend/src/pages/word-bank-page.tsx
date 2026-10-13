@@ -10,6 +10,7 @@ import { PageHeader } from '../components/ui/page-header';
 import { Button } from '../components/ui/button';
 import { TextField } from '../components/ui/text-field';
 import { Segmented } from '../components/ui/segmented';
+import { Eyebrow } from '../components/ui/section-heading';
 import { Sheet } from '../components/ui/sheet';
 import { Badge } from '../components/ui/badge';
 import { EmptyState } from '../components/ui/empty-state';
@@ -235,7 +236,7 @@ function AddWordForm({ onDone }: { onDone: () => void }) {
       </div>
       <TextField label="Nghĩa tiếng Việt" required {...bind('meaningVi')} />
       <fieldset className="space-y-4 border-t border-separator pt-4">
-        <legend className="float-left mb-1 w-full px-1 text-sm font-semibold uppercase tracking-[0.04em] text-text-3">Không bắt buộc</legend>
+        <Eyebrow as="legend" className="float-left mb-1 w-full px-1">Không bắt buộc</Eyebrow>
         <TextField label="IPA" autoCapitalize="none" spellCheck={false} placeholder="VD: /bʊk/" {...bind('ipaUs')} />
         <TextField label="Câu ví dụ" autoCapitalize="sentences" {...bind('exampleEn')} />
         <TextField label="Nghĩa câu ví dụ" {...bind('exampleVi')} />

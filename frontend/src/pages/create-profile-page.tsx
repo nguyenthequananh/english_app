@@ -1,4 +1,4 @@
-import { useRef, useState, type FormEvent, type ReactNode } from 'react';
+import { useRef, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { endpoints } from '../api/endpoints';
@@ -6,20 +6,10 @@ import { AvatarPicker, AVATARS } from '../components/avatar-picker';
 import type { Profile } from '../types/api';
 import { useEnglishVoices } from '../speech/speech';
 import { Button } from '../components/ui/button';
+import { FormGroup } from '../components/ui/form-group';
 import { IconLink } from '../components/ui/icon-button';
 import { TextField } from '../components/ui/text-field';
 import { Select } from '../components/ui/select';
-
-/** Nhóm form kiểu iOS grouped: tiêu đề nhỏ phía trên, thẻ trắng chứa các ô. */
-function FormGroup({ title, footer, children }: { title?: string; footer?: string; children: ReactNode }) {
-  return (
-    <section className="space-y-1.5">
-      {title && <h2 className="px-4 text-sm font-semibold uppercase tracking-[0.04em] text-text-3">{title}</h2>}
-      <div className="space-y-4 rounded-card bg-surface p-4 card-edge sm:p-5">{children}</div>
-      {footer && <p className="px-4 text-sm text-text-3">{footer}</p>}
-    </section>
-  );
-}
 
 export default function CreateProfilePage() {
   const navigate = useNavigate();

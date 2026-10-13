@@ -10,6 +10,7 @@ import { Button, ButtonLink } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Icon } from '../components/ui/icons';
 import { ProgressRing } from '../components/ui/progress-ring';
+import { Eyebrow } from '../components/ui/section-heading';
 import { Skeleton } from '../components/ui/skeleton';
 import { TopBar } from '../components/ui/top-bar';
 
@@ -124,7 +125,7 @@ function ResultCard({ kind, test, result, onRetry }: {
       </p>
       {!result.passed && result.weakUnits.length > 0 && (
         <div className="mt-4 w-full rounded-control bg-surface-2 px-4 py-3 text-left">
-          <p className="text-sm font-semibold uppercase tracking-[0.04em] text-text-3">Nên ôn lại</p>
+          <Eyebrow>Nên ôn lại</Eyebrow>
           <ul className="mt-2 flex flex-wrap gap-1.5">
             {result.weakUnits.map((u) => (
               <li key={u}><Badge tone="warning">{u}</Badge></li>

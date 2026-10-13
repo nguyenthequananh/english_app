@@ -1,4 +1,3 @@
-import type { ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { endpoints } from '../api/endpoints';
 import type { Roadmap, Stats, Summary } from '../types/api';
@@ -14,6 +13,7 @@ import { ListGroup, ListRow } from '../components/ui/list-row';
 import { Badge } from '../components/ui/badge';
 import { EmptyState } from '../components/ui/empty-state';
 import { Skeleton } from '../components/ui/skeleton';
+import { SectionTitle } from '../components/ui/section-heading';
 import { Icon } from '../components/ui/icons';
 
 const num = new Intl.NumberFormat('vi-VN');
@@ -100,15 +100,6 @@ function OverviewCard({ roadmap, summary }: { roadmap: Roadmap | undefined; summ
   );
 }
 
-function SectionTitle({ id, children, aside }: { id: string; children: string; aside?: ReactNode }) {
-  return (
-    <div className="mb-3 flex items-baseline justify-between gap-3">
-      <h2 id={id} className="text-2xl font-bold text-text">{children}</h2>
-      {aside}
-    </div>
-  );
-}
-
 function StatsSkeleton() {
   return (
     <div className="space-y-4" aria-busy="true">
@@ -145,14 +136,14 @@ export default function StatsPage() {
               <StatTile icon="star" value={num.format(s.heatmap.length)} label="Buổi đã xong" />
             </div>
             <Card as="section" aria-labelledby="stats-heatmap">
-              <SectionTitle id="stats-heatmap" aside={<span className="text-sm text-text-3">26 tuần gần nhất</span>}>Lịch học</SectionTitle>
+              <SectionTitle id="stats-heatmap" className="mb-3" aside={<span className="text-sm text-text-3">26 tuần gần nhất</span>}>Lịch học</SectionTitle>
               <Heatmap days={s.heatmap} />
             </Card>
           </div>
 
           <div className="min-w-0 space-y-4 lg:space-y-5">
             <Card as="section" aria-labelledby="stats-known">
-              <SectionTitle id="stats-known">Từ vựng</SectionTitle>
+              <SectionTitle id="stats-known" className="mb-3">Từ vựng</SectionTitle>
               <div className="mb-4 flex gap-6">
                 <div>
                   <p className="text-4xl font-bold leading-none tabular-nums text-text">

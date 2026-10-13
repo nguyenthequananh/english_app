@@ -3,6 +3,7 @@ import { IPA_GROUPS } from '../ipa/ipa-data';
 import { speak } from '../speech/speech';
 import { Icon } from '../components/ui/icons';
 import { PageHeader } from '../components/ui/page-header';
+import { SectionTitle } from '../components/ui/section-heading';
 import { cn } from '../components/ui/cn';
 
 /** Ô vừa bấm sáng lên trong khoảng này — đủ để thấy máy đã nghe, không chờ giọng đọc xong. */
@@ -30,10 +31,9 @@ export default function IpaPage() {
       <div className="space-y-7">
         {IPA_GROUPS.map((group) => (
           <section key={group.title} aria-label={group.title} className="space-y-2.5">
-            <div className="flex items-baseline justify-between px-1">
-              <h2 className="text-2xl font-bold text-text">{group.title}</h2>
-              <span className="text-sm tabular-nums text-text-3">{group.sounds.length} âm</span>
-            </div>
+            <SectionTitle className="px-1" aside={<span className="text-sm tabular-nums text-text-3">{group.sounds.length} âm</span>}>
+              {group.title}
+            </SectionTitle>
             <div className="grid grid-cols-4 gap-2 sm:gap-2.5 lg:grid-cols-8">
               {group.sounds.map((s) => {
                 const active = playing === s.symbol;

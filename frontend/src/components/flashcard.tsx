@@ -3,6 +3,7 @@ import { motion, useReducedMotion } from 'motion/react';
 import type { Grade, Word } from '../types/api';
 import { Button } from './ui/button';
 import { cn } from './ui/cn';
+import { Kbd } from './ui/kbd';
 import { FADE, FADE_NEXT_CARD, SPRING } from './ui/motion';
 import { SpeakButton } from './speak-button';
 
@@ -13,17 +14,6 @@ const GRADES: { grade: Grade; label: string; tone: string; key: string }[] = [
   { grade: 'EASY', label: 'Dễ', tone: 'tone-success', key: '4' },
 ];
 
-
-function Kbd({ children }: { children: ReactNode }) {
-  return (
-    <kbd
-      aria-hidden="true"
-      className="hidden min-w-5 items-center justify-center rounded-md bg-[color-mix(in_srgb,currentColor_14%,transparent)] px-1.5 font-sans text-xs font-semibold leading-5 lg:inline-flex"
-    >
-      {children}
-    </kbd>
-  );
-}
 
 /** Cỡ chữ của từ ở mặt trước theo độ dài, để từ dài (internationalization) vẫn nằm trên một dòng ở 390px. */
 function headwordSize(text: string) {
