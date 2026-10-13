@@ -4,7 +4,7 @@
 
 **Goal:** Làm lại toàn bộ giao diện `frontend/` theo spec `docs/superpowers/specs/2026-10-13-frontend-redesign-apple-design.md`: mobile-first, sáng/tối theo hệ thống, axios + `createBrowserRouter` + TanStack Query, file kebab-case.
 
-**Architecture:** Bốn task nền chạy tuần tự (đổi tên → axios → router + khung app → token + thành phần UI), sau đó ba task làm màn chạy song song trên các nhóm file rời nhau, rồi cập nhật E2E và review. Logic dữ liệu (`endpoints`, `types`, `speech`, `dates`) không đổi; chỉ đổi tầng gọi HTTP, định tuyến và trình bày.
+**Architecture:** Các task nền chạy tuần tự (đổi tên → tách test ra `test/` → axios → router + khung app → token + thành phần UI), sau đó ba task làm màn chạy song song trên các nhóm file rời nhau, rồi cập nhật E2E và review. Logic dữ liệu (`endpoints`, `types`, `speech`, `dates`) không đổi; chỉ đổi tầng gọi HTTP, định tuyến và trình bày.
 
 **Tech Stack:** React 19, React Router 8 (`createBrowserRouter`), TanStack Query 5, axios 1.20, Tailwind 4, motion 14, sonner 2, @base-ui/react 1.9, clsx, class-variance-authority, Vitest 5 + Testing Library, Playwright.
 
@@ -43,10 +43,12 @@ frontend/src/
     route-error.tsx             errorElement
   components/                   (đổi tên kebab-case) flashcard, exercise-set, lesson-view, heatmap…
   pages/                        (đổi tên kebab-case) today-page, session-page…
-  test/
+frontend/test/                  ngang hàng src/, cùng cấu trúc thư mục; import code bằng @/…
+  support/
     mock-api.ts                 mockApi/problem/mockNetworkDown/resetApiMock (qua adapter axios)
     render.tsx                  renderAt (MemoryRouter) + renderRoute (createMemoryRouter + routes)
     setup.ts, speech-stub.ts
+  app.test.tsx router.test.tsx api/ components/ pages/ shell/ ui/ speech/
 ```
 
 ---
@@ -170,6 +172,132 @@ git commit -m "refactor(frontend): đổi tên file sang kebab-case
 
 Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>"
 ```
+
+---
+
+### Task 1b: Tách test ra thư mục `frontend/test/` ngang hàng `src/`
+
+**Mục tiêu:** `src/` chỉ còn code chạy thật. Mọi `*.test.ts(x)` chuyển sang `frontend/test/` theo đúng cấu trúc thư mục của `src/`; helper test (`src/test/*`) chuyển sang `frontend/test/support/`. Test import code bằng alias `@/` (→ `src/`), import helper bằng `@test/` (→ `test/support/`).
+
+**Files:**
+- Modify: `frontend/vite.config.ts`, `frontend/tsconfig.json`, `frontend/CLAUDE.md`
+- Move: mọi `frontend/src/**/*.test.ts(x)` → `frontend/test/**` (giữ thư mục con); `frontend/src/test/{mock-api,render,setup,speech-stub}.*` → `frontend/test/support/`
+- Modify: import trong mọi file đã chuyển
+
+Bảng chuyển (sau Task 1):
+
+```
+src/app.test.tsx                       → test/app.test.tsx
+src/engines.test.ts                    → test/engines.test.ts
+src/api/client.test.ts                 → test/api/client.test.ts
+src/components/*.test.tsx              → test/components/*.test.tsx
+src/pages/*.test.tsx                   → test/pages/*.test.tsx
+src/speech/speech.test.ts              → test/speech/speech.test.ts
+src/test/mock-api.ts                   → test/support/mock-api.ts
+src/test/render.tsx                    → test/support/render.tsx
+src/test/setup.ts                      → test/support/setup.ts
+src/test/speech-stub.ts                → test/support/speech-stub.ts
+```
+
+- [ ] **Step 1: Mốc xanh**
+
+Run (trong `frontend/`): `npm test 2>&1 | tail -5` — ghi lại số file test và số test.
+
+- [ ] **Step 2: Alias và cấu hình**
+
+`vite.config.ts` — thêm alias và trỏ vitest sang thư mục mới:
+
+```ts
+/// <reference types="vitest/config" />
+import { fileURLToPath } from 'node:url';
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
+
+export default defineConfig({
+  plugins: [react(), tailwindcss()],
+  resolve: {
+    alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+      '@test': fileURLToPath(new URL('./test/support', import.meta.url)),
+    },
+  },
+  server: {
+    port: 5173,
+    proxy: { '/api': 'http://127.0.0.1:8765' },
+  },
+  build: { outDir: 'dist', emptyOutDir: true },
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: ['./test/support/setup.ts'],
+    include: ['test/**/*.test.{ts,tsx}'],
+  },
+});
+```
+
+`tsconfig.json` — thêm vào `compilerOptions`:
+
+```json
+"paths": { "@/*": ["./src/*"], "@test/*": ["./test/support/*"] }
+```
+
+và đổi `"include"` thành `["src", "test", "e2e", "vite.config.ts", "playwright.config.ts"]`.
+
+- [ ] **Step 3: Chuyển file bằng `git mv`**
+
+```bash
+cd frontend
+mkdir -p test/support
+git mv src/test/mock-api.ts src/test/render.tsx src/test/setup.ts src/test/speech-stub.ts test/support/
+for f in $(git ls-files 'src/*.test.ts' 'src/*.test.tsx' 'src/**/*.test.ts' 'src/**/*.test.tsx'); do
+  dest="test/${f#src/}"; mkdir -p "$(dirname "$dest")"; git mv "$f" "$dest"
+done
+rmdir src/test 2>/dev/null || true
+```
+
+Kiểm tra: `git ls-files src | grep -E '\.test\.|/test/'` → rỗng.
+
+- [ ] **Step 4: Sửa import**
+
+Trong mọi file dưới `test/`:
+- import tới code chạy thật (trước đây `./x`, `../x`, `../../x` trỏ vào `src/`) → `@/<đường dẫn trong src>` (ví dụ `import { Flashcard } from '@/components/flashcard'`, `import App from '@/app'`).
+- import tới helper (trước đây `../test/mock-api`, `./test/render`…) → `@test/<tên>` (ví dụ `import { mockApi, problem } from '@test/mock-api'`).
+- Trong chính `test/support/*.ts(x)`: import code thật dùng `@/…`, import helper khác dùng `./…`.
+- `vi.mock('…')` cũng đổi theo cùng quy tắc.
+- `test/engines.test.ts` đọc `package.json` bằng `resolve(__dirname, '../package.json')` — vẫn đúng vì `test/` cùng cấp `src/`; kiểm tra lại.
+
+Kiểm tra không còn import tương đối vượt ra ngoài `test/`: `grep -rnE "from '(\.\./)+(api|components|pages|speech|ipa|app|dates|router|shell|ui)" test` → rỗng.
+
+- [ ] **Step 5: Test + build**
+
+Run: `npm test && npm run build`
+Expected: cùng số file test và số test như Step 1, tất cả PASS; `tsc --noEmit` type-check cả `test/`.
+
+- [ ] **Step 6: Cập nhật `frontend/CLAUDE.md`**
+
+Sửa các đường dẫn helper (`src/test/mock-api.ts` → `test/support/mock-api.ts`, `src/test/render.tsx` → `test/support/render.tsx`, `src/test/setup.ts` → `test/support/setup.ts`, `speech-stub.ts`), ví dụ lệnh chạy một file (`npx vitest run test/components/flashcard.test.tsx`), và thêm vào mục Test:
+
+```
+- Test nằm ở `test/` ngang hàng `src/`, cùng cấu trúc thư mục (`src/pages/today-page.tsx` ↔ `test/pages/…test.tsx`). Helper ở `test/support/`. Import code bằng `@/…`, helper bằng `@test/…`.
+```
+
+- [ ] **Step 7: Commit**
+
+```bash
+git add vite.config.ts tsconfig.json CLAUDE.md src test
+git commit -m "refactor(frontend): tách test ra thư mục test/ ngang hàng src/
+
+Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>"
+```
+
+---
+
+> **Quy đổi đường dẫn cho Task 2–9 (đọc trước khi làm):** kế hoạch dưới đây viết trước khi có Task 1b. Áp dụng:
+> - Mọi file test `src/<x>.test.ts(x)` trong kế hoạch → `test/<x>.test.ts(x)` (ví dụ `src/router.test.tsx` → `test/router.test.tsx`, `src/shell/nav-bar.test.tsx` → `test/shell/nav-bar.test.tsx`, `src/ui/ui.test.tsx` → `test/ui/ui.test.tsx`, `src/components/layout.test.tsx` → `test/components/layout.test.tsx`, `src/shell/require-profile.test.tsx` → `test/shell/require-profile.test.tsx`).
+> - `src/test/mock-api.ts`, `src/test/render.tsx`, `src/test/setup.ts`, `src/test/speech-stub.ts` → `test/support/…`.
+> - Trong code mẫu: import code thật từ test/helper → `@/…` (ví dụ `'./client'` trong test client → `'@/api/client'`; `'../api/client'` trong mock-api → `'@/api/client'`; `'../router'` trong render → `'@/router'`); import helper → `'@test/mock-api'`, `'@test/render'`, `'@test/speech-stub'`.
+> - Lệnh `npx vitest run src/…test.tsx` → `npx vitest run test/…test.tsx`.
 
 ---
 

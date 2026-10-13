@@ -101,6 +101,7 @@ Mọi file và thư mục trong `frontend/src/` và `frontend/e2e/` dùng **keba
 
 - File mới tạo (`src/ui/*`, `src/router.tsx`, `src/styles/tokens.css`…) cũng theo kebab-case: `src/ui/progress-bar.tsx`, `src/ui/list-row.tsx`.
 - Đổi tên bằng `git mv` để giữ lịch sử. macOS/Windows không phân biệt hoa thường nên file chỉ khác hoa/thường (`Flashcard.tsx` → `flashcard.tsx`) phải đổi qua tên trung gian: `git mv Flashcard.tsx flashcard.tmp.tsx && git mv flashcard.tmp.tsx flashcard.tsx`.
+- Test tách khỏi `src/`: mọi `*.test.ts(x)` nằm trong `frontend/test/` ngang hàng `src/`, cùng cấu trúc thư mục; helper test ở `frontend/test/support/`. Test import code bằng alias `@/` (→ `src/`), helper bằng `@test/` (→ `test/support/`). Commit riêng, ngay sau commit đổi tên.
 - Làm thành **một commit riêng chỉ đổi tên + sửa import**, test xanh, trước mọi thay đổi giao diện — để diff design không lẫn với diff đổi tên.
 
 ### Định tuyến
