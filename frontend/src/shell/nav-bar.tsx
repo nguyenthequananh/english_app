@@ -91,6 +91,7 @@ export function NavBar() {
       <nav
         aria-label="Điều hướng chính"
         data-testid="nav-bar"
+        data-nav-bar=""
         className={[
           'material fixed inset-x-0 bottom-0 z-40 border-t border-[var(--material-edge)] pb-safe shadow-[var(--shadow-bar)]',
           'lg:material-strong lg:inset-y-0 lg:right-auto lg:flex lg:w-[var(--sidebar-width)] lg:flex-col',

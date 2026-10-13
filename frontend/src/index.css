@@ -107,6 +107,20 @@
     min-height: 100dvh;
   }
 
+  /*
+   * Chừa chỗ cho thanh cố định khi trình duyệt tự cuộn tới phần tử được focus (Tab) hay anchor: không có
+   * scroll-padding thì nút cuối trang dừng ngay dưới tab bar kính (<lg) hoặc dưới TopBar dính đỉnh — đang
+   * focus mà không nhìn thấy (WCAG 2.4.11). Đáy cộng thêm phần nút tròn giữa nhô lên khỏi tab bar.
+   */
+  @media (width < 64rem) {
+    html:has([data-nav-bar]) {
+      scroll-padding-bottom: calc(var(--tabbar-height) + env(safe-area-inset-bottom, 0px) + 1.5rem);
+    }
+  }
+  html:has([data-top-bar]) {
+    scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 4.25rem);
+  }
+
   ::selection {
     background-color: color-mix(in srgb, var(--accent) 24%, transparent);
   }
