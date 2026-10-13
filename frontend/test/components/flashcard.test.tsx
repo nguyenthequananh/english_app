@@ -38,7 +38,7 @@ test('đang gửi (busy) thì không chấm được', () => {
   fireEvent.keyDown(window, { key: ' ', code: 'Space' });
   fireEvent.keyDown(window, { key: '1' });
   expect(onGrade).not.toHaveBeenCalled();
-  expect(screen.getByRole('button', { name: '1. Quên' })).toBeDisabled();
+  expect(screen.getByRole('button', { name: 'Quên' })).toBeDisabled();
 });
 
 test('nút loa đọc từ và câu ví dụ', async () => {
@@ -71,6 +71,26 @@ test('Space trên nút 🔊 đang được focus không lật thẻ', () => {
   speakBtn.focus();
   fireEvent.keyDown(speakBtn, { key: ' ', code: 'Space' });
   expect(screen.queryByTestId('card-back')).not.toBeInTheDocument();
+});
+
+test('lật đi lật lại: mỗi lúc chỉ một mặt bấm được, nút chấm chỉ có khi xem mặt sau', () => {
+  stubSpeech();
+  render(<Flashcard word={word} onGrade={() => undefined} />);
+  expect(screen.queryByRole('button', { name: 'Được' })).not.toBeInTheDocument();
+  fireEvent.keyDown(window, { key: ' ', code: 'Space' });
+  expect(screen.getAllByRole('button', { name: 'Nghe: hello' })).toHaveLength(1);
+  expect(screen.getByRole('button', { name: 'Được' })).toHaveAttribute('aria-keyshortcuts', '3');
+  fireEvent.keyDown(window, { key: ' ', code: 'Space' });
+  expect(screen.getByRole('button', { name: /Lật thẻ/ })).toBeInTheDocument();
+  expect(screen.getAllByRole('button', { name: 'Nghe: hello' })).toHaveLength(1);
+  expect(screen.queryByRole('button', { name: 'Được' })).not.toBeInTheDocument();
+});
+
+test('chạm vào mặt trước cũng lật thẻ', async () => {
+  stubSpeech();
+  render(<Flashcard word={word} onGrade={() => undefined} />);
+  await userEvent.click(screen.getByRole('heading', { name: 'hello' }));
+  expect(screen.getByTestId('card-back')).toHaveTextContent('xin chào');
 });
 
 test('Space khi focus ở nút lật thẻ vẫn lật thẻ', () => {
