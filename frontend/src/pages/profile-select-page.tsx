@@ -48,7 +48,7 @@ function ProfileTile({ profile, busy, disabled, onPick }: { profile: Profile; bu
           </span>
         )}
       </span>
-      <span className="line-clamp-2 max-w-[9rem] text-[1rem] leading-snug font-semibold break-words text-text">{profile.name}</span>
+      <span className="line-clamp-2 max-w-[9rem] text-[1rem] leading-snug font-semibold break-words text-text" title={profile.name}>{profile.name}</span>
       {profile.hasPin && <span className="sr-only">(có mã PIN)</span>}
     </button>
   );

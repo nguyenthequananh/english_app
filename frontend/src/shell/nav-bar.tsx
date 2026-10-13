@@ -57,7 +57,7 @@ function ProfileCard() {
           {profile?.avatar || name.charAt(0).toUpperCase() || '?'}
         </span>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-[0.9375rem] font-semibold text-text">{name || '…'}</p>
+          <p className="truncate text-[0.9375rem] font-semibold text-text" title={name || undefined}>{name || '…'}</p>
           <p className="text-[0.75rem] text-text-3">Hồ sơ đang dùng</p>
         </div>
       </div>

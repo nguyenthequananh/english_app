@@ -48,6 +48,14 @@ test('trang Hôm nay: chuỗi ngày, thẻ đến hạn, tiến độ unit và n
   expect(screen.getByRole('link', { name: 'Bắt đầu buổi học' })).toHaveAttribute('href', '/session');
 });
 
+test('trang Hôm nay: số lớn có dấu ngăn cách hàng nghìn', async () => {
+  mockApi({ 'GET /progress/summary': () => ({ body: { streak: 1284, dueCount: 12345, finishedToday: false, currentUnit: null } }) });
+  renderRoutes('/');
+  expect(await screen.findByTestId('today-streak')).toHaveTextContent('1.284');
+  expect(screen.getByTestId('today-due')).toHaveTextContent('12.345');
+  expect(screen.getByText('12.345 thẻ cần ôn')).toBeInTheDocument();
+});
+
 test('trang Hôm nay: chào theo tên hồ sơ, lưới Luyện tập dẫn tới các màn phụ', async () => {
   mockApi({
     'GET /profiles/current': () => ({ body: { id: 1, name: 'Lan', avatar: null, hasPin: false, dailyMinutes: 30, voice: null, speechRate: 1 } }),

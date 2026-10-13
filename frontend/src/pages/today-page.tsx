@@ -16,6 +16,9 @@ import { Skeleton } from '../ui/skeleton';
 import { StatTile } from '../ui/stat-tile';
 import { SESSION_KEY } from './session-page';
 
+/** Số lớn có dấu chấm ngăn cách hàng nghìn (12.345), như màn Tiến độ. */
+const num = new Intl.NumberFormat('vi-VN');
+
 /**
  * Ô Luyện tập — biến thể cục bộ của `SkillTile` (ui), khác ở hai điểm:
  * - nhận `ariaLabel`: ô "Lộ trình" trùng tên với mục điều hướng nên tên đọc là "Mở lộ trình";
@@ -87,15 +90,15 @@ function SessionCard({ summary, dailyMinutes }: { summary: Summary; dailyMinutes
   let detail: string;
   if (inProgress) {
     const parts = [
-      inProgress.reviewsLeft > 0 && `${inProgress.reviewsLeft} thẻ ôn`,
-      inProgress.newLeft > 0 && `${inProgress.newLeft} từ mới`,
+      inProgress.reviewsLeft > 0 && `${num.format(inProgress.reviewsLeft)} thẻ ôn`,
+      inProgress.newLeft > 0 && `${num.format(inProgress.newLeft)} từ mới`,
     ].filter(Boolean);
     headline = parts.length ? `Còn ${parts.join(' · ')}` : 'Còn bài chính';
-    detail = `Đã ôn ${inProgress.cardsDone} thẻ — làm tiếp từ chỗ dừng.`;
+    detail = `Đã ôn ${num.format(inProgress.cardsDone)} thẻ — làm tiếp từ chỗ dừng.`;
   } else {
     const minutes = dailyMinutes ? ` · khoảng ${dailyMinutes} phút` : '';
     if (summary.dueCount > 0) {
-      headline = `${summary.dueCount} thẻ cần ôn`;
+      headline = `${num.format(summary.dueCount)} thẻ cần ôn`;
       detail = `Rồi học từ mới và bài chính${minutes}`;
     } else {
       headline = 'Từ mới và bài chính';
@@ -196,7 +199,7 @@ function TodaySkeleton() {
 function greeting(s: Summary | undefined) {
   if (!s) return undefined;
   if (s.finishedToday) return 'Hôm nay bạn đã học xong. Giữ nhịp này nhé!';
-  if (s.streak > 0) return `Học hôm nay để giữ chuỗi ${s.streak} ngày.`;
+  if (s.streak > 0) return `Học hôm nay để giữ chuỗi ${num.format(s.streak)} ngày.`;
   return 'Mỗi ngày một chút — bắt đầu thôi.';
 }
 
@@ -224,8 +227,8 @@ export default function TodayPage() {
           <div className="mt-2 flex flex-col gap-6 lg:mt-0">
             <Practice />
             <div className="grid grid-cols-2 gap-3 lg:order-first">
-              <StatTile icon="flame" tone="warning" value={s.streak} label="ngày liên tiếp" testId="today-streak" />
-              <StatTile icon="cards" tone="VOCAB" value={s.dueCount} label="thẻ đến hạn" testId="today-due" />
+              <StatTile icon="flame" tone="warning" value={num.format(s.streak)} label="ngày liên tiếp" testId="today-streak" />
+              <StatTile icon="cards" tone="VOCAB" value={num.format(s.dueCount)} label="thẻ đến hạn" testId="today-due" />
             </div>
           </div>
         </div>
