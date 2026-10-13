@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import RoadmapPage from '@/pages/roadmap-page';
 import WordBankPage from '@/pages/word-bank-page';
@@ -43,15 +43,45 @@ test('kho từ: lọc theo trạng thái và thêm từ', async () => {
   });
   renderAt(<WordBankPage />, '/words');
   expect(await screen.findByText('quyển sách')).toBeInTheDocument();
-  expect(screen.getByRole('cell', { name: 'Đang học' })).toBeInTheDocument();
-  await user.selectOptions(screen.getByLabelText('Trạng thái'), 'KNOWN');
-  expect(await screen.findByText('Không có từ nào')).toBeInTheDocument();
+  const row = screen.getByTestId('word-row');
+  expect(within(row).getByRole('cell', { name: 'Đang học' })).toBeInTheDocument();
+  expect(within(row).getByText('/bʊk/')).toBeInTheDocument();
+  expect(within(row).getByRole('button', { name: 'Nghe: book' })).toBeInTheDocument();
 
-  await user.click(screen.getByRole('button', { name: 'Thêm từ của bạn' }));
-  await user.type(screen.getByLabelText('Từ'), 'serendipity');
-  await user.type(screen.getByLabelText('Loại từ'), 'noun');
-  await user.type(screen.getByLabelText('Nghĩa tiếng Việt'), 'sự tình cờ may mắn');
-  await user.click(screen.getByRole('button', { name: 'Lưu từ' }));
-  await screen.findByRole('button', { name: 'Thêm từ của bạn' });
-  expect(calls.find((c) => c.method === 'POST')?.body).toMatchObject({ headword: 'serendipity', pos: 'noun', meaningVi: 'sự tình cờ may mắn' });
+  const filter = screen.getByRole('radiogroup', { name: 'Trạng thái' });
+  await user.click(within(filter).getByRole('radio', { name: 'Đã thuộc' }));
+  expect(await screen.findByText('Không có từ nào')).toBeInTheDocument();
+  expect(calls.some((c) => c.path === '/words?status=KNOWN')).toBe(true);
+
+  await user.click(screen.getByRole('button', { name: 'Thêm từ' }));
+  const sheet = await screen.findByRole('dialog', { name: 'Thêm từ của bạn' });
+  await user.type(within(sheet).getByLabelText('Từ'), 'serendipity');
+  await user.type(within(sheet).getByLabelText('Loại từ'), 'noun');
+  await user.type(within(sheet).getByLabelText('Nghĩa tiếng Việt'), 'sự tình cờ may mắn');
+  await user.click(within(sheet).getByRole('button', { name: 'Lưu từ' }));
+  await waitFor(() => expect(screen.queryByRole('dialog', { name: 'Thêm từ của bạn' })).not.toBeInTheDocument());
+  const posted = calls.find((c) => c.method === 'POST')?.body;
+  expect(posted).toMatchObject({ headword: 'serendipity', pos: 'noun', meaningVi: 'sự tình cờ may mắn' });
+  // Trường tuỳ chọn để trống thì không gửi (không gửi chuỗi rỗng).
+  expect(posted).not.toHaveProperty('ipaUs');
+  expect(posted).not.toHaveProperty('exampleEn');
+  expect(posted).not.toHaveProperty('exampleVi');
+});
+
+test('kho từ: lọc "Đang học" gửi đúng tham số, mọi từ là một dòng word-row', async () => {
+  const user = userEvent.setup();
+  stubSpeech();
+  const word = (id: number, headword: string) => ({
+    word: { id, headword, pos: 'noun', ipaUs: null, ipaUk: null, meaningVi: `nghĩa ${id}`, exampleEn: null, exampleVi: null, cefr: null, source: 'OXFORD' },
+    status: 'LEARNING', dueDate: null,
+  });
+  mockApi({
+    'GET /words': () => ({ body: [] }),
+    'GET /words?status=LEARNING': () => ({ body: [word(1, 'apple'), word(2, 'banana'), word(3, 'cherry')] }),
+  });
+  renderAt(<WordBankPage />, '/words');
+  expect(await screen.findByText('Không có từ nào')).toBeInTheDocument();
+  await user.click(screen.getByRole('radio', { name: 'Đang học' }));
+  expect(await screen.findAllByTestId('word-row')).toHaveLength(3);
+  expect(screen.getByText('3 từ')).toBeInTheDocument();
 });
