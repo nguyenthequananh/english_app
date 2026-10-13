@@ -60,6 +60,9 @@ test('trang Hôm nay: chào theo tên hồ sơ, lưới Luyện tập dẫn tớ
   mockApi({
     'GET /profiles/current': () => ({ body: { id: 1, name: 'Lan', avatar: null, hasPin: false, dailyMinutes: 30, voice: null, speechRate: 1 } }),
     'GET /progress/summary': () => ({ body: { streak: 0, dueCount: 0, finishedToday: false, currentUnit: null } }),
+    'GET /roadmap': () => ({ body: { stages: [
+      { code: 'S0', title: 'Xây nền', targetBand: 4, status: 'DONE', testAvailable: true, units: [{ code: 'S0-U01', title: 'Chào hỏi', status: 'DONE' }] },
+    ] } }),
   });
   renderRoutes('/');
   expect(await screen.findByRole('heading', { level: 1, name: 'Chào, Lan' })).toBeInTheDocument();
@@ -69,7 +72,55 @@ test('trang Hôm nay: chào theo tên hồ sơ, lưới Luyện tập dẫn tớ
   expect(screen.getByRole('link', { name: 'Phát âm IPA' })).toHaveAttribute('href', '/ipa');
   // Ô Lộ trình đổi tên đọc để không trùng với mục "Lộ trình" của thanh điều hướng.
   expect(screen.getByRole('link', { name: 'Mở lộ trình' })).toHaveAttribute('href', '/roadmap');
-  expect(screen.getByText('Bạn đã học hết nội dung hiện có.')).toBeInTheDocument();
+  expect(await screen.findByText('Bạn đã học hết nội dung hiện có.')).toBeInTheDocument();
+});
+
+const noUnitSummary = { streak: 0, dueCount: 0, finishedToday: false, currentUnit: null };
+
+test('trang Hôm nay: chưa nạp nội dung thì mời nạp, không báo đã học hết', async () => {
+  mockApi({
+    'GET /progress/summary': () => ({ body: noUnitSummary }),
+    'GET /roadmap': () => ({ body: { stages: [] } }),
+  });
+  renderRoutes('/');
+  expect(await screen.findByText('Chưa có nội dung để học')).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Nạp nội dung trong Cá nhân' })).toHaveAttribute('href', '/settings');
+  expect(screen.queryByText('Bạn đã học hết nội dung hiện có.')).not.toBeInTheDocument();
+});
+
+test('trang Hôm nay: xong các unit nhưng chưa qua kiểm tra chặng thì mời làm bài kiểm tra chặng', async () => {
+  mockApi({
+    'GET /progress/summary': () => ({ body: noUnitSummary }),
+    'GET /roadmap': () => ({ body: { stages: [
+      { code: 'S0', title: 'Xây nền', targetBand: 4, status: 'ACTIVE', testAvailable: true, units: [{ code: 'S0-U01', title: 'Chào hỏi', status: 'DONE' }] },
+      { code: 'S1', title: 'Tăng tốc', targetBand: 5, status: 'LOCKED', testAvailable: false, units: [{ code: 'S1-U01', title: 'Gia đình', status: 'LOCKED' }] },
+    ] } }),
+  });
+  renderRoutes('/');
+  expect(await screen.findByText('Đã học xong các unit của chặng')).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Làm bài kiểm tra chặng' })).toHaveAttribute('href', '/stages/S0/test');
+});
+
+test('trang Hôm nay: không đọc được lộ trình thì không đoán là đã học hết', async () => {
+  mockApi({
+    'GET /progress/summary': () => ({ body: noUnitSummary }),
+    'GET /roadmap': () => problem(500, 'INTERNAL', 'Lỗi'),
+  });
+  renderRoutes('/');
+  expect(await screen.findByText('Chưa có unit đang học')).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Xem lộ trình' })).toHaveAttribute('href', '/roadmap');
+  expect(screen.queryByText('Bạn đã học hết nội dung hiện có.')).not.toBeInTheDocument();
+});
+
+test('trang Hôm nay: unit chưa có bài thì không hiện 0% và 0/0 bài', async () => {
+  mockApi({ 'GET /progress/summary': () => ({ body: {
+    streak: 0, dueCount: 0, finishedToday: false,
+    currentUnit: { code: 'S0-U02', title: 'Gia đình', lessonsDone: 0, lessonsTotal: 0, testReady: false },
+  } }) });
+  renderRoutes('/');
+  expect(await screen.findByText('Unit chưa có bài học')).toBeInTheDocument();
+  expect(screen.queryByRole('progressbar', { name: 'Tiến độ unit S0-U02' })).not.toBeInTheDocument();
+  expect(screen.queryByText('0/0 bài')).not.toBeInTheDocument();
 });
 
 test('trang Hôm nay: buổi học đang dở thì nút đổi thành Tiếp tục, không tự gọi tạo buổi học', async () => {

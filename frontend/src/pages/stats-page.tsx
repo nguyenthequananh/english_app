@@ -80,7 +80,7 @@ function OverviewCard({ roadmap, summary }: { roadmap: Roadmap | undefined; summ
           </span>
         </ProgressRing>
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold text-accent-text">Chặng đang học · Band {stage.targetBand}</p>
+          <p className="text-sm font-semibold text-accent-text">Chặng đang học · Band{'\u00a0'}{stage.targetBand}</p>
           <p className="mt-0.5 text-xl font-bold text-balance break-words text-text">{stage.title}</p>
           <p className="mt-0.5 text-md tabular-nums text-text-2">{done}/{total} unit đã xong</p>
         </div>
@@ -88,7 +88,7 @@ function OverviewCard({ roadmap, summary }: { roadmap: Roadmap | undefined; summ
       {unit && (
         <div className="rounded-control bg-fill px-3.5 py-3">
           <div className="flex items-baseline justify-between gap-3">
-            <p className="min-w-0 truncate text-base font-semibold text-text">
+            <p className="min-w-0 truncate text-base font-semibold text-text" title={unit.title}>
               <span className="font-normal text-text-2">Unit: </span>{unit.title}
             </p>
             <span className="shrink-0 text-sm tabular-nums text-text-2">{unit.lessonsDone}/{unit.lessonsTotal} bài</span>
@@ -184,7 +184,7 @@ export default function StatsPage() {
                   <ListRow
                     key={`${t.testCode}-${t.takenAt}`}
                     leading={
-                      <span className={`${t.passed ? 'tone-success' : 'tone-danger'} inline-flex size-8 items-center justify-center rounded-full bg-[var(--tone-soft)] text-[var(--tone-text)]`}>
+                      <span className={`${t.passed ? 'tone-success' : 'tone-warning'} inline-flex size-8 items-center justify-center rounded-full bg-[var(--tone-soft)] text-[var(--tone-text)]`}>
                         <Icon name={t.passed ? 'check' : 'cross'} size={16} strokeWidth={2.6} />
                       </span>
                     }
@@ -193,7 +193,7 @@ export default function StatsPage() {
                     trailing={
                       <>
                         <span className="text-base font-semibold tabular-nums text-text">{Math.round(t.score * 100)}%</span>
-                        <Badge tone={t.passed ? 'success' : 'danger'} className="max-sm:sr-only">{t.passed ? 'Đạt' : 'Chưa đạt'}</Badge>
+                        <Badge tone={t.passed ? 'success' : 'warning'} className="max-sm:sr-only">{t.passed ? 'Đạt' : 'Chưa đạt'}</Badge>
                       </>
                     }
                   />

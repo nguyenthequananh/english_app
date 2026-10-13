@@ -15,7 +15,10 @@ test('thống kê: các ô số, heatmap hôm nay và bảng kết quả', async
       streak: 4, knownWords: 120, learningWords: 35,
       heatmap: [{ date: today, minutes: 31 }, { date: '2000-01-03', minutes: 840 }],
       knownByWeek: [{ weekStart: '2026-09-28', total: 100 }, { weekStart: '2026-10-05', total: 120 }],
-      tests: [{ testCode: 'S0-U01-T', kind: 'UNIT', score: 0.75, passed: true, takenAt: '2026-10-05T20:00' }],
+      tests: [
+        { testCode: 'S0-U01-T', kind: 'UNIT', score: 0.75, passed: true, takenAt: '2026-10-05T20:00' },
+        { testCode: 'S0-U02-T', kind: 'UNIT', score: 0.4, passed: false, takenAt: '2026-10-06T20:00' },
+      ],
     } }),
     'GET /progress/summary': () => ({ body: {
       streak: 4, dueCount: 0, finishedToday: true,
@@ -38,6 +41,7 @@ test('thống kê: các ô số, heatmap hôm nay và bảng kết quả', async
   expect(screen.getByRole('img', { name: /^Lịch học 26 tuần/ })).toBeInTheDocument();
   expect(screen.getByText('S0-U01-T')).toBeInTheDocument();
   expect(screen.getByText('75%')).toBeInTheDocument();
+  expect(screen.getByText('Chưa đạt')).toHaveClass('tone-warning');
   expect(screen.getByRole('img', { name: 'Số từ đã thuộc theo tuần' })).toBeInTheDocument();
   // Thẻ tổng quan: chặng đang học 1/4 unit = 25%, unit hiện tại 2/6 bài.
   expect(await screen.findByRole('progressbar', { name: 'Hoàn thành chặng Xây nền' })).toHaveAttribute('aria-valuenow', '25');

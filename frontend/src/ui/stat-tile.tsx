@@ -14,12 +14,13 @@ export function StatTile({ icon, tone = 'accent', value, label, testId, classNam
   className?: string;
 }) {
   return (
-    <div className={cn('flex flex-col gap-2 rounded-card bg-surface p-4 card-edge', toneClass(tone), className)}>
+    <div className={cn('@container flex flex-col gap-2 rounded-card bg-surface p-4 card-edge', toneClass(tone), className)}>
       <span className="inline-flex size-9 items-center justify-center rounded-full bg-[var(--tone-soft)] text-[var(--tone-text)]">
         <Icon name={icon} size={19} strokeWidth={2} />
       </span>
       <div>
-        <div data-testid={testId} className="text-3xl font-bold tabular-nums text-text">{value}</div>
+        {/* Cỡ số theo bề rộng ô (container query): lưới 3 ô ở 320px chỉ còn ~57px cho "1.460g". */}
+        <div data-testid={testId} className="text-xl font-bold tabular-nums text-text @[4.5rem]:text-2xl @[7rem]:text-3xl">{value}</div>
         <div className="mt-0.5 text-sm text-text-3">{label}</div>
       </div>
     </div>

@@ -86,7 +86,8 @@ test('trượt bài chuyển chặng thì hiện unit nên ôn và cho làm lạ
   await user.click(await screen.findByRole('button', { name: 'Nộp bài' }));
   expect(await screen.findByText('Cần 70% để qua.')).toBeInTheDocument();
   expect(screen.getByRole('progressbar', { name: 'Điểm bài kiểm tra' })).toHaveAttribute('aria-valuenow', '50');
-  expect(screen.getByText('Chưa đạt')).toBeInTheDocument();
+  // Chưa đạt là "chưa tới", không phải lỗi: cùng tông cảnh báo với danh sách bài kiểm tra ở Tiến độ.
+  expect(screen.getByText('Chưa đạt')).toHaveClass('tone-warning');
   expect(screen.getByText(/S0-U01/)).toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: 'Làm lại' }));
   expect(screen.getByRole('button', { name: 'Nộp bài' })).toBeInTheDocument();

@@ -1,4 +1,4 @@
-import { useId, useState } from 'react';
+import { useId, useState, type CSSProperties } from 'react';
 import type { Profile } from '../../types/api';
 import { speak, useEnglishVoices } from '../../speech/speech';
 import { ListGroup } from '../../ui/list-row';
@@ -9,6 +9,8 @@ import { GroupItem } from './settings-rows';
 import { useSaveProfile } from './use-save-profile';
 
 const SAMPLE = 'Hello, welcome to your English lesson.';
+const RATE_MIN = 0.5;
+const RATE_MAX = 2;
 
 /** Nhóm "Giọng đọc": chọn giọng + tốc độ, nghe thử, lưu khi có thay đổi. */
 export function VoiceSettings({ profile }: { profile: Profile }) {
@@ -41,13 +43,14 @@ export function VoiceSettings({ profile }: { profile: Profile }) {
           <input
             id={rateId}
             type="range"
-            min={0.5}
-            max={2}
+            min={RATE_MIN}
+            max={RATE_MAX}
             step={0.1}
             value={speechRate}
             aria-valuetext={`${speechRate.toFixed(1)} lần`}
             onChange={(e) => setSpeechRate(Number(e.target.value))}
-            className="h-11 min-w-0 flex-1 cursor-pointer accent-accent"
+            className="range-slider min-w-0 flex-1"
+            style={{ '--range-progress': (speechRate - RATE_MIN) / (RATE_MAX - RATE_MIN) } as CSSProperties}
           />
           <span aria-hidden="true" className="text-xs text-text-3">Nhanh</span>
         </div>

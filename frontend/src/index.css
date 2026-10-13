@@ -227,6 +227,68 @@
     }
   }
 
+  /*
+   * Thanh trượt kiểu iOS vẽ bằng token: rãnh 4px --fill-strong, phần đã chọn --accent, núm --knob có bóng.
+   * Không dùng `accent-color`: Chromium tự đổi rãnh sang trắng trong chế độ tối để tương phản với màu nhấn.
+   * Phần đã chọn đọc `--range-progress` (0–1) do component đặt; tâm núm đi từ 14px tới (100% − 14px).
+   */
+  .range-slider {
+    --range-fill: calc(14px + (100% - 28px) * var(--range-progress, 0.5));
+    appearance: none;
+    -webkit-appearance: none;
+    height: 44px;
+    background: transparent;
+    cursor: pointer;
+  }
+  .range-slider:focus-visible {
+    outline: none;
+  }
+  .range-slider::-webkit-slider-runnable-track {
+    height: 4px;
+    border-radius: 9999px;
+    background: linear-gradient(to right, var(--accent) var(--range-fill), var(--fill-strong) var(--range-fill));
+  }
+  .range-slider::-moz-range-track {
+    height: 4px;
+    border-radius: 9999px;
+    background: var(--fill-strong);
+  }
+  .range-slider::-moz-range-progress {
+    height: 4px;
+    border-radius: 9999px;
+    background: var(--accent);
+  }
+  .range-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 28px;
+    height: 28px;
+    margin-top: -12px;
+    border: 0;
+    border-radius: 9999px;
+    background: var(--knob);
+    box-shadow: var(--shadow-knob), inset 0 0 0 0.5px var(--separator);
+  }
+  .range-slider::-moz-range-thumb {
+    width: 28px;
+    height: 28px;
+    border: 0;
+    border-radius: 9999px;
+    background: var(--knob);
+    box-shadow: var(--shadow-knob), inset 0 0 0 0.5px var(--separator);
+  }
+  .range-slider:focus-visible::-webkit-slider-thumb {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+  .range-slider:focus-visible::-moz-range-thumb {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+  .range-slider:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
   /* FocusShell: TopBar tràn ngang, phần còn lại căn giữa ≤720px. */
   .focus-shell > :not([data-top-bar]) {
     width: 100%;

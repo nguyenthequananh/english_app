@@ -5,6 +5,8 @@ import { Button } from '@/ui/button';
 import { ProgressBar } from '@/ui/progress-bar';
 import { Segmented } from '@/ui/segmented';
 import { StatTile } from '@/ui/stat-tile';
+import { SkillTile } from '@/ui/skill-tile';
+import { PageHeader } from '@/ui/page-header';
 import { TextField } from '@/ui/text-field';
 import { renderAt } from '@test/render';
 
@@ -43,4 +45,26 @@ test('StatTile gắn testId lên phần tử chứa số', () => {
 test('TextField liên kết label với input', () => {
   renderAt(<TextField label="Tên" defaultValue="Lan" />);
   expect(screen.getByLabelText('Tên')).toHaveValue('Lan');
+});
+
+test('SkillTile: tên đọc riêng, tông trung tính cho đích không phải kỹ năng, icon neo đỉnh mặc định', () => {
+  renderAt(<>
+    <SkillTile to="/roadmap" label="Lộ trình" ariaLabel="Mở lộ trình" icon="map" tone="neutral" />
+    <SkillTile to="/ipa" label="Phát âm IPA" icon="mic" tone="PRONUNCIATION" align="center" />
+  </>);
+  const roadmap = screen.getByRole('link', { name: 'Mở lộ trình' });
+  expect(roadmap).toHaveAttribute('href', '/roadmap');
+  expect(roadmap).toHaveTextContent('Lộ trình');
+  expect(roadmap).toHaveClass('tone-neutral');
+  expect(roadmap).toHaveAttribute('data-align', 'top');
+  const ipa = screen.getByRole('link', { name: 'Phát âm IPA' });
+  expect(ipa).toHaveClass('tone-pronunciation');
+  expect(ipa).toHaveAttribute('data-align', 'center');
+});
+
+test('PageHeader: tiêu đề dài vẫn đọc đủ khi bị cắt còn 2 dòng', () => {
+  renderAt(<><PageHeader title="Chào, Nguyễn Thị Phương Thảo Nguyên" /><PageHeader title="Tiến độ" /></>);
+  const long = screen.getByRole('heading', { level: 1, name: 'Chào, Nguyễn Thị Phương Thảo Nguyên' });
+  expect(long).toHaveAttribute('title', 'Chào, Nguyễn Thị Phương Thảo Nguyên');
+  expect(screen.getByRole('heading', { level: 1, name: 'Tiến độ' })).not.toHaveAttribute('title');
 });
